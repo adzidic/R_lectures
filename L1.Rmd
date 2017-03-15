@@ -1,0 +1,336 @@
+---
+title: "Lecture 1:Opening R for the first time"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+
+output:
+   html_document:
+     theme: flatly
+     toc: true
+     toc_depth: 4
+     number_sections: yes
+     
+---
+#Installing  R for the first time!
+
+
+## About R
+
+R is free, open-source software, available for all commonly used operating systems, including Windows, Mac OS X, and Linux systems. You can download it form the web-site [CRAN](https://cran.r-project.org/).
+
+**IMPORTANT: Regardless of your operating system, you should install R before installing RStudio.**
+
+**IMPORTANT: R is case and character sensitive language**
+
+
+
+#RStudio
+
+
+RStudio is an integrated development environment (IDE) for R which works with the standard version of R higher than version 2.11. available from RStudio web-site [RStudion](https://www.rstudio.com/products/rstudio/download/). Source editor for writing scripts, workspae to view objects in the global environment, dataviewer for inspecting elements, searchable command history, plots pane, Rpackage manager, Integrated R help
+
+![RStudio RMarkdown first screen!](/Users/alendzidic/Documents/PROJECTS/RMarkdown_intro.jpg)
+
+In Console window you can clearly see the exact version of R software like one on machine that created this Rnotebook (R version 3.3.2 (2016-10-31) -- "Sincere Pumpkin Patch").
+Executive R code is written within Chunk!
+
+##RStudio session
+
+You have to take care about two things within RStudio session:
+
+1.RObjects created within session
+
+2.RScripts written for particular session - in this case RMarkdown!
+
+
+## Prompt change
+
+You can easily change your default prompt (>) in R to something else like RStudio>:
+```{r}
+options(prompt="RStudio>")
+```
+If you want to set it back use:
+```{r}
+options(prompt=">")
+```
+
+## Keyboard shortcuts
+
+
+Description | MAC | PC
+--- | ---| ---
+Navigate command (last) | $\uparrow$  | $\uparrow$
+Navigate command (next) | $\downarrow$ | $\downarrow$
+Last matching command | CMD + $\uparrow$ | CTRL + $\uparrow$ 
+TAB completion | TAB | TAB
+Dismiss completion popup | Esc | Esc
+
+##Setting working directory
+
+If you are not using RProject default working directory could be set as follows:
+
+
+First go to Tools and Global options as shown on the picture:
+
+![RStudio Tools Global Options!](/Users/alendzidic/Documents/PROJECTS/Global_options.jpg)
+
+Then you change RGeneral default working directory (black rectangle), press apply and OK.
+
+![RStudio Tools Working directory!](/Users/alendzidic/Documents/PROJECTS/Working_Directory.jpg)
+
+To check it you can type in:
+```{r, eval=FALSE}
+getwd()
+```
+
+
+ 
+#Basic calculations - use RStudio as a calculator
+
+You can use RStudio to perform basic calculations: addition, subtraction, division, multiplication, exponents and modulo.
+
+Addition
+
+```{r}
+2+7
+```
+Subtraction
+
+```{r}
+11-3
+```
+Division
+
+```{r}
+18/3
+```
+Multiplication
+
+```{r}
+5*8
+```
+Exponents
+
+```{r}
+2^4
+```
+But be carefull if you want to write 2 to the power of 3 minus 1, i.e. 2 to the power of 2, while you have to put this number in paremtheses:
+Good example:
+```{r}
+2^(3-1)
+```
+Otherwise you get 2 to the power of 3 and then minus 1:
+```{r}
+2^3-1
+```
+**Carefull with negative numbers**, while R considers a negative number -2 as -1*2, therefore you need parenthese around (-2).
+
+Modulo operation finds the remainder after division of one number by another (sometimes called modulus). In this example 5 divided by 2 is 2 and the remainder is 1.
+```{r}
+5 %% 2
+```
+
+You can also transfer a bit complicated formula
+$$(\frac{0.14 * (1-0.14)}{24})^{1/3}$$
+to a R executable code:
+```{r}
+(0.14*(1-0.14)/24)^(1/3)
+```
+
+## Assignment 1
+
+1. Calculate in RStudio following expression for x=3:
+$$\frac{2x +51}{3^{-4.2+5.62}} = ?$$
+2. What is the solution for negative number five squared and added number two?
+
+
+
+
+
+Solution 1:
+```{r}
+x<-3
+(2*x+51)/3^(-4.2+5.62)
+```
+
+Solution 2:
+```{r}
+(-5)^2+2
+```
+
+
+
+# R Objects
+
+## Comments
+
+Comments are important in R and they start after hash mark (#). This kind of annotation could be usefull other people using your code!
+```{r}
+#This is a comment
+2+2 #Example of addition
+```
+
+## Assigning and removing R Object
+
+Suppose we want to give a object called a a value of 53.
+We can perform that by writting following code in R Markdown:
+
+```{r}
+a<- 53
+```
+We can check if our object exists with typing his name.
+
+```{r}
+a
+```
+To check if our object exist in R working environment we can use list function ls().
+```{r}
+ls()
+```
+To remove object a from the R working environment we can use remove function rm().
+
+```{r}
+rm(a)
+```
+
+After we remove our object from R environment we can check our list of objects with list function. 
+```{r}
+ls()
+```
+
+Our previously created object a is not anymore in R environment.
+
+
+#Functions
+
+## Assigning R Objectes with combine function
+
+Suppose we want to make one object with house mouse body weight. 
+We can use **combine** function to do that. Example: mouse.wts <-c(). In brackets are measurements divided by comma.
+
+![House mouse!](/Users/alendzidic/Documents/PROJECTS/House_mouse.jpeg)
+
+Photo source: [House mouse](https://en.wikipedia.org/wiki/House_mouse)
+```{r}
+rm(list = ls()) #clearing the environment of any left over objects from a previous analysis
+mouse.wts <-c(16.6, 12, 10.9, 15.9, 25, 14.5, 18.2, 13.8, 21, 21.5) #creating a vector with house mouse body weight in grams
+```
+
+##Class function
+
+Class function can be used to determine class of particular object. 
+R has 5 basic atomic classes
+
+    logical (e.g.,RUE, FALSE)
+    integer (e.g., 1L, 2L)
+    numeric (real or decimal) (e.g, 2, 2.0, pi)
+    complex (e.g, 1 + 0i, 1 + 4i)
+    character (e.g, "a", "b")
+  
+Suppose we want to check what class has object mouse.wts.
+
+```{r}
+class(mouse.wts)
+```
+
+
+Some basic functions (mean, min, max, summary) to caluculate from both samples
+
+##Mean function
+
+
+Arithmetic mean is a quantitative measure of central tendency that is highly sensitive to outliers. Value of aritmentic mean is in units as original variable! To calculate arithmentic mean in R we use following code:
+
+```{r}
+mean(mouse.wts)
+```
+
+##Min function
+
+Minimum function calculated minimal value in the vector.
+
+```{r}
+min(mouse.wts)
+```
+##Max function
+
+Maximum function calculated maximal value in the vector.
+
+```{r}
+max(mouse.wts)
+
+```
+
+##Summary function
+
+Summary function gives you a descriptive statistics for the analyzed vector.
+
+```{r}
+summary(mouse.wts)
+```
+
+##Help function in R
+
+If we need help on any function in R we could write down ?name of the function and help(name of the function in brackets)
+```{r}
+?summary
+help(summary)
+```
+
+#Plots
+
+##Plot
+
+If we have a single variable then R makes a plot of the values of x (on the y-axis) ordered on the x-axis with Index from first to last value. 
+
+```{r}
+plot(mouse.wts, main="House mouse weight plot", xlab="Mouse number in the dataset", ylab="Weight (g)")
+```
+
+
+##Histogram
+
+A histogram is a visual representation of the distribution of a dataset. If we want to see a histogram of the data we could use hist function:
+
+```{r}
+hist(mouse.wts, main="House mouse weight histogram", xlab="Mouse weight classes", ylab="Frequency")
+```
+
+
+##Box plot
+
+Syntax for boxplot in first case is boxplot(variable_name) and in the second case boxplot(x, data=), where x is a variable name or formula and data= dataframe that provides the data. 
+
+Boxplot for individual variables could be used for two of our created variables:
+
+```{r}
+
+boxplot(mouse.wts, main="House mouse weight", xlab="Species - Mouse", ylab="Weight (g)") #boxplot for the variable mouse.wts
+```
+
+## Assignment 2
+
+1. Plot a function Z using plot function with option type ="l" to plot line instead of points:
+
+$$ Z= x^3 -6x^2+4x+12$$
+For x values use a sequence of numbers between -2.1 and 6.1 with increment 0.1. (Hint: Use seq function; seq function arguments: inital value, final value and increment)
+
+Solution 1:
+
+```{r}
+x<-seq(-2.1,6.1,0.1)
+Z<- (x^3-6*x^2+4*x+12)
+plot(x,Z, type="l")
+```
+
+2. Now try to plot the same function and call it Z1 with increment for x instead by 0.1 to 1. 
+
+
+```{r}
+x<-seq(-2.1,6.1,1)
+Z1<- (x^3-6*x^2+4*x+12)
+plot(x,Z1, type="l")
+```
+
+What is the difference in plots?!
+
+If you want to learn more about nice graphs take a look at the package [ggplot2](http://ggplot2.org/)!
