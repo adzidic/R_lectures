@@ -1,0 +1,84 @@
+---
+title: "A course in the R statistical computing language by video podcast"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+
+output:
+   html_document:
+     theme: flatly
+     toc: true
+     toc_depth: 4
+     number_sections: yes
+---
+
+
+I have been playing around with teaching R through downloadable video podcasts and feel that it works well for getting people up to speed with some of the basics in a user-friendly way. I have also decided to stick with the open-source ethos for R and provide these to all users who want access. As is the case with all programming languages, there is always more than one way to do something, and these represent my own personal preference for a variety of analyses (at least in terms of teaching others how to do them). These demonstrations are for Windows OS for the time being. Mac/Linux users will have to learn some conversions for some commands. I am moving my day-to-day computing over to Mac anyway, so one day I will probably end up with Mac only demonstrations. The course is ever expanding, and I will be adding new chapters as time goes on. If there is an analysis you would particularly like to see, I might be able to create a podcast so please contact me with your suggestions and requests (a.jackson(at)tcd.ie).
+
+You will of course need to install [R](https://cran.r-project.org/) before you can follow along with the podcast course. There are also some script template files and datafiles (I suggest you right click and save these to your local disk) to accompany some of the podcasts below. Many browsers will play these files in a frame, but I strongly suggest you download each podcast to enjoy at your convenience in your media player of choice ([Quicktime](https://support.apple.com/kb/DL837?locale=en_US) is often a default, or  player[VLC](http://www.videolan.org/vlc/index.html)) to avoid problems such as stutter or lack of content. 
+
+
+
+#Introduction to R for first time users
+
+
+    1. Opening R for the first time: [podcast](http://www.tcd.ie/Zoology/research/research/theoretical/Rpodcastsfiles/videos/Intro%20to%20R%20lesson%201.mp4), RMarkdown(L1)
+    2. Working with script files: podcast, script
+    3. Importing data into R: podcast, script, data
+    4. Installing packages: podcast
+
+#Basic graphics / plots in R
+
+
+    1. Histograms: podcast, script
+    2. Scatter plots (including how to make pretty graphs): podcast, script
+    3. Barplots: podcast coming soon, script
+    4. Errorbar plots: podcast coming soon, script
+    5. Boxplots: podcast, script
+    6. Advanced Boxplots: podcast, script
+
+#Basic analyses in R
+
+
+    1. Generating summary statistics (includes an introduction to writing your own functions): podcast, script
+    2. Basic data manipulation (sort, subset, randomise, sample, etc...): coming soon.
+    3. Comparing two means with t-tests and their non-parametric analogues: podcast, script, data
+
+#Analysis of Variance - ANOVA in R
+
+
+    1. ANOVA one-way: (podcast coming soon), script, data
+
+#General linear models in R
+
+
+    1. Simple linear regression: podcast, script, data
+    2. Analysis of Covariance (ANCOVA - fixed and linear effects in general linear models): podcast, script, data
+    3. Multiple regression and model selection using AIC: coming soon
+    4. Mixed effects / multilevel / hierarchical regression models: coming soon
+
+#Generalised linear models in R (non-normal errors)
+
+
+    1. Poisson regression: coming soon
+    2. Binary logistic regression: podcast, script, data
+    3. Binomial regression for proportional data: coming soon
+    4. Survival models for time-to-event
+
+#SIAR package podcasts
+##SIAR: Stable Isotope Analysis in R
+
+SIAR is an R package that contains functions useful for analysing stable isotope data in the context of ecology - although there are more general applications. Its primary function is as a mixing model to estimate the diet of organisms from analysis of the isotopic content of their food sources. It fits the models via MCMC within a Bayesian framework. The following podcast series is supported by the demonstration files which can be obtained here. Equivalent podcasts supporting the SIBER models will follow shortly. These examples are based on the R package siar. These models are based on the paper Parnell, A.C., Inger R., Bearhop, S. & Jackson, A.L. 2010. Source partitioning using stable isotopes: coping with too much variation. PLoS ONE, 5(3), e9672. doi
+
+
+    1. Importing data for analysis in siar: podcast
+    2. Running siar and basic interrogation of results: podcast
+    3. Matrix plots and posterior correlations: podcast
+    4. Advanced interrogation of results
+
+##SIBER: Stable Isotope Bayesian Ellipses in R
+
+SIBER is subset of functions within the SIAR package and allow for analysis of analysis of data in isotope-space as opposed to diet-space such as in the mixing model side of siar. The scripts supporting these podcasts can be found here as a zip file. The SIBER functions and routines are obtainable within the R package siar and are based on the paper Jackson, A.L., Parnell, A.C., Inger R., & Bearhop, S. 2011. Comparing isotopic niche widths among and within communities: SIBER – Stable Isotope Bayesian Ellipses in R. Journal of Animal Ecology, 80, 595-602. doi
+
+
+    1.Introduction to SIBER: comparisons among communities or among community members? podcast
+    2. Using ellipses to compare community members: podcast
+
