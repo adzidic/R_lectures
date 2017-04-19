@@ -1,0 +1,163 @@
+---
+title: "Lecture 16:ANCOVA"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+
+output:
+   html_document:
+     theme: flatly
+     toc: true
+     toc_depth: 4
+     number_sections: yes
+---    
+
+#BEFORE START - Install RMarkdown
+
+To use this file you have to install RMarkdown!
+
+RMarkdown files have extension: .Rmd
+
+#ANCOVA - Analysis of covariance has one continous response variable and at least one continous and categorical explanatory vairable. 
+
+**IMPORTANT THING to keep in mind is that order of categorical variable matters, because data are not-orthogonal (for details see Crawley: Statistics: an introductory using R). **
+
+EXAMPLE: 
+Data file - Grazing.csv
+Variables: Root-continous, Seed-continous and Grazing-categorical
+Question: Which one of the continuos variables is explanatory and which one is response?
+Research question: Does diameter of the top of its rootstock influences weight of the seed produced in grazed or ungrazed plants?
+Solution: 
+Diameter of the top of rootstock (Root) - explanatory variable (x-axis)
+Weight of the seed produced - response variable (y-axis)
+
+6 posible solutions to the problem:
+1. Both slopes and intercept are different
+2. Different intercepts and same slope
+3. Same intercept different slopes
+4. No slope and different intercepts
+5. One slope and one intercept
+6. No slope only one intercept
+
+#HOUSEKEEPING
+
+First lets make some houskeeping before we start:
+
+```{r Housekeeping}
+rm(list=ls()) # remove everything currently held in the R memory
+graphics.off() # close all open graphics windows 
+```
+
+#READ IN YOUR DATA
+
+Enter or read in your data from a file as a CSV (comma separated) file from Excel
+
+REMEMBER: Choose your working directory and put file inside that directory!
+
+##CODE EXPLANATION:
+Data file - grazing.csv
+header=TRUE - in first row are the variable names (Root, Seed and Grazing)
+sep="," - means that values in grazing.csv file are separated with comma (look inside .csv data file in Excel)
+
+```{r setup, include=FALSE}
+mydata <- read.table("grazing.csv", header=TRUE, sep=",")
+```
+
+#EXPLORE DATA
+
+```{r explore data}
+head(mydata) # Return the First Part of an Object -usually first six observations
+head(mydata, n = 12L) # option - name of the Object, n= number of lines you want to see (12) from the start of the Object
+mydata # Return complete Object
+```
+
+#PLOT DATA SCATTERPLOT
+```{r}
+levels(mydata$Grazing) # gives you all levels of the classification variable within variable Grazing
+plot(mydata$Root, mydata$Seed, xlab="Root",ylab="Seed",col=mydata$Grazing, pch=as.numeric(mydata$Grazing)) #xlab-means title for x-axis; y-lab- means title for y-axis, col - means colour for each level of Grazing variable (Grazed is first and first colour is black, while Ungrazed is second and second colur is red; pch- means a type of the symbol to represent each level of Grazed variable)
+
+legend("topleft", pch=c(2,1), col=c("red", "black"), c("Ungrazed", "Grazed"))
+```
+#FIT THE MOST COMPLICATED MODEL
+
+Our assumption is that both slopes and intercept in Grazed and Ungrazed group differ!
+
+Therefore we use INTERACTION in the model1:
+
+```{r}
+model1 <- glm( mydata$Seed ~ mydata$Root * mydata$Grazing )
+
+summary(model1)
+
+```
+When we analyse coefficients we see that there is no interaction while P-value for interaction is greater than 0.05!
+
+
+
+##PRACTICAL EXPLANATION:
+
+There is no difference in slope between Grazed and Unrazed groups!
+
+#FIT NEXT MODEL
+
+Here we just test if there are differences in intercept between these two groups.
+
+```{r}
+model2 <- glm( mydata$Seed ~ mydata$Root + mydata$Grazing )
+
+summary(model2)
+coefmod2 <- coef(model2)
+```
+
+When we analyse coefficients we see that there is difference between Grazed and Ungrazed group while P-value for interaction is lower than 0.05!
+
+
+#FIT LINES FOR BOTH MODELS
+
+IMPORTANT: ORDERS MATTERS - Grazing variable has two levels Grazed and Ungrazed which are in alphabetical order!
+
+```{r}
+plot(mydata$Root, mydata$Seed, xlab="Root",ylab="Seed",col=mydata$Grazing, pch=as.numeric(mydata$Grazing))
+
+legend("topleft", pch=c(2,1), col=c("red", "black"), c("Ungrazed", "Grazed"))
+abline (coefmod2[1],coefmod2[2], col="black", lty=1) #First add the line for the Grazed group
+abline (coefmod2[1] + coefmod2[3],coefmod2[2], col="red", lty=2 ) #Then add the line for the Ungrazed group
+```
+
+
+#CHECK RESIDUALS OF ANALYSIS
+
+##Extract the residuals for easy recall in model 2 without interaction
+
+
+```{r}
+rsd <- residuals(model2)
+```
+
+# Histogram of the residuals
+
+```{r}
+hist(rsd,6)
+```
+
+
+## QQ plot of the residuals to assess how well the residuals compare with an ideal normal distribution
+
+```{r}
+qqnorm(rsd)
+qqline(rsd,col="red")
+```
+
+
+
+# Check for a trend in the residuals with the X axis variable
+```{r}
+plot(mydata$Root,rsd)
+abline(0,0,col="blue")
+```
+Any pattern among the differences between model and observed value indicates a failure of the model to adequately represent some aspect of the relationship within the sampled data.
+
+# Save your data (only if you want)
+
+The "list=" command tells us which variables we want to save
+The "file=" option tells us what file to save the data to
+
+save( list=ls(), file="grazing_data.rdata" )
