@@ -1,0 +1,206 @@
+---
+title: "Lecture 2:Working with script files"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+
+output:
+   html_document:
+     theme: flatly
+     toc: true
+     toc_depth: 4
+     number_sections: yes
+     
+---
+# Getting started
+
+## How to clear a console window
+
+Press CRTL + L and all the content will be deleted in the CONSOLE window!
+
+## Open a folder on your S: DRIVE
+
+1. Create a new folder on your S: DRIVE
+2. Make subfolders for each lesson or project you have
+
+## How to create R code chunks in RMarkdown document
+
+To create new chunk to write R code on Mac press: *OPTION-CMD-I* and on Windows machine: *Ctrl+Alt+I*
+
+## Change working directory in R
+
+To see your current directory use function:
+
+```{r determine working directory}
+getwd()
+```
+
+You can change working directory in any of these three ways:
+
+1. Use the setwd R function in Windows:
+
+setwd("C:/Users/User Name/Documents/FOLDER")
+
+or on MAC:
+
+setwd("/Users/User Name/Documents/FOLDER")
+    
+2. on Windows: Use the Tools | Change Working Dir
+on MAC: Use (Session | Set Working Directory on a mac)
+
+![Change directory on MAC!](/Users/alendzidic/Documents/PROJECTS/Setting_working_directory_on_MAC_1.png)
+
+![Change directory on MAC !](/Users/alendzidic/Documents/PROJECTS/Setting_working_directory_on_MAC_2.png)
+
+Navigation within the Files pane alone will not change the working directory. First you have to select folder and then set it as a working directory.
+
+
+
+## Open a new R Markdown document
+
+To make new R Markdown document do following:
+
+
+![Create R Markdown document on MAC !](/Users/alendzidic/Documents/PROJECTS/Open_R_Markdown _document.png)
+
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. 
+You can embed an R code chunk like this:
+
+This R code chunk calculates summary function for the dataset called cars as follows:
+
+```{r cars}
+summary(cars)
+```
+
+You can save R Markdows using FILE - SAVE AS.
+
+** Remember that R Markdown file has an .Rmd extension **
+
+*Good name for the file would be Lession_2.Rmd - use undescore insted of space*
+
+When you write text within body of R Markdown it remains as a text, but if you want to write text within R code chunk you have to add # (hash tag) like in ordinary R script.
+
+
+# Object input in R Markdown script
+
+```{r First input}
+apples <-0.46
+oranges <- 0.89
+bananas <- 0.75
+
+shopping <- 5*apples + 3*oranges + 8*bananas
+# check if all objects exist in R
+apples
+oranges
+bananas
+shopping
+```
+
+How to execute chunk in R Markdown document
+
+1. Press small green arrow in the right corner of the R code chunk as shown on picture:
+
+![Run R code chunk in R Markdown document on MAC !](/Users/alendzidic/Documents/PROJECTS/L_2_R_Markdown.jpg)
+
+
+If we want to execute comans line by line we would point to the line of code within R code chunk and in Windows press CTRL + R, and on Mac CMD + ENTER.
+
+
+
+```{r Enter your data in R}
+
+# Some Housekeeping
+
+rm(list=ls()) # remove everything currently held in the R memory
+
+# These are the lengths of my digits on my left and right hands
+# measures in mm.
+
+left <- c(5.8, 7.5, 8.5, 7.3, 5.8)
+left
+right <- c(5.7, 7.3, 8.3, 7.0, 5.6)
+right
+
+# class function determines object type
+
+class(left)
+class(right)
+
+
+# cbind function - binds vectors of equal length!
+cbind(left, right)
+
+
+```
+# Plotting in R
+
+## Boxplot
+
+Boxplot represents centrality, spread and skewnees of the distribution and defines an outlier if that observation lies more than 1.5 times the interquartile range below the lower or above the upper quartile.
+
+![Boxplot!](/Users/alendzidic/Documents/PROJECTS/R_lectures/L2/boxplot.jpg)
+
+
+```{r Plot your data in R - Boxplot}
+
+# you might want to look at the spread of your data using e.g. a boxplot
+
+boxplot(cbind(left,right))
+
+# open up a new figure for plotting
+boxplot(cbind(left,right), xlab="Hand", ylab="Digit length(mm)")
+```
+
+
+```{r Plot your data in R - Plot (Scatter plot)}
+# you might want to plot one variable against another
+
+plot(left, right, xlab="Left hand", ylab="Right hand",xlim=c(5.5,9), ylim=c(5.5,9))
+abline (a=0,b=1) # draws a symetric line
+```
+
+## Histrograms
+
+They explore distribution of the contionous variable.
+It is always good to explore with the bins to get a more complete undestanding of the distribution.
+
+```{r Plot your data in R - Plot histogram}
+hist(left)
+hist(right)
+
+hist(left, breaks=16, col="lightgreen", main="Breaks=16") 
+# with breaks = 16 we define number of bins on x-axis
+
+```
+
+# Summary statistics in R
+
+```{r Summary statistics in R}
+summary(left)
+summary(right)
+```
+# Save data in R
+
+```{r Save data after session in R}
+# Save your data (only if you want)
+
+# The "list=" command tells us which variables we want to save
+# The "file=" option tells us what file to save the data to
+ls() # see all the objects present in R
+save( list=ls(), file="finger_data.rdata" )
+```
+
+**IMPORTANT: As seen in the Second R Markdown script file it is important to make comments with # sign in the R code chunk. It is even important for yourself, while you cannot e-mail to yourself in the past! (Qoute: Hadley Wickham)**
+
+#Assignment 1
+
+1. Measure your left and right fingers 
+2. Create two variables:
+left.yourfirstname <- (Thumb, Index finger, Middle finger, Ring finger and Little finger)
+right.yourfirstname <- (Thumb, Index finger, Middle finger, Ring finger and Little finger)
+3. Make summary statistics
+4. Plot your data
+5. Explain results!
+
+
