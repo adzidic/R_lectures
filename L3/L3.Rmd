@@ -1,0 +1,130 @@
+---
+title: "Lecture 3: Importing data into R"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+
+output:
+   html_document:
+     theme: flatly
+     toc: true
+     toc_depth: 4
+     number_sections: yes
+     
+---
+
+
+# Housekeeping
+
+```{r Housekeeping}
+rm(list=ls()) # remove everything currently held in the R memory
+```
+
+# Arrange data in Excel
+
+Arrange your data in Excel. 
+Save your data under other formats option in Excel as a .csv (comma separated values) file. 
+*Remember that name of the variable finger lenght should be written either as finger.length or finger_lenght, but not finger length!*
+
+Change original file to modified file in Excel as follows:
+
+![Original file!](/Users/alendzidic/Documents/PROJECTS/R_lectures/L3/Original_file.png)
+
+
+![Modified file!](/Users/alendzidic/Documents/PROJECTS/R_lectures/L3/Modified_file.png)
+
+
+After you file has been arranged put it in the working directory. To see all the files in the working directory use:
+```{r}
+dir()
+```
+
+# Read in your data from a Excel csv (comma separated file) file
+
+
+The table format consist of three key features:
+
+1. Header - representing first row of the data file; usually the variable names. If defined as false R reads first row as observed data values.
+2. Delimiter - character used to separate the data entries in each line (usually , : ;)
+3. Missing values - R will turn all missing values to NA
+
+Usually files to be imported into R have .csv or .txt extension, but we will use .csv extension for files previously edited in Excel.
+
+**IMPORTANT - read.table will convert all non-numeric values into factors by default.**
+
+If you want to avoid this add option stringAsFactors = FALSE. 
+Then all non-numeric values will be stored as character and with function as.factor you could return them to factors.
+
+
+
+```{r Importing finger_length.csv in R}
+mydata <- read.table("finger_lengths.csv", header=TRUE, sep=",")#Be sure your file is in the R working directory!!!
+mydata
+```
+
+*Note the use of the square brackets when addressing arrays [ , ]* - FIRST ROWS THEN COLUMNS!
+```{r}
+mydata[1,1] # extract the element of the first row and column
+mydata[1,2] # extract the element of the first row and second column
+mydata[1,3] # extract the element of the first row and third column
+mydata[ ,3] # extract the elements of the third column
+mydata[, c(1, 3)] # extract the elements of the first and third column
+mydata[, c(-1, -3)] # extract all elements except first and third column
+mydata$digit #extract all values for the variable digit
+mydata$hand  #extract all values for the variable hand
+mydata$finger.length  #extract all values for the variable finger.length
+```
+
+
+
+# Check already available datasets in R
+
+```{r}
+data() # brings the list of R build in datasets
+library(help="datasets") # brings the list of R build in datasets
+
+```
+
+# Open one of the existing datasets in R
+
+```{r One of the availabe datasets Orange}
+data(Orange) # reads in the data in R environment
+Orange # shows Orange dataset
+?Orange # help file describes dataset Orange in detail
+```
+
+
+# Read data from web with read.table
+
+
+```{r Read in data from the web in R}
+
+SwissSquirrels <-read.table("https://www.mbr-pwrc.usgs.gov/pubanalysis/keryroylebook/SwissSquirrels.txt")
+head(SwissSquirrels)
+```
+
+
+# Plot your finger length data with boxplot
+
+
+```{r}
+boxplot(finger.length~hand, xlab="Hand", ylab="digit length(mm)", data=mydata) # Finger.length on y axis and hand on x axis
+
+```
+
+# Save data in R
+
+```{r}
+save( list=ls(), file="finger_data.rdata" )
+```
+
+
+
+**ASSIGNMENT**
+
+1. Find built in dataset PlantGrowth and make boxplot for each of the treatment groups.
+What is your conclusion about treatment groups applied?
+
+
+```{r}
+#Solution
+boxplot(weight~group, xlab="Group", ylab="weight", data=PlantGrowth)
+```
