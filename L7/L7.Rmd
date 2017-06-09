@@ -1,0 +1,95 @@
+---
+title: "Lecture 7: Barplots"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+
+output:
+   html_document:
+     theme: flatly
+     toc: true
+     toc_depth: 4
+     number_sections: yes
+     
+---
+
+# Barplots in general
+
+Barplot draws vertical or horizontal bars to visualize frequncies in each defined category. Barplot can visualize means and proportions. They are especially useful when comparing data over time or between diverse groups. There are three types of bar plots: Simple, Stacked and grouped.
+
+We will focus on simple and grouped barplots.
+
+Another classification is based on the way how the data are shown: vertical and horizontal barplots. Vertical barplots compare categories while horizontal barplots work especially well for ranking.
+
+When producing barplots, keep the following tips in mind:
+
+•   Allow white space between the bars and keep the bars at the same distance.
+
+•   Keep bars the same color when the data is a single category. Unless your whole package is using a theme for a particular category, multiple colors usually only distract the viewer.
+
+•   Avoid using patterns or anything unusual for the bars. It is distracting.
+
+•   Viewers might have a hard time understanding vertical charts when there are more than 10 categories. Add a filter to allow the viewer to determine what is comfortable.
+
+# Housekeeping
+```{r}
+rm(list=ls()) # remove everything currently held in the R memory
+
+```
+
+# Simple barplots
+
+Bar plots need not be based on counts or frequencies. You can create bar plots that represent means, medians, standard deviations, etc. Use the aggregate( ) function and pass the results to the barplot( ) function.
+
+We will focus on the Petal Length data for a start.
+
+The tapply function is useful when we need to break up a vector into groups defined by some classifying factor, compute a function on the subsets, and return the results in a convenient form. Now add the error bars on top. 
+
+First create our own function to calculate standard error of a vector of numbers in a hypothetical vector named "x" then apply this function across a tabulated data of petal lengths grouped by Speciesand use the plotting function arrows() to draw arrows with flat heads on each end which are essentially vertical lines with T-shaped tops and bottoms.. i.e. errorbars.
+
+```{r}
+head(iris) # explore dataset
+mu <- tapply(iris$Petal.Length,iris$Species,mean)
+centres<-barplot(mu, names.arg=names(mu),ylim=c(0,7),
+                  las=1,xlab="Species",ylab="Petal Length (cm)",
+                  col = rainbow(10), cex.lab=1.2,cex.axis=1.2)
+std.error <- function (x) {return(sqrt(var(x)/length(x)))}
+se <- tapply(iris$Petal.Length,iris$Species,std.error)
+arrows( x0= centres, x1=centres, y0=mu+se, y1=mu-se,
+         code=3, length=0.3, angle=90,lwd=2)
+```
+
+Another way to do it is with agregate function.
+```{r}
+
+means <- aggregate(iris$Petal.Length, by=list(iris$Species), FUN=mean) # Here you can change any function you want to explore
+means
+sd <- aggregate(iris$Petal.Length, by=list(iris$Species), FUN=sd) # Here you can change any function you want to explore
+sd
+barplot(means$x, names.arg=means$Group.1, ylim=c(0,6), ylab="Petal Length (cm)", xlab ="Species", col = c("lightblue", "mistyrose","lightcyan") )
+title(main="Mean of the petal length by species")
+barplot(sd$x, names.arg=sd$Group.1, ylim=c(0,1), ylab="Petal Length (cm)", xlab ="Species", col = c("lightblue", "mistyrose","lightcyan") )
+title(main="Standard deviation of the petal length by species")
+```
+
+
+
+# Grouped horizontal and vertical barplot
+
+To obtain grouped barplots for several species first we have to use table function to create table of frequencies. With head function we can see first six rows of the table petal.freq.
+```{r}
+petal.freq <- table(iris$Petal.Length,iris$Species)
+head(petal.freq)
+
+```
+
+Thereafter we use petal.freq to construct first horizontal and than vertical barplot.
+```{r}
+
+barplot(t(petal.freq), beside = TRUE,ylim = c(0,14), col = c("red", "green", "blue"), xlab = "Species petal length (cm)", ylab="Count", legend.text = c("Setosa", "Versicolor", "Virginica"), args.legend = list(x = "topright"))
+
+barplot(t(petal.freq), beside = TRUE,horiz=TRUE, xlim = c(0,14), col = c("red", "green", "blue"), xlab = "Count", ylab="Species petal length (cm)", legend.text = c("Setosa", "Versicolor", "Virginica"), args.legend = list(x = "topright"))
+```
+
+
+
+
+
