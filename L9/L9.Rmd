@@ -1,0 +1,155 @@
+---
+title: "Lecture 9: Boxplots"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+
+output:
+   html_document:
+     theme: flatly
+     toc: true
+     toc_depth: 4
+     number_sections: yes
+     
+---
+
+
+Example script for creating simple boxplots of data
+
+
+# Housekeeping
+```{r}
+rm(list=ls()) # remove everything currently held in the R memory
+```
+
+
+In this example we will use the in-built dataset "iris" which gives the measurements in centimeters of the variables sepal length and width and petal length and width, respectively, for 50 flowers from each of 3 species of iris. The species are Iris setosa, versicolor, and virginica.
+
+see ?iris for more information
+
+# Histrograms
+
+We will focus on the Petal Length data for a start. 
+
+```{r}
+par(mfrow=c(3,1)) # specify a 3x1 panel plot
+# Species == setosa
+hist(iris$Petal.Length[iris$Species=="setosa"], breaks=seq(0,7,0.25),
+      main="setosa", xlab="", ylab="", cex.lab=1.5, ylim=c(0, 40), las=1, col="lightgrey")
+
+# Species == versicolor
+hist(iris$Petal.Length[iris$Species=="versicolor"], breaks=seq(0,7,0.25),
+      main="versicolor", xlab="", ylab="Frequency", ylim=c(0, 40), las=1, cex.lab=1.5, col="lightgrey")
+
+# Species == virginica
+hist(iris$Petal.Length[iris$Species=="virginica"], breaks=seq(0,7,0.25),
+      main="virginica", xlab="Petal Length (cm)", ylab="", ylim=c(0, 40), las=1, cex.lab=1.5, col="lightgrey")
+
+```
+
+Use a boxplot to show this same information in one single panel
+See the wikipedia site for more information
+[WIKIPEDIA](http://en.wikipedia.org/wiki/Box_plot)
+
+# Simple boxplot
+
+For more detailed explanation of the boxplot see L2 RMarkdown document.
+
+```{r}
+par(mfrow=c(1,1))
+boxplot( iris$Petal.Length ~ iris$Species,
+		ylab="Petal Length (cm)", xlab="Species")
+```
+
+# Histograms and boxplot 
+
+Some code below to facilirate direct comparison of histograms and boxplots.
+
+Intended for illustrative purposes in this podcast only.
+
+```{r}
+par(mfrow=c(3,1)) # specify a 3x1 panel plot
+
+hist(iris$Petal.Length[iris$Species=="setosa"], breaks=seq(0,7,0.25), freq=F,
+      main="setosa", xlab="", ylab="", cex.lab=1.5,ylim=c(0, 4), las=1,
+      col="lightgrey")
+boxplot(iris$Petal.Length[iris$Species=="setosa"],at=3.5,horizontal=T,add=T,width=2)
+
+hist(iris$Petal.Length[iris$Species=="versicolor"], breaks=seq(0,7,0.25),  freq=F,
+      main="versicolor", xlab="", ylab="Frequency", cex.lab=1.5, ylim=c(0, 4), las=1,
+      col="lightgrey")
+boxplot(iris$Petal.Length[iris$Species=="versicolor"],at=1.5,horizontal=T,add=T)
+
+hist(iris$Petal.Length[iris$Species=="virginica"], breaks=seq(0,7,0.25),  freq=F,
+      main="virginica", xlab="Petal Length (cm)", ylab="", cex.lab=1.5, 
+      ylim=c(0, 4), las=1, col="lightgrey")
+boxplot(iris$Petal.Length[iris$Species=="virginica"],at=1.5,horizontal=T,add=T)
+```
+
+
+
+      
+      
+# Different Boxplots in ggplot2 package
+
+```{r}
+library(ggplot2)
+```
+
+
+
+## Basic box plot in ggplot2
+
+
+```{r}
+p <- ggplot(iris, aes(x=Species, y=Petal.Length)) + geom_boxplot()
+p
+```
+
+## Rotate the box plot
+
+
+```{r}
+p + coord_flip()
+```
+
+## Notched box plot
+
+The Notch - displays the a confidence interval around the median which is normally based on the median +/- 1.57 x IQR/sqrt of n.  According to Graphical Methods for Data Analysis (Chambers, 1983) although not a formal test the, if two boxes' notches do not overlap there is ‘strong evidence’ (95% confidence) their medians differ. 
+
+```{r}
+ggplot(iris, aes(x=Species, y=Petal.Length)) + 
+  geom_boxplot(notch=TRUE)
+```
+
+
+  
+## Change outlier, color, shape and size
+
+```{r}
+ggplot(iris, aes(x=Species, y=Petal.Length)) + 
+  geom_boxplot(outlier.colour="red", outlier.shape=8,
+                outlier.size=4)
+```
+
+
+
+# Colour Boxplot in ggplot2
+
+```{r}
+require(ggplot2)
+q <- ggplot(data = iris, aes(x=Species, y=Petal.Length)) 
+q <- q + geom_boxplot(aes(fill = Species))
+
+# if you want color for points replace group with colour=Label
+
+q <- q + geom_point(aes(y=Petal.Length, group=Species), position = position_dodge(width=0.75))
+
+q <- q + xlab("Species") + ylab("Petal length (cm)") + ggtitle("Petal length in several species")
+q <- q + guides(fill=guide_legend(title="Legend Title"))
+q
+```
+
+
+
+
+
+
