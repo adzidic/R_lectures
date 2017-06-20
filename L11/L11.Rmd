@@ -1,0 +1,146 @@
+---
+title:title: "L11: Generating summary statistics (includes an introduction to writing your own functions)"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+
+output:
+   html_document:
+     theme: flatly
+     toc: true
+     toc_depth: 4
+     number_sections: yes
+     
+---
+
+
+How to calculate summary statistics of variables, which also includes a quick explanation of how to write your own functions in R Studio.
+
+
+# Housekeeping
+
+
+```{r}
+rm(list=ls()) # remove everything currently held in the R memory
+```
+
+
+
+
+#Summary statistics
+
+Generate some summary statistics on the Petal Lengths
+
+
+```{r}
+mu <- mean(iris$Petal.Length)    # mean
+med <- median(iris$Petal.Length)  # median
+variance <- var(iris$Petal.Length)     # variance
+stan.dev <- sd(iris$Petal.Length)      # standard deviation
+n <- length(iris$Petal.Length) # the number of observations
+standard.error <- sd(iris$Petal.Length) / sqrt(length(iris$Petal.Length)) # SE of the mean
+maximum <- max(iris$Petal.Length, na.rm=T)
+minimum <- min(iris$Petal.Length, na.rm=T)
+```
+
+
+```{r}
+min(c(1,5,2,NA,3))
+min(c(1,5,2,NA,3), na.rm=T)
+```
+
+
+But... we probably want to calculate these metrics for each of the three species seperately. Use the function aggregate() to collect the data into subsets associated with each species, and apply a given function to the subset. It probably helps if we have a quick graph of the data as a reference point for these summary statistics. A boxplot does this and i refer you to the
+associated podcast on boxplots for more information
+
+To remmeber how did the data look like:
+```{r}
+boxplot(iris$Petal.Length ~ iris$Species)
+```
+
+```{r}
+mu.sepal.lengths <- aggregate(iris$Petal.Length, by=list(iris$Species), mean)
+mu.sepal.lengths
+# or
+(mu.sepal.lengths <- aggregate(iris$Petal.Length, by=list(iris$Species), mean))
+```
+If you want just simple statistics with build in functions you can use summary function which calculates: 
+
+```{r}
+summary(iris$Petal.Length) # for all Petal lengths
+
+tapply(iris$Petal.Length, iris$Species, summary) # for Petal length by species
+IQR(iris$Petal.Length)
+```
+
+
+
+```{r}
+z<-c(1,2,4,5)
+z
+```
+
+
+We could repeat this for all the metrics, but instead, we can write our own function that calculates a series of useful summary statistics on the data.
+
+Let's specify our own function
+```{r}
+summary.stats <- function (x,...) {
+
+# "out" will be a vector with names assigned to each entry.
+out <- c( n.obs=length(x),
+          min=min(x),
+          quantile(x,c(0.25,0.5,0.75)),
+          max=max(x),
+          mean=mean(x),
+          sd=sd(x),
+          var=var(x),
+          se=sd(x)/sqrt(length(x))
+          )
+          
+return(out)  # this tells the function what to return as "the answer"
+} # end of function
+
+```
+
+Let's apply our new function on our vector z.
+```{r}
+summary.stats(z)
+```
+
+
+Now apply our summary.stats() function to the Petal Length data by Species
+
+```{r}
+petal.length.summaries <- aggregate(iris$Petal.Length,by=list(iris$Species),summary.stats)
+petal.length.summaries
+```
+
+However, take care that you need first to run function and then you can use it for the variables of interest within dataset.
+
+ASSIGNMENT:
+
+1. Add interquantile range IQR into your function called summary.stats1 and perform calculation for Sepal.Length and store values into sepal.length.summaries. 
+
+Solution:
+
+
+```{r}
+summary.stats1 <- function (x,...) {
+
+# "out" will be a vector with names assigned to each entry.
+out <- c( n.obs=length(x),
+          min=min(x),
+          quantile(x,c(0.25,0.5,0.75)),
+          max=max(x),
+          mean=mean(x),
+          sd=sd(x),
+          var=var(x),
+          se=sd(x)/sqrt(length(x)),
+          IQR=IQR(x)
+          )
+          
+return(out)  # this tells the function what to return as "the answer"
+}
+sepal.length.summaries <- aggregate(iris$Sepal.Length,by=list(iris$Species),summary.stats1)
+sepal.length.summaries
+```
+
