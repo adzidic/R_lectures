@@ -1,0 +1,149 @@
+---
+title:title: "L13: Comparing two means with t-tests and their non-parametric analogues"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+
+output:
+   html_document:
+     theme: flatly
+     toc: true
+     toc_depth: 4
+     number_sections: yes
+     
+---
+
+# Housekeeping
+
+rm(list=ls()) # remove everything currently held in the R memory
+
+
+# t-tests in R
+
+Template file on how to perform t-tests in R.
+This file is a direct follow-on from the podcast "Intro to R lesson 3 - reading in data" and its associated script and data
+
+
+# Enter or read in your data from a file
+
+read in data from our CSV file
+This is a comma separated file
+
+
+```{r}
+
+mydata <- read.table("finger_lengths.csv", header=TRUE, sep=",")
+```
+
+
+# Plot your data
+
+
+open up a new figure for plotting
+```{r}
+boxplot(mydata$finger.length~mydata$hand, xlab="Hand", ylab="digit length(cm)")
+```
+
+
+
+There are few questions you have to ask yourself: 
+
+1. If the variances between left and right hand different?
+2. If the data and errors are normally distributed?
+3. If the data are dependent or independent?
+
+
+To answer first questions we could perform var.test as follows:
+
+```{r}
+var.test(mydata$finger.length~mydata$hand)
+```
+
+Answer: Since p-value is not lower than 0.05 there are no differences in variances between left and right hand.
+
+To see actual differences we could make a barplot:
+
+```{r}
+Left_hand  = mydata$finger.length[mydata$hand=="left"]
+
+Right_hand = mydata$finger.length[mydata$hand=="right"]
+
+Difference = Right_hand - Left_hand
+
+barplot(Difference,  
+        col="dark gray",
+        xlab="Observation",
+        ylab="Difference (Right – Left)")
+```
+Conclusion: All left hand fingers are smaller than right hand fingers.
+
+However, if we had different variances we could use defalut t-test with default option var.equal = FALSE.
+
+
+```{r}
+welch.test <- t.test(mydata$finger.length~mydata$hand)
+#or
+welch.test.alternative <- t.test(mydata$finger.length[mydata$hand=="left"],mydata$finger.length[mydata$hand=="right"])
+welch.test
+welch.test.alternative
+```
+
+
+For more detils read following article:
+
+Ruxton, G.D. (2006) The unequal variance t-test is an underused alternative to Student's t-test and the Mann–Whitney U test. Behavioral Ecology, 17, 688-690.http://dx.doi.org/10.1093/beheco/ark016
+
+
+We could conclude that there is no difference between right and left hand. However, we would see that this is WRONG!
+
+
+# T-test for normally distributed data and errors
+
+We can perform two test depending on the fact that data and errors are normally distributed with the "classic" t-test.
+
+```{r}
+classic.test <- t.test(mydata$finger.length~mydata$hand, var.equal=T) #note that variances equality is true!
+classic.test
+```
+
+We can obresrve similar results like in the Welch test.
+
+
+
+# Paired T-test for normally distributed data and errors 
+
+```{r}
+paired.test <- t.test(mydata$finger.length~mydata$hand, paired=T)
+paired.test
+```
+
+And now something completely different!
+
+Why?
+
+We would suspect that someone with a large left hand is likely to have a large right hand. This means that measuring hands on the same individual leads to PAIRED observations. Basically this test shows that left hand fingers are longer that fingers on my left hand!
+
+
+# Non-parametric Mann-Whitney U-test for completeness
+
+At the end if we have data that are not normally distributed than we could use this test. 
+This test is called the "Wilcoxon Rank Sum (for non-paired data) and Signed Rank Tests (for paired data)" in R
+
+First one with not paired observations.
+
+```{r}
+mann.test <- wilcox.test(mydata$finger.length~mydata$hand, paired=F)
+mann.test
+```
+
+and for paired observations.
+```{r}
+signed.rank.test <- wilcox.test(mydata$finger.length~mydata$hand, paired=T)
+signed.rank.test
+```
+
+
+At the end to conclude: To see if your hand fingers are different we would use paired t-test while observations are measured on the same individual and since we assume normality of data distribution we would used classical paired parametric test which showed that fingers on my left hand are longer than fingers on my right hand.
+
+#ASSIGNMENT:
+
+Measure your left and right finger length and test if there are some differences between your hands.
+
