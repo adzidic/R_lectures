@@ -1,0 +1,190 @@
+---
+title:title: "L14: ANOVA one-way"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+
+output:
+   html_document:
+     theme: flatly
+     toc: true
+     toc_depth: 4
+     number_sections: yes
+     
+---
+
+# ANOVA
+
+Analysis of variance (ANOVA) is a collection of statistical models used to analyze the differences among group means and their associated procedures (such as "variation" among and between groups), developed by statistician and evolutionary biologist Ronald Fisher. [Wikipedia](https://en.wikipedia.org/wiki/Analysis_of_variance)
+
+
+Template file on how to perform one-way ANOVA in R
+
+
+The data represent femur lengths of an animal for varying genotypes.
+Specifically, two genes, at two independent loci are predicted to affect femur length.
+
+
+Housekeeping
+
+rm(list=ls()) # remove everything currently held in the R memory
+
+
+# Data for ANOVA one-way analysis
+
+Enter or read in your data from a file read in data from our CSV file
+
+This is a comma separated file
+
+
+```{r}
+mydata <- read.csv("genedata.csv", header=TRUE)
+```
+
+
+# Plot and explore your data
+
+
+```{r}
+head(mydata)
+```
+
+For these data, it might be worth in the first instance, creating a new grouping column that identifies the four categories:
+
+1) both genes absent
+2) only gene 1 present
+3) only gene 2 present
+4) both genes present
+
+NB -- later we will see how we could analyse this slightly differently using a two-way ANOVA by using the original coding structure
+
+First of all create a vector of length = number of observations
+
+# Data preparation for ANOVA one-way analysis
+
+```{r}
+Group <- numeric(length(mydata$femur))
+```
+
+Now will it with character strings naming each group appropriately
+
+
+```{r}
+Group[mydata$gene1=="absent" & mydata$gene2=="absent"] <- "Absent"
+Group[mydata$gene1=="gene1" & mydata$gene2=="absent"] <- "Gene1only"
+Group[mydata$gene1=="absent" & mydata$gene2=="gene2"] <- "Gene2only"
+Group[mydata$gene1=="gene1" & mydata$gene2=="gene2"] <- "Both"
+```
+
+Now conver this vector of character strings to the factor format for data that is used in models to identify categorical data
+
+```{r}
+Group <- as.factor(Group)
+```
+
+Append it to the mydata dataframe
+
+```{r}
+mydata$Group <- Group
+```
+
+
+
+and check it
+
+```{r}
+print(mydata)
+```
+
+
+Open up a new figure for plotting
+
+```{r}
+boxplot(mydata$femur~mydata$Group,ylab="Femur Length (cm)", xlab="Genotype")
+```
+
+
+
+# Analyse your data
+
+e.g. a t-test, or linear regression, or ANOVA, or whatever
+
+
+```{r}
+anova.1 <- aov(mydata$femur~mydata$Group)
+summary(anova.1)
+```
+
+
+
+That ANOVA tells us whether or not there is a significantly more variation among groups than within compared with what would be expected under the null hypothesis that there is no difference among groups. Our results shows that there are differences between the groups, but we do not know between which groups are different. It DOES NOT tell us which groups are different from one another. In order to ask which if any groups are different, we can use one of a number of posthoc tests which account for the multiple testing issue that arises (http://en.wikipedia.org/wiki/Multiple_comparisons). The easiest one to run in R is Tukey's "Honest Significant Difference" test
+
+We can perform Tukey's HSD test with the following R code:
+
+```{r}
+test.all.comparisons <- TukeyHSD(anova.1)
+print(test.all.comparisons)
+```
+
+From this ANOVA table we can conclude that there are difference between following groups (Both-Absent, Gene1only-Absent, Gene1only-Both and Gene2only-Both). 
+
+# Plot the results of your analysis
+
+NB for ANOVA's there is no other plot to include as there are no model predicted lines to add. 
+Instead, the model predictions are the means of each category, and an estimate of the within group variance and among group variance. 
+All of this information is already depicted in our boxplots, so there is no need to do anything further to the plot we already have 
+(except of course to tidy it up for publication - but you can follow my other podcasts on boxplots for those hints)
+
+
+
+
+```{r}
+boxplot( mydata$femur~mydata$Group, ylim=c(0,30), axes=F, col=rainbow(10))
+box(bty="L")
+axis(1,at=1:4,c("Absent","Both","Gene1only", "Gene2only"),
+        font=3, cex.axis=1.2, tcl=0.5)
+title(xlab="Groups", cex.lab=1.4)
+axis(2, las=1, tcl=0.5) # las=1 changes direction of the y-axis text
+title(ylab="Femur Length (cm)",cex.lab=1.2)
+text(x= 1, y= 14.4, labels= "a")
+text(x= 2, y= 26.6, labels= "b")
+text(x= 3, y= 17.8, labels= "c")
+text(x= 4, y= 16.8, labels= "ac")
+
+```
+
+
+This graph clearly shows that there are differences between Group called both with all other groups and Absent with all groups except Gene2only and that there are no significant (P<0.05) differences between Gene1only and Gene2only.
+
+
+# Save your data (only if you want)
+
+The "list=" command tells us which variables we want to save
+
+The "file=" option tells us what file to save the data to
+
+
+```{r}
+save( list=ls(), file="femur_lengths.rdata" )
+```
+
+
+# ASSIGNMENT 1:
+
+Load the dataset InsectsSprays and with ANOVA check which type of insect spray resulted in significantly different results?
+You can perform means option to see differences in means.
+
+Solution:
+```{r}
+
+data(InsectSprays)
+head(InsectSprays)
+str(InsectSprays)
+mu.InsectSprays <- aggregate(InsectSprays$count, by=list(InsectSprays$spray), mean)
+mu.InsectSprays
+anova.2 <- aov(InsectSprays$count~InsectSprays$spray)
+summary(anova.2)
+test.all.comparisons.1 <- TukeyHSD(anova.2)
+print(test.all.comparisons.1)
+```
+
+Different are A from C, D and E; B from C, D and E; C from A, B and F; D from A, B and F; E from A, B and F.
+
