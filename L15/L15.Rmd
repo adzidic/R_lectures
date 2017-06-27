@@ -1,0 +1,207 @@
+---
+title:title: "L15: Simple linear regression"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+
+output:
+   html_document:
+     theme: flatly
+     toc: true
+     toc_depth: 4
+     number_sections: yes
+     
+---
+
+
+# Linear regression in R
+
+
+Simple linear regression model describe the effect of the explanatory variable (X) on the response variable (Y). Explanatory variable may be contonous, discrete, or categorical.
+
+It is important to assume following for the error term:
+
+1. Normal distribution of error with N (0,sigma)
+2. That errors are centered, which means that mean of the errors is equal to 0.
+3. The variance of the errors is sigma squared and it is constant.
+
+We need to estimate regression coefficients:
+B0 - intercept 
+B1 - slope.
+
+When we find intecept we could conclude that for every unit increase in X, Y increases for the value of the slope (B1).
+
+
+
+
+The data give the diameter of plants in mm and the amount of seed each plant produced in g.
+
+We are interested in how seed production is affected by plant size, as indicated by root diameter.
+
+Housekeeping
+
+```{r}
+rm(list=ls()) # remove everything currently held in the R memory
+```
+
+
+
+# Enter or read in your data from a file
+
+Read in data from our CSV (comma separated value) file
+
+If you need any help for import of the data, take a look at Lesson 3 course material.
+
+Remember that the data file should be in your working directory before you import the file to R.
+
+
+```{r}
+
+mydata <- read.table("grazing.csv", header=TRUE, sep=",")
+```
+
+
+
+# Plot and explore your data
+
+If we want to see first six rows of our data we could use function head (name of the dataset) as follows:
+
+First explore:
+
+```{r}
+head(mydata)
+```
+
+
+then plot
+
+```{r}
+plot(mydata$Root,mydata$Seed,type="p", xlab="Root diameter (mm)", ylab="Amount of seed (g)", pch=20 ,
+        cex.lab=1.5, cex.axis=1.5, cex=1.2,
+        bty="L", las=1, tcl=0.5 ) # type = p - this p is for points
+```
+
+
+
+
+
+
+
+# Analyse your data
+
+We want to see how root size influences seed size.
+
+```{r}
+model1 <- lm(mydata$Seed~mydata$Root) # model 1 will store information on linear model where Y axis variable is Seed and X axis variable is Root.
+
+model1 # we can see formula and coefficients of linear model
+
+summary(model1)
+```
+
+
+
+R-squared and adjusted R-squared explain how good is your model. If the value is close to 1 than your model is good, if the value is close to 0 your model is bad. This model is reasonably good while its value is 0.7 which is closer to 1 than to 0.
+
+
+
+# Plot the results of your analysis
+
+abline() adds the best fit line
+
+```{r}
+plot(mydata$Root,mydata$Seed,type="p", xlab="Root diameter (mm)", ylab="Amount of seed (g)", pch=20 ,
+        cex.lab=1.5, cex.axis=1.5, cex=1.2,
+        bty="L", las=1, tcl=0.5 ) # type = p - this p is for points
+abline(model1,col="red")
+```
+
+# Extract the residuals for easy recall
+
+```{r}
+rsd <- residuals(model1)
+```
+
+
+
+# Histogram of the residuals
+
+```{r}
+hist(rsd, main="Histogram of residuals", xlab="Residuals", ylab="Frequency", las=1)
+```
+
+
+
+QQ plot of the residuals to assess how well the residuals compare with an ideal normal distribution
+
+```{r}
+qqnorm(rsd)
+qqline(rsd,col="red")
+
+```
+
+
+Check for a trend in the residuals with the X axis variable
+
+```{r}
+plot(mydata$Root,rsd,type="p", xlab="Root diameter (mm)", ylab="Residuals", pch=20 ,
+        cex.lab=1.5, cex.axis=1.5, cex=1.2,
+        bty="L", las=1, tcl=0.5 ) # type = p - this p is for points
+abline(0,0,col="blue")
+```
+
+We see some data under the curve (overestimation), thereafter above the line (underestimation), then again under the line and then again over the line.
+
+If we make a graph of real values with the model and residuals we can see clearly these paterrns.
+
+```{r}
+par(mfrow=c(1,2))
+plot(mydata$Root,mydata$Seed,type="p", xlab="Root diameter (mm)", ylab="Amount of seed (g)", pch=20 ,
+        cex.lab=1.5, cex.axis=1.5, cex=1.2,
+        bty="L", las=1, tcl=0.5 ) # type = p - this p is for points
+abline(model1,col="red")
+plot(mydata$Root,rsd,type="p", xlab="Root diameter (mm)", ylab="Residuals", pch=20 ,
+        cex.lab=1.5, cex.axis=1.5, cex=1.2,
+        bty="L", las=1, tcl=0.5 ) # type = p - this p is for points
+abline(0,0,col="blue")
+```
+
+
+# Save your data (only if you want)
+
+The "list=" command tells us which variables we want to save
+
+The "file=" option tells us what file to save the data to
+
+
+```{r}
+save( list=ls(), file="grazing_data.rdata" )
+```
+
+
+ASSIGNMENT:
+
+Install car package, load a Prestige dataset and make a new data set called new with just these two variables. Then make a linear regression where education is on x axis and income on y-axis and explain results. Check residuals.
+
+Solution:
+
+```{r}
+library(car)
+head(Prestige,5)
+str(Prestige)
+new <- Prestige[,c(1:2)]
+plot(new$education,new$income,type="p", xlab="Years of education", ylab="Income", pch=20 ,
+        cex.lab=1, cex.axis=0.8, cex=1.2,
+        bty="L", las=1, tcl=0.5)
+modelx <- lm(new$income~new$education)
+abline(modelx,col="red")
+rsdx <- residuals(modelx)
+hist(rsdx, main="Histogram of residuals", xlab="Residuals", ylab="Frequency", las=1)
+qqnorm(rsdx)
+qqline(rsdx,col="red")
+plot(new$education,rsdx,type="p", xlab="Years of education", ylab="Residuals", pch=20 ,
+        cex.lab=1, cex.axis=0.8, cex=1.2,
+        bty="L", las=1, tcl=0.5) # type = p - this p is for points
+abline(0,0,col="blue")
+```
+
+
+
