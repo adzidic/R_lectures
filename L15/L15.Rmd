@@ -1,5 +1,5 @@
 ---
-title:title: "L15: Simple linear regression"
+title: "L15: Simple linear regression"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 
 output:

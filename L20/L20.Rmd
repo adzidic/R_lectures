@@ -1,0 +1,214 @@
+---
+title: "L20: Binary logistic regression"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+
+output:
+   html_document:
+     theme: flatly
+     toc: true
+     toc_depth: 4
+     number_sections: yes
+     
+---
+
+# Binary logistic regression
+
+A binary logistic regression is typically used when there is one dichotomous outcome variable (binary one), and a continuous predictor variable which is related to the probability or odds of the outcome variable. 
+
+The way that R treats binary data is to assume that the zeroes and ones come from a binomial trial with sample size one.
+The response variable here is binary and could represent: 0/1 , Absent/Present , Uninfected/Infected etc...
+The single explanatory variable here is a linear covariate but any combination of fixed, linear or random factors are allowed under the glm framework.
+
+The key alteration here is the use of family="binomial" to account for the binary data.
+
+
+# Housekeeping
+
+
+```{r}
+rm(list=ls()) # remove everything currently held in the R memory
+```
+
+
+Enter or read in your data from a CSV (comma separated value) file.
+
+
+```{r}
+mydata <- read.csv("binary_example_data.csv", header=TRUE, sep=",")
+
+```
+
+
+# Explore and plot your data
+
+
+```{r}
+head(mydata)
+str(mydata)
+```
+
+
+Plot your raw data
+```{r}
+
+
+plot(mydata$X1,mydata$Y,type="p",ylab="Y",xlab="X1", bty="L", yaxp=c(0,1,1),las=1) # a scatter plot
+
+boxplot(mydata$X1~mydata$Y,horizontal=T,ylab="Y",xlab="X1",
+        main="Take care with axes",bty="L",las=1) # a boxplot
+```
+
+
+
+
+
+# Analyse your data
+
+NB in this case we specify the family of the GLM to have binomial errors (i.e. not the default normal or gaussian errors) for the residuals of the data to the predicted model. 
+
+Specifically in this case, we are modelling a binomial distribution (http://en.wikipedia.org/wiki/Binomial_distribution) with one single observation per data point (i.e. one coin toss for which record either heads/tails, presence/absence, infected/uninfected etc...). This situation is actually a special case of the binomial distribution called the bernouli distribution http://en.wikipedia.org/wiki/Bernoulli_distribution
+
+
+
+```{r}
+model1 <- glm(mydata$Y~mydata$X1,family=binomial) # family = binomail includes logit link function
+summary(model1)
+```
+
+Be carefull with estimates while they are on log (odds) scale!
+
+
+
+# Plot the results of your analysis
+
+Remember that we have fitted a linear model, and as we have only first-order polynomials in X fitted, can expect a straight line on the graph. However, you have to remember that this is linear on the log(odds) scale.
+
+
+
+
+
+First plot the fitted model on the log(odds) scale on which it operated, and on which scale it returns its estimates.
+
+
+```{r}
+plot(0,0,type="n",xlim=c(min(mydata$X1),max(mydata$X1)),ylim=c(-4,4),
+      ylab="log(odds)",xlab="X1",main="log(odds) predictions",bty="L")
+abline(model1,col="red",lwd=2)
+```
+
+This is not hugely informative for our data though as we cant add the raw data to this plot, since we can calculate log(odds) for stricly binary data as we get 1/(1-1) = 1/0 which is Infinity, and we cant take log(0) which is -Infinity. So, instead we need to plot our data on their 0/1 scale and add the model as a probability of Y taking 0 or 1. In order to do this, we need to predict our model for a range of X values. There are two ways to acheive this.
+
+
+# PREDICTION METHOD 1 
+
+- evaluate the function create a new  vector of X values at small increments
+
+```{r}
+X.predict <- seq(0,100,0.01) # create a new list of predicted values
+head(X.predict) # to see new vector values that we have created
+
+b0 <- coef(model1)[1]  # extract the intercept of the model
+b1 <- coef(model1)[2]   # extract the slope
+
+Y.predict.1 <- 1 / ( 1 + exp( -( b0 + b1*X.predict ) ) )
+
+plot(mydata$X1,mydata$Y,type="p",main="prediction method 1",bty="L",las=1) # now plot the raw data
+lines(X.predict,Y.predict.1,col="red",lwd=2)
+```
+
+
+
+
+# PREDICTION METHOD 2 
+
+- use the predict function - used when there is more complex situation
+
+This time we need to create a new dataset which we will ask the model to predict values of Y from using its internal information.
+
+
+
+Use the predict function
+
+```{r}
+
+plot(mydata$X1,mydata$Y,type="p",main="prediction method 2",bty="L",las=1) # now plot the raw data
+# it is important to know that now we change the shape of the data frame and it has only one variable X1 and not as before X1 and Y. Therefore, we plot the data from the raw dataframe, then we change the number of observations and draw our prediction line. It is important to know that predict function can only be used on our primary model1 one variables mydata$X1 and mydata$Y!
+X.predict <- seq(0,100,0.01)
+mydata <- data.frame(X1=X.predict)
+head(mydata)
+Y.predict.2 <- predict(model1, newdata=mydata, type="response")
+lines(X.predict,Y.predict.2,col="blue",lwd=2)
+```
+
+
+
+Now the only thing remaining is to make sure the residuals of this model are normally distributed. NB there are more than one kind of residual.
+For all GLMS, the predcition is that the "deviance residuals" are normally distributed.
+
+```{r}
+qqnorm(resid(model1,type="deviance"))
+qqline(resid(model1,type="deviance"),col="red",lwd=2)
+```
+
+
+
+
+A histogram of the data if you want
+
+
+```{r}
+hist(resid(model1,type="deviance"),freq=F)
+```
+
+
+
+You can superimpose the model over the horizontal boxplots if you prefer that style.
+
+```{r}
+mydata <- read.csv("binary_example_data.csv", header=TRUE, sep=",")
+boxplot(mydata$X1~mydata$Y,horizontal=T,ylab="Y",xlab="X1",
+          main="superimpose over boxes", frame.plot=T, las=1)
+X.predict <- seq(0,100,0.01)
+mydata <- data.frame(X1=X.predict)
+head(mydata)
+Y.predict.2 <- predict(model1, newdata=mydata, type="response")
+lines(X.predict,Y.predict.2+1,col="blue",lwd=2)
+```
+
+Note the +1 to the Y variable as the model line is between 0 and 1 whereas the categories that boxplot produces are automatically assigned 1 and 2
+
+
+
+
+Save your data (only if you want)
+
+The "list=" command tells us which variables we want to save
+The "file=" option tells us what file to save the data to
+
+
+```{r}
+save( list=ls(), file="grazing_data.rdata" )
+```
+
+
+
+ASSIGNMENT 1:
+Make a subset called dat from the data set mtcars containing two variables vs (binary) and mpg (contionous).
+```{r}
+dat <- subset(mtcars, select=c(vs, mpg))
+str(dat)
+model2 <- glm(dat$vs~dat$mpg,family=binomial) # family = binomail includes logit link function
+summary(model2)
+X.predict <- seq(0,100,0.01) # create a new list of predicted values
+head(X.predict) # to see new vector values that we have created
+
+b0 <- coef(model2)[1]  # extract the intercept of the model
+b1 <- coef(model2)[2]   # extract the slope
+
+Y.predict.1 <- 1 / ( 1 + exp( -( b0 + b1*X.predict ) ) )
+
+plot(dat$mpg, dat$vs,type="p",main="Prediction model",xlab="Miles/(US) gallon", ylab=" V engine or a straight engine", bty="L",las=1) # now plot the raw data
+lines(X.predict,Y.predict.1,col="red",lwd=2)
+```
+
+
