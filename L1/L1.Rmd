@@ -28,7 +28,7 @@ R is free, open-source software, available for all commonly used operating syste
 
 RStudio is an integrated development environment (IDE) for R which works with the standard version of R higher than version 2.11. available from RStudio web-site [RStudion](https://www.rstudio.com/products/rstudio/download/). Source editor for writing scripts, workspae to view objects in the global environment, dataviewer for inspecting elements, searchable command history, plots pane, Rpackage manager, Integrated R help
 
-![RStudio RMarkdown first screen!](/Users/alendzidic/Documents/PROJECTS/RMarkdown_intro.jpg)
+![RStudio RMarkdown first screen!](../assets/images/RMarkdown_intro.jpg)
 
 In Console window you can clearly see the exact version of R software like one on machine that created this Rnotebook (R version 3.3.2 (2016-10-31) -- "Sincere Pumpkin Patch").
 Executive R code is written within Chunk!
@@ -71,11 +71,11 @@ If you are not using RProject default working directory could be set as follows:
 
 First go to Tools and Global options as shown on the picture:
 
-![RStudio Tools Global Options!](/Users/alendzidic/Documents/PROJECTS/Global_options.jpg)
+![RStudio Tools Global Options!](../assets/images/Global_options.jpg)
 
 Then you change RGeneral default working directory (black rectangle), press apply and OK.
 
-![RStudio Tools Working directory!](/Users/alendzidic/Documents/PROJECTS/Working_Directory.jpg)
+![RStudio Tools Working directory!](../assets/images/Working_Directory.jpg)
 
 To check it you can type in:
 ```{r, eval=FALSE}
@@ -113,12 +113,12 @@ Exponents
 ```{r}
 2^4
 ```
-But be carefull if you want to write 2 to the power of 3 minus 1, i.e. 2 to the power of 2, while you have to put this number in paremtheses:
+But be carefull if you want to write 2 to the power of 3 minus 1, i.e. 2 to the power of 2, while you have to put this number in parentheses:
 Good example:
 ```{r}
 2^(3-1)
 ```
-Otherwise you get 2 to the power of 3 and then minus 1:
+Otherwise you get 2 to the power of 3 and then minus 1 because R follows the [operator precedence rule](https://en.wikipedia.org/wiki/Order_of_operations):
 ```{r}
 2^3-1
 ```
@@ -169,15 +169,17 @@ Comments are important in R and they start after hash mark (#). This kind of ann
 2+2 #Example of addition
 ```
 
-## Assigning and removing R Object
+A good rule is to always write at least one line of comment for every line of code. You need to be kind to "future you" so that "future you" is happy with "present you" a few months down the line when you need to analyse that dataset again.
 
-Suppose we want to give a object called a a value of 53.
+## Assigning and removing R Objects
+
+Suppose we want to give a object called `a` the value of 53.
 We can perform that by writting following code in R Markdown:
 
 ```{r}
-a<- 53
+a <- 53
 ```
-We can check if our object exists with typing his name.
+We can check if our object exists with typing its name.
 
 ```{r}
 a
@@ -186,6 +188,7 @@ To check if our object exist in R working environment we can use list function l
 ```{r}
 ls()
 ```
+
 To remove object a from the R working environment we can use remove function rm().
 
 ```{r}
@@ -197,7 +200,7 @@ After we remove our object from R environment we can check our list of objects w
 ls()
 ```
 
-Our previously created object a is not anymore in R environment.
+Our previously created object `a` is not available in R environment anymore.
 
 
 #Functions
@@ -205,9 +208,9 @@ Our previously created object a is not anymore in R environment.
 ## Assigning R Objectes with combine function
 
 Suppose we want to make one object with house mouse body weight. 
-We can use **combine** function to do that. Example: mouse.wts <-c(). In brackets are measurements divided by comma.
+We can use **combine** function to do that. Example: `mouse.wts <-c()`. In brackets are measurements divided by comma.
 
-![House mouse!](/Users/alendzidic/Documents/PROJECTS/House_mouse.jpeg)
+![House mouse!](../assets/images/House_mouse.jpeg)
 
 Photo source: [House mouse](https://en.wikipedia.org/wiki/House_mouse)
 ```{r}
@@ -217,7 +220,7 @@ mouse.wts <-c(16.6, 12, 10.9, 15.9, 25, 14.5, 18.2, 13.8, 21, 21.5) #creating a 
 
 ##Class function
 
-Class function can be used to determine class of particular object. 
+The `class` function can be used to determine class of particular object. 
 R has 5 basic atomic classes
 
     logical (e.g.,RUE, FALSE)
@@ -238,7 +241,7 @@ Some basic functions (mean, min, max, summary) to caluculate from both samples
 ##Mean function
 
 
-Arithmetic mean is a quantitative measure of central tendency that is highly sensitive to outliers. Value of aritmentic mean is in units as original variable! To calculate arithmentic mean in R we use following code:
+The arithmetic mean is a quantitative measure of central tendency that is highly sensitive to outliers. The value of the aritmentic mean is in same units as original variable! To calculate the arithmentic mean in R we use following code:
 
 ```{r}
 mean(mouse.wts)
@@ -246,23 +249,44 @@ mean(mouse.wts)
 
 ##Min function
 
-Minimum function calculated minimal value in the vector.
+The minimum function returns the smallest (nearest to negative infinity) value in the vector.
 
 ```{r}
 min(mouse.wts)
 ```
 ##Max function
 
-Maximum function calculated maximal value in the vector.
+The maximum function returns the largest (nearest to positive infinity) value in the vector.
 
 ```{r}
 max(mouse.wts)
 
 ```
 
+# Which entries are the smallest or largest?
+
+The related function `which.min()` and `which.max()` will tell us the index of the entry in the vector that is the smallest or largest:
+
+```r{}
+idx_min <- which.min(mouse.wts)
+
+# the entry in the vector with the smallest value is
+print(idx_min)
+
+
+# = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+
+idx_max <- which.max(mouse.wts)
+
+# the entry in the vector with the largest value is
+print(idx_max)
+
+# and then we can recover the smallest and largest values just to check
+c(mouse.wts[idx.min], mouse.wts[idx.max])
+```
 ##Summary function
 
-Summary function gives you a descriptive statistics for the analyzed vector.
+Summary function gives you a set of descriptive statistics for the analyzed vector.
 
 ```{r}
 summary(mouse.wts)
@@ -276,7 +300,7 @@ If we need help on any function in R we could write down ?name of the function a
 help(summary)
 ```
 
-#Plots
+#Figures in R
 
 ##Plot
 
@@ -312,7 +336,7 @@ boxplot(mouse.wts, main="House mouse weight", xlab="Species - Mouse", ylab="Weig
 1. Plot a function Z using plot function with option type ="l" to plot line instead of points:
 
 $$ Z= x^3 -6x^2+4x+12$$
-For x values use a sequence of numbers between -2.1 and 6.1 with increment 0.1. (Hint: Use seq function; seq function arguments: inital value, final value and increment)
+For x values use a sequence of numbers between an arbitrary range of `-2.1` and `6.1` with increment `0.1`. (Hint: Use seq function; seq function arguments: inital value, final value and increment)
 
 Solution 1:
 
