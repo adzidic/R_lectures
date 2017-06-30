@@ -1,2 +1,8 @@
 
-L1/L1.html
+#L1/L1.html
+
+*.DS_Store
+*.Rhistory
+*.RData
+*.Rproj.user
+.Rproj.user
