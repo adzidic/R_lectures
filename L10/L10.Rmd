@@ -33,7 +33,7 @@ see ?iris for more information
 ```{r}
 par(mfrow=c(1,1))
 boxplot( Petal.Length ~ Species, data = iris,
-		ylab="Petal Length (cm)", xlab="Species")
+		ylab = "Petal Length (cm)", xlab = "Species")
 
 ```
 
@@ -49,7 +49,7 @@ Here are some advanced tricks to customising plots.Remove the frame surrounding 
 ```{r, fig.height=9}
 par(mfrow=c(2,1))
 boxplot(  Petal.Length ~ Species, data = iris, 
-          ylab="Petal Length (cm)", xlab="Species") # old one
+          ylab = "Petal Length (cm)", xlab = "Species") # old one
 boxplot(  Petal.Length ~ Species, data = iris,
           frame.plot=F ) # new one
 ```
