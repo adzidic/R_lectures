@@ -21,13 +21,33 @@ rm(list=ls()) # remove everything currently held in the R memory
 ```
 
 
-In this example we will use the in-built dataset "iris" which gives the measurements in centimeters of the variables sepal length and width and petal length and width, respectively, for 50 flowers from each of 3 species of iris. The species are Iris setosa, versicolor, and virginica.
+In this example we will use the in-built dataset "iris" which gives the measurements in centimeters of the variables sepal length and width and petal length and width, respectively, for 50 flowers from each of 3 species of iris. The species are Iris setosa, versicolor, and virginica. See `?iris` for more information. When visualising data, we often need to summarise it, as the raw data itself is not always the best representation. In terms of summarising or abstracting the information, we can start with the raw data which is the most granular picture we can build.
 
-see ?iris for more information
+# Raw data
+
+Essentailly this is a scatter plot, stacked by each species. Note that we have to use `as.numeric(Species)` in order to convert them to numbers rather than factors: if `plot(y~x)` sees that x is a factor it will automatically call the function boxplot! Note also that this code uses the expression version of `plot()` which is `plot(y~x)` rather than `plot(x, y)`. This structure is favoured as it allows us to call the columns of the dataset by name, and then provide the dataframe as `data = iris` thereby avoiding the need to call them directly with `$` notation.
+
+```{r}
+plot(Petal.Length ~ as.numeric(Species), data = iris, type = "p", axes = F)
+axis(1, at = 1:3, levels(iris$Species))
+axis(2)
+```
+
+lots of the points overlap, which doesnt really help distinguish between them, so we can "jitter" them a little (i.e. add a small bit of noise). We want to jitter them in the x axis direction.
+
+```{r}
+plot(Petal.Length ~ jitter(as.numeric(Species), amount = 0.1), 
+     data = iris, type = "p", axes = F)
+axis(1, at = 1:3, levels(iris$Species))
+axis(2)
+```
+
+Thats better, and we can at least see better how many data points we have, but its still rather cluttered and so instead we might abstract the information into three histograms.
+
 
 # Histrograms
 
-We will focus on the Petal Length data for a start. 
+We will focus on the Petal Length data for a start. Histograms give us a good representation of the data and let us quickly visualise the shape and extent of the distribution.
 
 ```{r}
 par(mfrow=c(3,1)) # specify a 3x1 panel plot
@@ -45,9 +65,9 @@ hist(iris$Petal.Length[iris$Species=="virginica"], breaks=seq(0,7,0.25),
 
 ```
 
-Use a boxplot to show this same information in one single panel
-See the wikipedia site for more information
-[WIKIPEDIA](http://en.wikipedia.org/wiki/Box_plot)
+While this is ok for a small number of groups, if we have more than a few it becomes messy and difficult to stack up lots of histograms, and it is rather wasteful of white space. Abstracting the data further is the solution, and boxplots are one way to acheive this.
+
+Use a boxplot to show this same information in one single panel. See the [wikipedia](http://en.wikipedia.org/wiki/Box_plot) site on boxplots for more information.
 
 # Simple boxplot
 
@@ -90,6 +110,8 @@ boxplot(iris$Petal.Length[iris$Species=="virginica"],at=1.5,horizontal=T,add=T)
       
 # Different Boxplots in ggplot2 package
 
+As always, `ggplot2` does boxplots, and arguably easier / prettier.
+
 ```{r}
 library(ggplot2)
 ```
@@ -98,14 +120,14 @@ library(ggplot2)
 
 ## Basic box plot in ggplot2
 
-
 ```{r}
 p <- ggplot(iris, aes(x=Species, y=Petal.Length)) + geom_boxplot()
-p
+print(p)
 ```
 
 ## Rotate the box plot
 
+Flip it 90 degrees.
 
 ```{r}
 p + coord_flip()
@@ -123,6 +145,8 @@ ggplot(iris, aes(x=Species, y=Petal.Length)) +
 
   
 ## Change outlier, color, shape and size
+
+You can customise the details of the visualisation.
 
 ```{r}
 ggplot(iris, aes(x=Species, y=Petal.Length)) + 
