@@ -49,7 +49,7 @@ Thats better, and we can at least see better how many data points we have, but i
 
 We will focus on the Petal Length data for a start. Histograms give us a good representation of the data and let us quickly visualise the shape and extent of the distribution.
 
-```{r}
+```{r, fig.height=10}
 par(mfrow=c(3,1)) # specify a 3x1 panel plot
 # Species == setosa
 hist(iris$Petal.Length[iris$Species=="setosa"], breaks=seq(0,7,0.25),
@@ -85,7 +85,7 @@ Some code below to facilirate direct comparison of histograms and boxplots.
 
 Intended for illustrative purposes in this podcast only.
 
-```{r}
+```{r, fig.height = 10}
 par(mfrow=c(3,1)) # specify a 3x1 panel plot
 
 hist(iris$Petal.Length[iris$Species=="setosa"], breaks=seq(0,7,0.25), freq=F,
