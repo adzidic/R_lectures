@@ -37,18 +37,18 @@ You can change working directory in any of these three ways:
 
 1. Use the setwd R function in Windows:
 
-setwd("C:/Users/User Name/Documents/FOLDER")
+`setwd("C:/Users/User Name/Documents/FOLDER")`
 
 or on MAC:
 
-setwd("/Users/User Name/Documents/FOLDER")
+`setwd("/Users/User Name/Documents/FOLDER")`
     
 2. on Windows: Use the Tools | Change Working Dir
 on MAC: Use (Session | Set Working Directory on a mac)
 
-![Change directory on MAC!](/Users/alendzidic/Documents/PROJECTS/Setting_working_directory_on_MAC_1.png)
+![Change directory on MAC!](Setting_working_directory_on_MAC_1.png)
 
-![Change directory on MAC !](/Users/alendzidic/Documents/PROJECTS/Setting_working_directory_on_MAC_2.png)
+![Change directory on MAC !](Setting_working_directory_on_MAC_2.png)
 
 Navigation within the Files pane alone will not change the working directory. First you have to select folder and then set it as a working directory.
 
@@ -59,7 +59,7 @@ Navigation within the Files pane alone will not change the working directory. Fi
 To make new R Markdown document do following:
 
 
-![Create R Markdown document on MAC !](/Users/alendzidic/Documents/PROJECTS/Open_R_Markdown _document.png)
+![Create R Markdown document on MAC !](Open_R_Markdown _document.png)
 
 
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
@@ -104,7 +104,7 @@ How to execute chunk in R Markdown document
 ![Run R code chunk in R Markdown document on MAC !](/Users/alendzidic/Documents/PROJECTS/L_2_R_Markdown.jpg)
 
 
-If we want to execute comans line by line we would point to the line of code within R code chunk and in Windows press CTRL + R, and on Mac CMD + ENTER.
+If we want to execute commands line by line we would point to the line of code within R code chunk and in Windows press CTRL + R, and on Mac CMD + ENTER.
 
 
 
@@ -137,9 +137,9 @@ cbind(left, right)
 
 ## Boxplot
 
-Boxplot represents centrality, spread and skewnees of the distribution and defines an outlier if that observation lies more than 1.5 times the interquartile range below the lower or above the upper quartile.
+Boxplot represents centrality, spread and skewnees of the distribution and with a bit of practice and experience summarise a more detailed histogram of the raw data. The main box is the interquartile range (IQR) and contains the middle 50% of the data (i.e. between 25% and 75%-tiles) and the solid black line is the median (50% data above and below this line). The maximum and minimum extent of the whiskers (dotted lines extending out from the box) is either the max and min of the data or 1.5 times the IQR depending on which is lower (by default anyway; you can override this if you want). If there are datapoints beyond this limit they are plotted as stars.
 
-![Boxplot!](/Users/alendzidic/Documents/PROJECTS/R_lectures/L2/boxplot.jpg)
+![Boxplot!](boxplot.jpg)
 
 
 ```{r Plot your data in R - Boxplot}
@@ -162,8 +162,7 @@ abline (a=0,b=1) # draws a symetric line
 
 ## Histrograms
 
-They explore distribution of the contionous variable.
-It is always good to explore with the bins to get a more complete undestanding of the distribution.
+They explore distribution of a continuous variable in more detail than a boxplot. It is always good to explore with the bins to get a more complete undestanding of the distribution.
 
 ```{r Plot your data in R - Plot histogram}
 hist(left)

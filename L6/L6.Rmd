@@ -19,7 +19,7 @@ Data: iris (in-built dataset in R base)
 
 # Housekeeping
 ```{r}
-rm(list=ls()) # remove everything currently held in the R memory
+rm(list=ls()) # remove all objects currently held in the R environment
 ```
 
 
@@ -118,27 +118,35 @@ save( list=ls(), file="grazing_data.rdata")
 ```
 
 
-Once you are happy with your graph, you can export it as a high resolution tiff for example.
+Once you are happy with your graph, you can export it as a high resolution tiff for example. This is done by opening a black `*.tif` file in which to print the figure, creating the figure, and then closing the file which causes it to finalise writing it to file.
 
 Check you working directory before saving your plot, while plot will be saved on that location.
 
 ```{r Save plot as a tiff}
+
+# create and open the tif file for writing
 tiff(filename="petal_plot_1.tif",units="cm",
 		height=21,width=21, res=300, compression="none")
+
+# do the plotting
 my.colors <- c("black","blue","green")
 my.points <- c(16,17,18)
 plot( iris$Petal.Width, iris$Petal.Length,
-        col=my.colors[iris$Species], pch=my.points[iris$Species], 
-        xlab="Petal Width (cm)", ylab="Petal Length (cm)",
-        cex.lab=1.5, cex.axis=1.5, cex=1.2,
-        bty="L", las=1, tcl=0.5 )
+        col = my.colors[iris$Species], 
+        pch = my.points[iris$Species], 
+        xlab = "Petal Width (cm)", ylab="Petal Length (cm)",
+        cex.lab = 1.5, cex.axis = 1.5, cex = 1.2,
+        bty = "L", las = 1, tcl = 0.5 )
 legend("topleft", levels(iris$Species), col=my.colors, pch=my.points, lty=0, bty="n",
         cex=1.5) # bty = "n" means no box around legend
+
+# close the tif file
+dev.off()
 ```
 
-# ggplot 
+# Nicer (and sort of easier) graphics using ggplot 
 
-If you want the best and most sofisticated scatter plot with lots of options you should use ggplot. It is more complex than ordinary plot and requires instalation of the tidyverse package
+If you want the best and most sofisticated scatter plot with lots of options you should use the package `ggplot2`. It is more complex than base graphics in R, and it certainly follows a very different syntax, and requires installation of the tidyverse package
 
 Core elements:
 
@@ -168,22 +176,31 @@ Guides
 
 These objects help the viewer to interpret the plot, e.g. axis labels and legends.
 
+You will need to install the tidyverse set of packages if you do not already have them: `install.packages("tidyverse")`
+
+With ggplot2, you can create the figure without printing it anywhere by storing the instructions behind the figure as an object. You can then use `print()` to show it on screen or embed it into a Rmarkdown document. In contast to the method above where you have to open and close a plotting device (we used a `*.tif` file), you can use `ggsave()` to acheive the same. The advantage here is you can both print it and save it to file easily enough. Wtih ggsave, there are lots of file formats you can save to, including png, jpg, etc... We will not cover ggplot2 in detail here, but you can find a lot of help [online](http://ggplot2.tidyverse.org).
+
 
 ```{r ggplot package scatter plot}
-
 library(tidyverse) # load package with ggplot
-tiff(filename="petal_plot_2.tif",units="cm", height=21,width=21, res=300, compression="none") # save file as a tiff
 
-
-ggplot(data= iris, mapping = aes(x=Petal.Width,y=Petal.Length)) + geom_point(mapping = aes(color = Species, shape=Species)) + 
+# create the plot and save it in object called p2
+p2 <- ggplot(data= iris, mapping = aes(x=Petal.Width,y=Petal.Length)) + 
+  geom_point(mapping = aes(color = Species, shape=Species)) + 
   geom_smooth() + ggtitle("Petal width and length plot") + 
-                theme(plot.title = element_text(hjust = 0.5), axis.text=element_text(size=12),
+  theme(plot.title = element_text(hjust = 0.5), 
+        axis.text=element_text(size=12),
         axis.title=element_text(size=14,face="bold")) + 
   labs( x="Petal width (cm)",y="Petal Length(cm)") 
 
+# printing the created ggplot object causes it to be show on screen
+print(p2)
+
+# save it out as a tiff or myriad otehr formats
+ggsave(filename="petal_plot_2.tif", plot = p2, device = "tiff",
+       dpi = 300, compression = "none")
+
 # aesthetics defines x and y axis; geom_point defines classification variable Species for shape and colour; geom_smooth provides shoothing curve through data; ggtitle defines title; theme adjust title in the centre of the plot; axis.text - defines text size for axis text; axis.title - defines size and style of the axis text; labs defines x and y - axis labels.
-
-
 
 ```
 
@@ -192,14 +209,18 @@ ggplot(data= iris, mapping = aes(x=Petal.Width,y=Petal.Length)) + geom_point(map
 
 library(tidyverse)
 
-tiff(filename="petal_plot_3.tif",units="cm", height=21,width=21, res=300, compression="none")
-
-ggplot(data= iris, mapping = aes(x=Petal.Width,y=Petal.Length)) + geom_point(mapping = aes(color = Species, shape=Species)) + 
+# create the plot and save it in object called p3
+p3 <- ggplot(data= iris, mapping = aes(x=Petal.Width,y=Petal.Length)) + geom_point(mapping = aes(color = Species, shape=Species)) + 
   geom_smooth() + ggtitle("Petal width and length plot") + scale_shape_manual (values=4:6) +
                 theme(plot.title = element_text(hjust = 0.5), axis.text=element_text(size=12),
         axis.title=element_text(size=14,face="bold")) + 
   labs( x="Petal width (cm)",y="Petal Length(cm)")
 # the only difference with previous graph is that each shape variable (Species) is defined manualy with scale_shape_manual.
+
+# save it out as a tiff or myriad otehr formats
+ggsave(filename="petal_plot_3.tif", plot = p3, device = "tiff",
+       dpi = 300, compression = "none")
+
 ```
 
 

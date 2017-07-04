@@ -12,7 +12,7 @@ output:
 ---
 # Housekeeping
 ```{r}
-rm(list=ls()) # remove everything currently held in the R memory
+rm(list=ls()) # remove all objects currently held in the R environment
 ```
 
 # Histogram
@@ -149,12 +149,12 @@ hist(iris$Petal.Length[iris$Species=="virginica"], main="virginica", xlab="Petal
 iris$Species=="setosa"
 ```
 
-**NOTE == is it equal to, not is equal to!**
+**NOTE** `==` is interpreted as "is it equal to?", *not* "is equal to"!
 
 
 THE SAME DATA SHOULD BE PRESENTED LIKE THIS - same x and y axis to compare data distribution between species.
 
-```{r}
+```{r, fig.height=12}
 par(mfrow=c(3,1)) # specify a 3x1 panel plot
 
 # Species == setosa
@@ -176,7 +176,7 @@ hist(iris$Petal.Length[iris$Species=="virginica"], breaks=seq(0,7,0.25),
 # Save your histogram
 
 If you want to save your image, you can save it as a image (png, jpeg, tiff, bmp, svg, eps), or pdf or save it to the clipboard as 
-![Save_histogram!](/Users/alendzidic/Documents/PROJECTS/R_lectures/L5/save_histogram.jpg)
+![Save_histogram!](save_histogram.jpg)
 
 
 

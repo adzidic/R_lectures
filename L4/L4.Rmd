@@ -22,22 +22,24 @@ Many  packages include ”vignettes” which gives an overview of the package an
 
 If you want to see all installed packages you could use function installed.packages(). Under Priority column it is defined if the package is Base or Recommended.
 
+Packages can be installed from anywhere, as long as you have access to the source or binary (compiled) folder containing the package. In order to keep some quality control over user-submitted packages (at least structural quality control) the official repository is hosted by [CRAN](https://cran.r-project.org) and this tutorial will focus on installing from this location. [GitHub](https://github.com) is another popular location for packages and many of them host the raw and development code here and push occasional stable releases to CRAN. Some packages though are not available on CRAN and instead push releases to GitHub. Equally, you may find packages hosted elsewhere, and you could download a copmressed, usually *.zip, folder and install as a local packge. Ultimately, there is no guarantee that any of the code in these packages is actually correct, error free or even doing what you intend, and so, as with R itself, you use them under your own cogniscance.
+
 ```{r installed.packages}
 #installed.packages() - there are a lot of packages, therefore it is mentioned here as a comment
 ```
 
 # Install packages
 
-**IMPORTANT - To install packages you need internet connection**
+**IMPORTANT - To install packages you need an internet connection**
 
 First we have to define CRAN downloading site as shown in new picture:
 
-![Tools global options!](/Users/alendzidic/Documents/PROJECTS/R_lectures/L4/Tools_global_options.png)
+![Tools global options!](Tools_global_options.png)
 
 
 From R studio version v0.99.467 there is an option for secure downloads from CRAN as shown in picture:
 
-![Secure download with RStudio!](/Users/alendzidic/Documents/PROJECTS/R_lectures/L4/Secure_and_CRAN_Ireland.jpg)
+![Secure download with RStudio!](Secure_and_CRAN_Ireland.jpg)
 
 
 You can install packages in two ways:
@@ -46,12 +48,12 @@ You can install packages in two ways:
 
 Fist click packages (*STEP 1*) on Packages pane on the right down part of RStudio screen as shown in the picture Package installation with RStudio. Thereafter click Install (*Step 2*).
 
-![Package installation with RStudio!](/Users/alendzidic/Documents/PROJECTS/R_lectures/L4/Package_pane_installation.jpg)
+![Package installation with RStudio!](Package_pane_installation.jpg)
 
 
 Then new window will appear as shown in following picture:
 
-![Package installation with RStudio new window!](/Users/alendzidic/Documents/PROJECTS/R_lectures/L4/Install_siar_package.png)
+![Package installation with RStudio new window!](Install_siar_package.png)
 
 Type in the name of the package you want to install and press Install button.
 
@@ -79,13 +81,13 @@ If you wish to detach some of already installed packages you can do it in two wa
 
 You could do that by removing checked box as shown on next picture:
 
-![R package check box !](/Users/alendzidic/Documents/PROJECTS/R_lectures/L4/Check_box.jpg)
+![R package check box !](Check_box.jpg)
 
 If you uncheck this box (*see picture: uncheck box*) you will see in the Console window following function:
 
 detach("package:siar", unload=TRUE)
 
-![R package uncheck box !](/Users/alendzidic/Documents/PROJECTS/R_lectures/L4/Uncheck_box.jpg)
+![R package uncheck box !](Uncheck_box.jpg)
 
 However if you want to deinstall package bayesm that is required by package siar you will receive following notice:
 
@@ -97,7 +99,7 @@ package ‘bayesm’ is required by ‘siar’ so will not be detached
 You can do the same with function detach as follows:
 
 ```{r}
-detach("package:siar", unload=TRUE)
+detach("package:siar", unload = TRUE)
 ```
 
 
@@ -107,7 +109,7 @@ detach("package:siar", unload=TRUE)
 
 If you want to remove some of the packages then you have to press X on the right end side of the name of the package as shown in red rectange on the picture.
 
-![Remove R package !](/Users/alendzidic/Documents/PROJECTS/R_lectures/L4/Uninstall.jpg)
+![Remove R package !](Uninstall.jpg)
 
 2. Directly with code
 
@@ -126,7 +128,7 @@ remove.packages("siar")
 
 If you want to update packages you have to click update and RStudio console will ask you about update for each new package that exist in your list of packages
 
-![Update R package !](/Users/alendzidic/Documents/PROJECTS/R_lectures/L4/Update.jpg)
+![Update R package !](Update.jpg)
 
 2. Directly with code
 

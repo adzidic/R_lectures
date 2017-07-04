@@ -15,7 +15,7 @@ output:
 # Housekeeping
 
 ```{r Housekeeping}
-rm(list=ls()) # remove everything currently held in the R memory
+rm(list=ls()) # remove all objects currently held in the R environment
 ```
 
 # Arrange data in Excel
@@ -26,10 +26,10 @@ Save your data under other formats option in Excel as a .csv (comma separated va
 
 Change original file to modified file in Excel as follows:
 
-![Original file!](/Users/alendzidic/Documents/PROJECTS/R_lectures/L3/Original_file.png)
+![Original file!](Original_file.png)
 
 
-![Modified file!](/Users/alendzidic/Documents/PROJECTS/R_lectures/L3/Modified_file.png)
+![Modified file!](Modified_file.png)
 
 
 After you file has been arranged put it in the working directory. To see all the files in the working directory use:
@@ -56,11 +56,11 @@ Then all non-numeric values will be stored as character and with function as.fac
 
 
 ```{r Importing finger_length.csv in R}
-mydata <- read.table("finger_lengths.csv", header=TRUE, sep=",")#Be sure your file is in the R working directory!!!
+mydata <- read.csv("finger_lengths.csv", header = TRUE)#Be sure your file is in the R working directory!!!
 mydata
 ```
 
-*Note the use of the square brackets when addressing arrays [ , ]* - FIRST ROWS THEN COLUMNS!
+*Note the use of the square brackets when addressing arrays [ , ]* - FIRST ROWS THEN COLUMNS! I (AJ) was taught in school to remember this as *Roman Catholic = RC*: I've never mixed them up.
 ```{r}
 mydata[1,1] # extract the element of the first row and column
 mydata[1,2] # extract the element of the first row and second column
@@ -75,7 +75,8 @@ mydata$finger.length  #extract all values for the variable finger.length
 
 
 
-# Check already available datasets in R
+# Check already available datasets in 
+There are many datasets bundled with R that you can use, and many of the examples from the help files will call them.
 
 ```{r}
 data() # brings the list of R build in datasets
@@ -94,7 +95,7 @@ Orange # shows Orange dataset
 
 # Read data from web with read.table
 
-
+Alternatively, you can read data from data resources hosted on the web, but bear in mind that their urls might not be stable, and certainly not likely in perpetuity.
 ```{r Read in data from the web in R}
 
 SwissSquirrels <-read.table("https://www.mbr-pwrc.usgs.gov/pubanalysis/keryroylebook/SwissSquirrels.txt")
@@ -103,7 +104,7 @@ head(SwissSquirrels)
 
 
 # Plot your finger length data with boxplot
-
+Return to the finger length dataset we built.
 
 ```{r}
 boxplot(finger.length~hand, xlab="Hand", ylab="digit length(mm)", data=mydata) # Finger.length on y axis and hand on x axis
@@ -111,7 +112,7 @@ boxplot(finger.length~hand, xlab="Hand", ylab="digit length(mm)", data=mydata) #
 ```
 
 # Save data in R
-
+You can save some or all of the objects currently available in your working environment to `*.rdata` files. There are different types of compression and format you can use but the default is fine for nearly all situations. However, for most analyses, and certainly those involving datasets comprising tens or hundreds of observations, it is usually preferable to not save the results of an analysis like this, and instead re-run the script each time you want to re-create the outputs. 
 ```{r}
 save( list=ls(), file="finger_data.rdata" )
 ```
