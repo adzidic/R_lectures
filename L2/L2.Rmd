@@ -101,7 +101,7 @@ How to execute chunk in R Markdown document
 
 1. Press small green arrow in the right corner of the R code chunk as shown on picture:
 
-![Run R code chunk in R Markdown document on MAC !](/Users/alendzidic/Documents/PROJECTS/L_2_R_Markdown.jpg)
+![Run R code chunk in R Markdown document on MAC !](L_2_R_Markdown.jpg)
 
 
 If we want to execute commands line by line we would point to the line of code within R code chunk and in Windows press CTRL + R, and on Mac CMD + ENTER.
