@@ -10,7 +10,7 @@
 
 
 
-<meta name="date" content="2017-07-04" />
+<meta name="date" content="2017-07-05" />
 
 <title>Lecture 4: Installing packages</title>
 
@@ -117,14 +117,14 @@ $(document).ready(function () {
 
 
 <h1 class="title toc-ignore">Lecture 4: Installing packages</h1>
-<h4 class="date"><em>04 July 2017</em></h4>
+<h4 class="date"><em>05 July 2017</em></h4>
 
 </div>
 
 <div id="TOC">
 <ul>
 <li><a href="#install-packages"><span class="toc-section-number">1</span> Install packages</a><ul>
-<li><a href="#work-with-already-installed-packages"><span class="toc-section-number">1.1</span> Work with already installed packages</a><ul>
+<li><a href="#working-with-already-installed-packages"><span class="toc-section-number">1.1</span> Working with already installed packages</a><ul>
 <li><a href="#detach-package"><span class="toc-section-number">1.1.1</span> Detach package</a></li>
 <li><a href="#remove-package"><span class="toc-section-number">1.1.2</span> Remove package</a></li>
 <li><a href="#update-packages"><span class="toc-section-number">1.1.3</span> Update packages</a></li>
@@ -180,7 +180,7 @@ $(document).ready(function () {
 install.packages('siar') # Be aware that R is case sensitive!</code></pre>
 <pre><code>## 
 ## The downloaded binary packages are in
-##  /var/folders/ql/6y0jh0mn2bn1t1gd9h0521940000gn/T//RtmpQPr4c9/downloaded_packages</code></pre>
+##  /var/folders/ql/6y0jh0mn2bn1t1gd9h0521940000gn/T//RtmpFXHZsT/downloaded_packages</code></pre>
 <pre class="r"><code>library('siar')</code></pre>
 <pre><code>## Loading required package: hdrcde</code></pre>
 <pre><code>## Loading required package: mvtnorm</code></pre>
@@ -206,8 +206,15 @@ install.packages('siar') # Be aware that R is case sensitive!</code></pre>
 ## 
 ##     convexhull</code></pre>
 <p><strong>IMPORTANT - When you close you RStudio session, the packages will close too. Therefore, you need to load them next time you want ot use them.</strong></p>
-<div id="work-with-already-installed-packages" class="section level2">
-<h2><span class="header-section-number">1.1</span> Work with already installed packages</h2>
+<div id="working-with-already-installed-packages" class="section level2">
+<h2><span class="header-section-number">1.1</span> Working with already installed packages</h2>
+<p>One thing that can be essential to bear in mind is that with the proliferation of packges, and the limtations of language, one can end up with two functions with identical names attached via two different pacakges. R will retain both, but you will get a warning along the lines of</p>
+<pre><code>&quot;the following object is masked from package:purrr&quot;
+    map</code></pre>
+<p>In this case I loaded an installed library <code>maps</code> that has a function called <code>map</code> that has masked a similarly named function in the also attached package <code>purrr</code>. Masking means both functions still exist and are both available, but hierarchy means that the most recently loaded package will take precedence, and so if we simply call <code>map</code>, we will get the <code>map</code> function from the package <code>maps</code>. We can directly call the function we want within a package using the long-hand call of the form <code>package::function</code> (<em>note the double colon</em>), and it is best practice to always do this when using a non-base loaded package, which is often. The downside is that it reduces readability of code, at least casually, but increases robustness of the code and once you become more experienced it actually increases readability.</p>
+<p>So, to call the functions from each package you would use:</p>
+<pre><code>maps::map()
+purrr::maps()</code></pre>
 <div id="detach-package" class="section level3">
 <h3><span class="header-section-number">1.1.1</span> Detach package</h3>
 <p>If you wish to detach some of already installed packages you can do it in two ways:</p>

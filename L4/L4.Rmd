@@ -70,7 +70,23 @@ library('siar')
 **IMPORTANT - When you close you RStudio session, the packages will close too. Therefore, you need to load them next time you want ot use them.**
 
 
-## Work with already installed packages
+## Working with already installed packages
+
+One thing that can be essential to bear in mind is that with the proliferation of packges, and the limtations of language, one can end up with two functions with identical names attached via two different pacakges. R will retain both, but you will get a warning along the lines of 
+
+```
+"the following object is masked from package:purrr"
+    map
+```
+
+In this case I loaded an installed library `maps` that has a function called `map` that has masked a similarly named function in the also attached package `purrr`. Masking means both functions still exist and are both available, but hierarchy means that the most recently loaded package will take precedence, and so if we simply call `map`, we will get the `map` function from the package `maps`. We can directly call the function we want within a package using the long-hand call of the form `package::function` (*note the double colon*), and it is best practice to always do this when using a non-base loaded package, which is often. The downside is that it reduces readability of code, at least casually, but increases robustness of the code and once you become more experienced it actually increases readability.
+
+So, to call the functions from each package you would use:
+
+```
+maps::map()
+purrr::maps()
+```
 
 
 ### Detach package

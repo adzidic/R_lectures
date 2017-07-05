@@ -235,6 +235,15 @@ Suppose we want to check what class has object mouse.wts.
 class(mouse.wts)
 ```
 
+The `str` function is also useful as it returns a summary of the structure of the object, including information on what class and dimension the object contains.
+
+
+
+```{r}
+str(mouse.wts)
+```
+
+# Summary Statistics
 
 Some basic functions (mean, min, max, summary) to caluculate from both samples
 
