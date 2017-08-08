@@ -14,8 +14,11 @@ output:
 
 # Housekeeping
 
-```{r Housekeeping}
-rm(list=ls()) # remove all objects currently held in the R environment
+Remember that `rm(list=ls())` is not sufficient for a full clean set up of R, and you should use `Ctrl/Cmd-SHIFT-F10` in Rstudio to Restart R cleanly and check that this works at least at the end of your analysis, or periodically during development.
+
+```{r}
+# remove (almost) all objects currently held in the R environment
+rm(list=ls()) 
 ```
 
 # Arrange data in Excel

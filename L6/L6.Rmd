@@ -18,10 +18,13 @@ Script to illustrate scatter plots in R and contains basic instructions on how t
 Data: iris (in-built dataset in R base)
 
 # Housekeeping
-```{r}
-rm(list=ls()) # remove all objects currently held in the R environment
-```
 
+Remember that `rm(list=ls())` is not sufficient for a full clean set up of R, and you should use `Ctrl/Cmd-SHIFT-F10` in Rstudio to Restart R cleanly and check that this works at least at the end of your analysis, or periodically during development.
+
+```{r}
+# remove (almost) all objects currently held in the R environment
+rm(list=ls()) 
+```
 
 In this example we will use the in-built dataset "iris" which gives the measurements in centimeters of the variables sepal length and width and petal length and width, respectively, for 50 flowers from each of 3 species of iris. The species are Iris setosa, versicolor, and virginica.
 

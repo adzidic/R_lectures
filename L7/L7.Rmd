@@ -30,9 +30,12 @@ When producing barplots, keep the following tips in mind:
 •   Viewers might have a hard time understanding vertical charts when there are more than 10 categories. Add a filter to allow the viewer to determine what is comfortable.
 
 # Housekeeping
-```{r}
-rm(list=ls()) # remove everything currently held in the R memory
 
+Remember that `rm(list=ls())` is not sufficient for a full clean set up of R, and you should use `Ctrl/Cmd-SHIFT-F10` in Rstudio to Restart R cleanly and check that this works at least at the end of your analysis, or periodically during development.
+
+```{r}
+# remove (almost) all objects currently held in the R environment
+rm(list=ls()) 
 ```
 
 # Simple barplots

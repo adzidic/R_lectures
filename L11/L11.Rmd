@@ -17,9 +17,11 @@ How to calculate summary statistics of variables, which also includes a quick ex
 
 # Housekeeping
 
+Remember that `rm(list=ls())` is not sufficient for a full clean set up of R, and you should use `Ctrl/Cmd-SHIFT-F10` in Rstudio to Restart R cleanly and check that this works at least at the end of your analysis, or periodically during development.
 
 ```{r}
-rm(list=ls()) # remove everything currently held in the R memory
+# remove (almost) all objects currently held in the R environment
+rm(list=ls()) 
 ```
 
 
@@ -27,7 +29,7 @@ rm(list=ls()) # remove everything currently held in the R memory
 
 #Summary statistics
 
-Generate some summary statistics on the Petal Lengths
+Generate some summary statistics on the Petal Lengths manually
 
 
 ```{r}
@@ -41,9 +43,13 @@ maximum <- max(iris$Petal.Length, na.rm=T)
 minimum <- min(iris$Petal.Length, na.rm=T)
 ```
 
+NAs can cause problems for functions, and many take an optional argument `na.rm` which takes either `TRUE` or `FALSE` and removes the NAs prior to calculating the summary statistic. You need to take care of this as if NAs appear in vectors, they can propagate very easily and break code as you can end up with entire vectors and matrices of NAs where you intend there to be numbers. That said, NAs are often informative (e.g. identifying missing, often partially missing, information), and there are good reasons for keeping them in the vectors and matrices but ignoring them as required. 
 
 ```{r}
+# min of a vector with NA
 min(c(1,5,2,NA,3))
+
+# ingore the NAs
 min(c(1,5,2,NA,3), na.rm=T)
 ```
 
@@ -60,7 +66,7 @@ boxplot(iris$Petal.Length ~ iris$Species)
 mu.sepal.lengths <- aggregate(iris$Petal.Length, by=list(iris$Species), mean)
 mu.sepal.lengths
 # or
-(mu.sepal.lengths <- aggregate(iris$Petal.Length, by=list(iris$Species), mean))
+# (mu.sepal.lengths <- aggregate(iris$Petal.Length, by=list(iris$Species), mean))
 ```
 If you want just simple statistics with build in functions you can use summary function which calculates: 
 
@@ -83,17 +89,17 @@ We could repeat this for all the metrics, but instead, we can write our own func
 
 Let's specify our own function
 ```{r}
-summary.stats <- function (x,...) {
+summaryStats <- function (x,...) {
 
 # "out" will be a vector with names assigned to each entry.
-out <- c( n.obs=length(x),
-          min=min(x),
-          quantile(x,c(0.25,0.5,0.75)),
-          max=max(x),
-          mean=mean(x),
-          sd=sd(x),
-          var=var(x),
-          se=sd(x)/sqrt(length(x))
+out <- c( n.obs = length(x),
+          min   = min(x),
+          qtile = quantile(x,c(0.25,0.5,0.75)),
+          max   = max(x),
+          mean  = mean(x),
+          sd    = sd(x),
+          var   = var(x),
+          se    = sd(x)/sqrt(length(x))
           )
           
 return(out)  # this tells the function what to return as "the answer"
@@ -103,14 +109,16 @@ return(out)  # this tells the function what to return as "the answer"
 
 Let's apply our new function on our vector z.
 ```{r}
-summary.stats(z)
+summaryStats(z)
 ```
 
 
-Now apply our summary.stats() function to the Petal Length data by Species
+Now apply our summaryStats() function to the Petal Length data by Species
 
 ```{r}
-petal.length.summaries <- aggregate(iris$Petal.Length,by=list(iris$Species),summary.stats)
+petal.length.summaries <- aggregate(iris$Petal.Length, 
+                                    by = list(iris$Species), 
+                                    summaryStats)
 petal.length.summaries
 ```
 
@@ -124,23 +132,23 @@ Solution:
 
 
 ```{r}
-summary.stats1 <- function (x,...) {
+summaryStats1 <- function (x,...) {
 
 # "out" will be a vector with names assigned to each entry.
-out <- c( n.obs=length(x),
-          min=min(x),
-          quantile(x,c(0.25,0.5,0.75)),
-          max=max(x),
-          mean=mean(x),
-          sd=sd(x),
-          var=var(x),
-          se=sd(x)/sqrt(length(x)),
-          IQR=IQR(x)
+out <- c( n.obs = length(x),
+          min   = min(x),
+          qtile = quantile(x,c(0.25,0.5,0.75)),
+          max   = max(x),
+          mean  = mean(x),
+          sd    = sd(x),
+          var   = var(x),
+          se    = sd(x)/sqrt(length(x)),
+          IQR = IQR(x)
           )
           
 return(out)  # this tells the function what to return as "the answer"
 }
-sepal.length.summaries <- aggregate(iris$Sepal.Length,by=list(iris$Species),summary.stats1)
+sepal.length.summaries <- aggregate(iris$Sepal.Length,by=list(iris$Species),summaryStats1)
 sepal.length.summaries
 ```
 

@@ -10,7 +10,7 @@
 
 
 
-<meta name="date" content="2017-06-20" />
+<meta name="date" content="2017-07-06" />
 
 <title></title>
 
@@ -129,11 +129,13 @@ $(document).ready(function () {
 <p>How to calculate summary statistics of variables, which also includes a quick explanation of how to write your own functions in R Studio.</p>
 <div id="housekeeping" class="section level1">
 <h1><span class="header-section-number">1</span> Housekeeping</h1>
-<pre class="r"><code>rm(list=ls()) # remove everything currently held in the R memory</code></pre>
+<p>Remember that <code>rm(list=ls())</code> is not sufficient for a full clean set up of R, and you should use <code>Ctrl/Cmd-SHIFT-F10</code> in Rstudio to Restart R cleanly and check that this works at least at the end of your analysis, or periodically during development.</p>
+<pre class="r"><code># remove (almost) all objects currently held in the R environment
+rm(list=ls()) </code></pre>
 </div>
 <div id="summary-statistics" class="section level1">
 <h1><span class="header-section-number">2</span> Summary statistics</h1>
-<p>Generate some summary statistics on the Petal Lengths</p>
+<p>Generate some summary statistics on the Petal Lengths manually</p>
 <pre class="r"><code>mu &lt;- mean(iris$Petal.Length)    # mean
 med &lt;- median(iris$Petal.Length)  # median
 variance &lt;- var(iris$Petal.Length)     # variance
@@ -142,9 +144,12 @@ n &lt;- length(iris$Petal.Length) # the number of observations
 standard.error &lt;- sd(iris$Petal.Length) / sqrt(length(iris$Petal.Length)) # SE of the mean
 maximum &lt;- max(iris$Petal.Length, na.rm=T)
 minimum &lt;- min(iris$Petal.Length, na.rm=T)</code></pre>
-<pre class="r"><code>min(c(1,5,2,NA,3))</code></pre>
+<p>NAs can cause problems for functions, and many take an optional argument <code>na.rm</code> which takes either <code>TRUE</code> or <code>FALSE</code> and removes the NAs prior to calculating the summary statistic. You need to take care of this as if NAs appear in vectors, they can propagate very easily and break code as you can end up with entire vectors and matrices of NAs where you intend there to be numbers. That said, NAs are often informative (e.g. identifying missing, often partially missing, information), and there are good reasons for keeping them in the vectors and matrices but ignoring them as required.</p>
+<pre class="r"><code># min of a vector with NA
+min(c(1,5,2,NA,3))</code></pre>
 <pre><code>## [1] NA</code></pre>
-<pre class="r"><code>min(c(1,5,2,NA,3), na.rm=T)</code></pre>
+<pre class="r"><code># ingore the NAs
+min(c(1,5,2,NA,3), na.rm=T)</code></pre>
 <pre><code>## [1] 1</code></pre>
 <p>But… we probably want to calculate these metrics for each of the three species seperately. Use the function aggregate() to collect the data into subsets associated with each species, and apply a given function to the subset. It probably helps if we have a quick graph of the data as a reference point for these summary statistics. A boxplot does this and i refer you to the associated podcast on boxplots for more information</p>
 <p>To remmeber how did the data look like:</p>
@@ -157,11 +162,7 @@ mu.sepal.lengths</code></pre>
 ## 2 versicolor 4.260
 ## 3  virginica 5.552</code></pre>
 <pre class="r"><code># or
-(mu.sepal.lengths &lt;- aggregate(iris$Petal.Length, by=list(iris$Species), mean))</code></pre>
-<pre><code>##      Group.1     x
-## 1     setosa 1.462
-## 2 versicolor 4.260
-## 3  virginica 5.552</code></pre>
+# (mu.sepal.lengths &lt;- aggregate(iris$Petal.Length, by=list(iris$Species), mean))</code></pre>
 <p>If you want just simple statistics with build in functions you can use summary function which calculates:</p>
 <pre class="r"><code>summary(iris$Petal.Length) # for all Petal lengths</code></pre>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
@@ -185,31 +186,33 @@ z</code></pre>
 <pre><code>## [1] 1 2 4 5</code></pre>
 <p>We could repeat this for all the metrics, but instead, we can write our own function that calculates a series of useful summary statistics on the data.</p>
 <p>Let’s specify our own function</p>
-<pre class="r"><code>summary.stats &lt;- function (x,...) {
+<pre class="r"><code>summaryStats &lt;- function (x,...) {
 
 # &quot;out&quot; will be a vector with names assigned to each entry.
-out &lt;- c( n.obs=length(x),
-          min=min(x),
-          quantile(x,c(0.25,0.5,0.75)),
-          max=max(x),
-          mean=mean(x),
-          sd=sd(x),
-          var=var(x),
-          se=sd(x)/sqrt(length(x))
+out &lt;- c( n.obs = length(x),
+          min   = min(x),
+          qtile = quantile(x,c(0.25,0.5,0.75)),
+          max   = max(x),
+          mean  = mean(x),
+          sd    = sd(x),
+          var   = var(x),
+          se    = sd(x)/sqrt(length(x))
           )
           
 return(out)  # this tells the function what to return as &quot;the answer&quot;
 } # end of function</code></pre>
 <p>Let’s apply our new function on our vector z.</p>
-<pre class="r"><code>summary.stats(z)</code></pre>
-<pre><code>##     n.obs       min       25%       50%       75%       max      mean 
+<pre class="r"><code>summaryStats(z)</code></pre>
+<pre><code>##     n.obs       min qtile.25% qtile.50% qtile.75%       max      mean 
 ## 4.0000000 1.0000000 1.7500000 3.0000000 4.2500000 5.0000000 3.0000000 
 ##        sd       var        se 
 ## 1.8257419 3.3333333 0.9128709</code></pre>
-<p>Now apply our summary.stats() function to the Petal Length data by Species</p>
-<pre class="r"><code>petal.length.summaries &lt;- aggregate(iris$Petal.Length,by=list(iris$Species),summary.stats)
+<p>Now apply our summaryStats() function to the Petal Length data by Species</p>
+<pre class="r"><code>petal.length.summaries &lt;- aggregate(iris$Petal.Length, 
+                                    by = list(iris$Species), 
+                                    summaryStats)
 petal.length.summaries</code></pre>
-<pre><code>##      Group.1     x.n.obs       x.min       x.25%       x.50%       x.75%
+<pre><code>##      Group.1     x.n.obs       x.min x.qtile.25% x.qtile.50% x.qtile.75%
 ## 1     setosa 50.00000000  1.00000000  1.40000000  1.50000000  1.57500000
 ## 2 versicolor 50.00000000  3.00000000  4.00000000  4.35000000  4.60000000
 ## 3  virginica 50.00000000  4.50000000  5.10000000  5.55000000  5.87500000
@@ -223,25 +226,25 @@ petal.length.summaries</code></pre>
 <li>Add interquantile range IQR into your function called summary.stats1 and perform calculation for Sepal.Length and store values into sepal.length.summaries.</li>
 </ol>
 <p>Solution:</p>
-<pre class="r"><code>summary.stats1 &lt;- function (x,...) {
+<pre class="r"><code>summaryStats1 &lt;- function (x,...) {
 
 # &quot;out&quot; will be a vector with names assigned to each entry.
-out &lt;- c( n.obs=length(x),
-          min=min(x),
-          quantile(x,c(0.25,0.5,0.75)),
-          max=max(x),
-          mean=mean(x),
-          sd=sd(x),
-          var=var(x),
-          se=sd(x)/sqrt(length(x)),
-          IQR=IQR(x)
+out &lt;- c( n.obs = length(x),
+          min   = min(x),
+          qtile = quantile(x,c(0.25,0.5,0.75)),
+          max   = max(x),
+          mean  = mean(x),
+          sd    = sd(x),
+          var   = var(x),
+          se    = sd(x)/sqrt(length(x)),
+          IQR = IQR(x)
           )
           
 return(out)  # this tells the function what to return as &quot;the answer&quot;
 }
-sepal.length.summaries &lt;- aggregate(iris$Sepal.Length,by=list(iris$Species),summary.stats1)
+sepal.length.summaries &lt;- aggregate(iris$Sepal.Length,by=list(iris$Species),summaryStats1)
 sepal.length.summaries</code></pre>
-<pre><code>##      Group.1     x.n.obs       x.min       x.25%       x.50%       x.75%
+<pre><code>##      Group.1     x.n.obs       x.min x.qtile.25% x.qtile.50% x.qtile.75%
 ## 1     setosa 50.00000000  4.30000000  4.80000000  5.00000000  5.20000000
 ## 2 versicolor 50.00000000  4.90000000  5.60000000  5.90000000  6.30000000
 ## 3  virginica 50.00000000  4.90000000  6.22500000  6.50000000  6.90000000

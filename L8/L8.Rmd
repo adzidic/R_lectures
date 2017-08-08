@@ -14,10 +14,11 @@ output:
 -----------------------------------------------------------
 # Housekeeping
 
-Remove objects currently held in the environment
+Remember that `rm(list=ls())` is not sufficient for a full clean set up of R, and you should use `Ctrl/Cmd-SHIFT-F10` in Rstudio to Restart R cleanly and check that this works at least at the end of your analysis, or periodically during development.
 
 ```{r}
-rm(list=ls())
+# remove (almost) all objects currently held in the R environment
+rm(list=ls()) 
 ```
 
 #Errorbar plot

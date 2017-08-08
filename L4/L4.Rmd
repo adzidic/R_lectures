@@ -121,6 +121,8 @@ detach("package:siar", unload = TRUE)
 
 ### Remove package
 
+You can remove the entire installation of a package from R if you want to clean up your computer and save some space.
+
 1. Through RStudio packages pane 
 
 If you want to remove some of the packages then you have to press X on the right end side of the name of the package as shown in red rectange on the picture.
@@ -134,6 +136,13 @@ The same can be performed with remove.packages function as follows:
 
 ```{r}
 remove.packages("siar")
+```
+
+It is a good idea to restart your R session after doing this in order to refresh the internal table R holds with information on what packages are installed and available. The following shortcut will achieve this in Rstudio `Ctrl/Cmd-SHIFT-F10` or you can find the same command via the dropdown menu `Session -> Restart R`.
+
+```{r}
+# remove (almost) all objects currently held in the R environment
+rm(list=ls()) 
 ```
 
 
@@ -150,9 +159,16 @@ If you want to update packages you have to click update and RStudio console will
 
 The same can be performed with update.packages function as follows:
 
-```{r}
+```{r, eval=FALSE}
 update.packages() # it will ask you in the console window if you want to update packages with multichoice answer (yes/no/cancel)
 ```
+
+You can force it to ignore the prompt and just go and update using
+
+```{r, eval = FALSE}
+update.packages(ask = FALSE)
+```
+
 
 
 # Help with package installation or removal
