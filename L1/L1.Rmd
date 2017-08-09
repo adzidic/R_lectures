@@ -1,5 +1,5 @@
 ---
-title: "Lecture 1:Opening R for the first time"
+title: "Lecture 1: Opening R for the first time"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 
 output:
@@ -28,7 +28,7 @@ R is free, open-source software, available for all commonly used operating syste
 
 RStudio is an integrated development environment (IDE) for R which works with the standard version of R higher than version 2.11. available from RStudio web-site [RStudion](https://www.rstudio.com/products/rstudio/download/). Source editor for writing scripts, workspae to view objects in the global environment, dataviewer for inspecting elements, searchable command history, plots pane, Rpackage manager, Integrated R help
 
-![RStudio RMarkdown first screen!](../assets/images/RMarkdown_intro.jpg)
+![RStudio RMarkdown first screen!](RMarkdown_intro.jpg)
 
 In Console window you can clearly see the exact version of R software like one on machine that created this Rnotebook (R version 3.3.2 (2016-10-31) -- "Sincere Pumpkin Patch").
 Executive R code is written within Chunk!
@@ -71,11 +71,11 @@ If you are not using RProject default working directory could be set as follows:
 
 First go to Tools and Global options as shown on the picture:
 
-![RStudio Tools Global Options!](../assets/images/Global_options.jpg)
+![RStudio Tools Global Options!](Global_options.jpg)
 
 Then you change RGeneral default working directory (black rectangle), press apply and OK.
 
-![RStudio Tools Working directory!](../assets/images/Working_Directory.jpg)
+![RStudio Tools Working directory!](Working_Directory.jpg)
 
 To check it you can type in:
 ```{r, eval=FALSE}
@@ -205,12 +205,12 @@ Our previously created object `a` is not available in R environment anymore.
 
 #Functions
 
-## Assigning R Objectes with combine function
+## Assigning R Objects with combine function
 
 Suppose we want to make one object with house mouse body weight. 
 We can use **combine** function to do that. Example: `mouse.wts <-c()`. In brackets are measurements divided by comma.
 
-![House mouse!](../assets/images/House_mouse.jpeg)
+![House mouse!](House_mouse.jpeg)
 
 Photo source: [House mouse](https://en.wikipedia.org/wiki/House_mouse)
 ```{r}
@@ -350,18 +350,18 @@ For x values use a sequence of numbers between an arbitrary range of `-2.1` and 
 Solution 1:
 
 ```{r}
-x<-seq(-2.1,6.1,0.1)
-Z<- (x^3-6*x^2+4*x+12)
-plot(x,Z, type="l")
+x <- seq(-2.1, 6.1, 0.1)
+Z1 <- (x^3 - 6 * x^2 + 4 * x + 12)
+plot(Z1 ~ x, type="l")
 ```
 
 2. Now try to plot the same function and call it Z1 with increment for x instead by 0.1 to 1. 
 
 
 ```{r}
-x<-seq(-2.1,6.1,1)
-Z1<- (x^3-6*x^2+4*x+12)
-plot(x,Z1, type="l")
+x <- seq(-2.1, 6.1, 1)
+Z2 <- (x^3 - 6 * x^2 + 4 * x + 12)
+plot(Z2 ~ x, type="l")
 ```
 
 What is the difference in plots?!

@@ -1,5 +1,5 @@
 ---
-title: "Lecture 2:Working with script files"
+title: "Lecture 2: Working with script files"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 
 output:
@@ -137,7 +137,7 @@ cbind(left, right)
 
 ## Boxplot
 
-Boxplot represents centrality, spread and skewnees of the distribution and with a bit of practice and experience summarise a more detailed histogram of the raw data. The main box is the interquartile range (IQR) and contains the middle 50% of the data (i.e. between 25% and 75%-tiles) and the solid black line is the median (50% data above and below this line). The maximum and minimum extent of the whiskers (dotted lines extending out from the box) is either the max and min of the data or 1.5 times the IQR depending on which is lower (by default anyway; you can override this if you want). If there are datapoints beyond this limit they are plotted as stars.
+Boxplot represents centrality, spread and skewnees of the distribution and with a bit of practice and experience summarise a more detailed histogram of the raw data. The main box is the interquartile range (IQR) and contains the middle 50% of the data (i.e. between 25% and 75%-tiles) and the solid black line is the median (50% data above and below this line). The maximum and minimum extent of the whiskers (dotted lines extending out from the box) is either the max and min of the data or 1.5 times the IQR depending on which is lower (by default anyway; you can override this if you want with an additional argument passed to `boxplot()` when you call it). If there are datapoints beyond this limit they are plotted as stars.
 
 ![Boxplot!](boxplot.jpg)
 
@@ -145,19 +145,22 @@ Boxplot represents centrality, spread and skewnees of the distribution and with 
 ```{r Plot your data in R - Boxplot}
 
 # you might want to look at the spread of your data using e.g. a boxplot
-
-boxplot(cbind(left,right))
+# the function cbind() binds two vectors or matrices together by columns
+boxplot( cbind(left, right) )
 
 # open up a new figure for plotting
-boxplot(cbind(left,right), xlab="Hand", ylab="Digit length(mm)")
+boxplot(cbind(left,right), xlab = "Hand", ylab = "Digit length(mm)")
 ```
 
 
 ```{r Plot your data in R - Plot (Scatter plot)}
-# you might want to plot one variable against another
 
-plot(left, right, xlab="Left hand", ylab="Right hand",xlim=c(5.5,9), ylim=c(5.5,9))
-abline (a=0,b=1) # draws a symetric line
+# you might want to plot one variable against another
+plot(left, right, xlab = "Left hand", ylab = "Right hand", 
+     xlim = c(5.5,9), ylim = c(5.5,9))
+
+# draws the 1:1 line of perfect symmetry
+abline(a = 0, b = 1) 
 ```
 
 ## Histrograms
@@ -168,10 +171,23 @@ They explore distribution of a continuous variable in more detail than a boxplot
 hist(left)
 hist(right)
 
-hist(left, breaks=16, col="lightgreen", main="Breaks=16") 
-# with breaks = 16 we define number of bins on x-axis
 
 ```
+
+You can create multi-panel figures using the `par()` function which in its help files lists the many options available for customising plots using the base graphics in R. You can also change aspects of the histograms such as their colour and the number of bins or the location of the bin centres or breaks (see `?hist` for details and examples of these options).
+
+```{r multipanel_histograms}
+
+# set up a multipanel figure. Here with 1 row and 2 columns
+par(mfrow = c(1,2))
+
+# with breaks = 16 we define number of bins on x-axis
+hist(left, breaks = 16, col="lightgreen", main = "Breaks = 16") 
+hist(right, breaks = 16, col="lightblue",  main = "Breaks = 16") 
+
+
+```
+
 
 # Summary statistics in R
 
@@ -190,14 +206,14 @@ ls() # see all the objects present in R
 save( list=ls(), file="finger_data.rdata" )
 ```
 
-**IMPORTANT: As seen in the Second R Markdown script file it is important to make comments with # sign in the R code chunk. It is even important for yourself, while you cannot e-mail to yourself in the past! (Qoute: Hadley Wickham)**
+**IMPORTANT: As seen in the Second R Markdown script file it is important to make comments with # sign in the R code chunk. It is even important for yourself, while you cannot e-mail to yourself in the past! (Quote: Hadley Wickham)**
 
 #Assignment 1
 
 1. Measure your left and right fingers 
 2. Create two variables:
-left.yourfirstname <- (Thumb, Index finger, Middle finger, Ring finger and Little finger)
-right.yourfirstname <- (Thumb, Index finger, Middle finger, Ring finger and Little finger)
+left_yourfirstname <- (Thumb, Index finger, Middle finger, Ring finger and Little finger)
+right_yourfirstname <- (Thumb, Index finger, Middle finger, Ring finger and Little finger)
 3. Make summary statistics
 4. Plot your data
 5. Explain results!
