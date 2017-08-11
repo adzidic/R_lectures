@@ -80,7 +80,7 @@ You can save R Markdows using FILE - SAVE AS.
 
 ** Remember that R Markdown file has an .Rmd extension **
 
-*Good name for the file would be Lession_2.Rmd - use undescore insted of space*
+*Good name for the file would be Lession_2.Rmd - use underscore instead of space*
 
 When you write text within body of R Markdown it remains as a text, but if you want to write text within R code chunk you have to add # (hash tag) like in ordinary R script.
 
@@ -184,10 +184,10 @@ Boxplot represents centrality, spread and skewnees of the distribution and with 
 
 # you might want to look at the spread of your data using e.g. a boxplot
 # the function cbind() binds two vectors or matrices together by columns
-boxplot( cbind(left, right) )
+boxplot( fingers ~ hand )
 
 # open up a new figure for plotting
-boxplot(cbind(left,right), xlab = "Hand", ylab = "Digit length(mm)")
+boxplot(fingers ~ hand, xlab = "Hand", ylab = "Digit length (cm)")
 ```
 
 Given these data are paired, that is I have the same finger on each hand, we can plot them in a pairwise manner with each hand plotted against the other.
@@ -195,10 +195,11 @@ Given these data are paired, that is I have the same finger on each hand, we can
 ```{r scatter_plot}
 
 # set the figure plot type (pty) to be square
+# ?par for more help and options
 par(pty = "s")
 
 # you might want to plot one variable against another
-plot(left, right, xlab = "Left hand", ylab = "Right hand", 
+plot(right ~ left, xlab = "Left hand", ylab = "Right hand", 
      xlim = c(5,10), ylim = c(5,10), asp = 1)
 
 # draws the 1:1 line of perfect symmetry
@@ -251,7 +252,7 @@ Note the `eval = FALSE` argument in the r-chunk which means this is code is not 
 # The "list=" command tells us which variables we want to save
 # The "file=" option tells us what file to save the data to
 ls() # see all the objects present in R
-save( list=ls(), file="finger_data.rdata" )
+save( list = ls(), file = "L2/finger_data.rdata" )
 ```
 
 **IMPORTANT: As seen in this Second R Markdown script file it is important to make comments with # sign in the R code chunk. It is even important for yourself, while you cannot e-mail to yourself in the past! (Quote: Hadley Wickham)**
