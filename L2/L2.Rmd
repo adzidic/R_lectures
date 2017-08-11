@@ -16,16 +16,20 @@ output:
 
 Press CRTL + L and all the content will be deleted in the CONSOLE window!
 
-## Open a folder on your S: DRIVE
+## Create a folder on your local computer
 
-1. Create a new folder on your S: DRIVE
+1. For those in my statistics modules in TCD, you might create a new folder on your student storayge S: DRIVE so that you can access these files from any college computer. Otherwise you might choose a sensible location on your own laptop or desktop depending on how you like to work.
 2. Make subfolders for each lesson or project you have
+3. As you create these subfolders for different analyses, create a new `Rproject` file using Rstudio's dropdown menu `File` then `New Project...` and either `New Directory` if you have not already created a specific sub-folder in which to work or `Existing Directory` if you have created a folder for your project. 
 
-## How to create R code chunks in RMarkdown document
 
-To create new chunk to write R code on Mac press: *OPTION-CMD-I* and on Windows machine: *Ctrl+Alt+I*
+## A note onworking directories in R
 
-## Change working directory in R
+Like many similar packages, R does not have omniscient knowledge of your computer and its contents. It will look for files and write new files by default to wherever its current working directory is set. If you open a blank R studio (or blank R GUI) instance it will default to wherever is set in the global options: typically your local home directory. Changing the location of the `files` pane in Rstudio **_does not_** change the working directory and so you may have difficulty loading data files, or finding any figures or outputs you have saved.
+
+Generally speaking, if you have created an `Rproject` as we recommend, then this issue of setting working directories should never arise for you. Instead, you can open a specific `Rproject` by double clicking on the `*.Rproject` file in a finder or folder browswer window, or by choosing `File`, `Open Project` from Rstudio's dropdown menu, or via the icon in the top right corner of your Rstudio application.
+
+So, while we will run through this here so you are aware of it, the advice is not to do this, at least if you use Rstudio. If you use the standard R GUI then you will need to set your working directory for each analysis and you may need to change the location if you move between computers: this is another great feature of the Rproject approach which means you can share projects between computers, and even between operating systems.
 
 To see your current directory use function:
 
@@ -50,8 +54,7 @@ on MAC: Use (Session | Set Working Directory on a mac)
 
 ![Change directory on MAC !](Setting_working_directory_on_MAC_2.png)
 
-Navigation within the Files pane alone will not change the working directory. First you have to select folder and then set it as a working directory.
-
+3. Using the `Files` pane, navigate to the folder you want and then select the dropdown menu `More` and then `Set as Working Directory`.
 
 
 ## Open a new R Markdown document
@@ -81,10 +84,12 @@ You can save R Markdows using FILE - SAVE AS.
 
 When you write text within body of R Markdown it remains as a text, but if you want to write text within R code chunk you have to add # (hash tag) like in ordinary R script.
 
+To create new chunk to write R code on Mac press: *OPTION-CMD-I* and on Windows machine: *Ctrl+Alt+I*
+
 
 # Object input in R Markdown script
 
-```{r First input}
+```{r shopping_list}
 apples <-0.46
 oranges <- 0.89
 bananas <- 0.75
@@ -101,23 +106,23 @@ How to execute chunk in R Markdown document
 
 1. Press small green arrow in the right corner of the R code chunk as shown on picture:
 
-![Run R code chunk in R Markdown document on MAC !](L_2_R_Markdown.jpg)
+![Run R code chunk in R Markdown document on MAC !](L_2_R_Markdown.png)
 
 
 If we want to execute commands line by line we would point to the line of code within R code chunk and in Windows press CTRL + R, and on Mac CMD + ENTER.
 
 
 
-```{r Enter your data in R}
+```{r enter_data}
 
 # Some Housekeeping
 
-rm(list=ls()) # remove everything currently held in the R memory
+rm(list=ls()) # remove objects currently held in the environment
 
 # These are the lengths of my digits on my left and right hands
 # measures in mm.
 
-left <- c(5.8, 7.5, 8.5, 7.3, 5.8)
+left <- c(5.8, 7.5, 8.5, 7.3, 5.7)
 left
 right <- c(5.7, 7.3, 8.3, 7.0, 5.6)
 right
@@ -135,14 +140,47 @@ cbind(left, right)
 ```
 # Plotting in R
 
+## Scatterplot
+
+All plots of data ultimately boil down to scatter plots, with each data point (datum) located somewhere in (usually) 2-dimensional space. To plot the finger length data as we have it currently encoded needs a bit of additional manipulation and organisation. In this example, we are still just making basic figures, as we will learn later how to customise them to improve their appearance: an absolutely essential task if you are to effectively communicate your data and your scientific narrative..
+
+```{r scatter_fingers}
+
+# bundle the fingers together into a single vector by concatenating them
+fingers <- c(left, right)
+
+# now create a vector of codes that identify them as left and right.
+# This is done using both the rep() function which replicates an entry 
+# a specified number of times, and the concatentate function to put them 
+# together, which we do in one line of code. In this example, the first 
+# 5 fingers are on the left hand which we will encode as "1", 
+# and the next 5 are on the right which we will encode as "2".
+hand <- c( rep(1, 5) , rep(2, 5) )
+
+# and now we can plot the raw data points as a scatter plot, grouped by each 
+# hand. 
+
+plot(fingers ~ hand)
+
+# We need to give the graph some extra space to make it easier to see.
+# We can do this by increasing the x axis limits. The axis labels and tick 
+# labels are still awful, but we will learn in a later podcast how to 
+# tidy a figure like this up.
+plot(fingers ~ hand, xlim = c(0, 3))
+
+```
+
+
 ## Boxplot
+
+The scatter plots above are a useful and appropriate way to present data when we do not have very many data points and when they do not overlap much. With a larger number of data points, it becomes useful to summarise their distribution and there are variety of options for doing so: the boxplot is a common and relatively easy and quick way to do this.
 
 Boxplot represents centrality, spread and skewnees of the distribution and with a bit of practice and experience summarise a more detailed histogram of the raw data. The main box is the interquartile range (IQR) and contains the middle 50% of the data (i.e. between 25% and 75%-tiles) and the solid black line is the median (50% data above and below this line). The maximum and minimum extent of the whiskers (dotted lines extending out from the box) is either the max and min of the data or 1.5 times the IQR depending on which is lower (by default anyway; you can override this if you want with an additional argument passed to `boxplot()` when you call it). If there are datapoints beyond this limit they are plotted as stars.
 
 ![Boxplot!](boxplot.jpg)
 
 
-```{r Plot your data in R - Boxplot}
+```{r boxplot}
 
 # you might want to look at the spread of your data using e.g. a boxplot
 # the function cbind() binds two vectors or matrices together by columns
@@ -152,22 +190,28 @@ boxplot( cbind(left, right) )
 boxplot(cbind(left,right), xlab = "Hand", ylab = "Digit length(mm)")
 ```
 
+Given these data are paired, that is I have the same finger on each hand, we can plot them in a pairwise manner with each hand plotted against the other.
 
-```{r Plot your data in R - Plot (Scatter plot)}
+```{r scatter_plot}
+
+# set the figure plot type (pty) to be square
+par(pty = "s")
 
 # you might want to plot one variable against another
 plot(left, right, xlab = "Left hand", ylab = "Right hand", 
-     xlim = c(5.5,9), ylim = c(5.5,9))
+     xlim = c(5,10), ylim = c(5,10), asp = 1)
 
 # draws the 1:1 line of perfect symmetry
+# Specifically abline() takes abline(a = intercept, b = slope) and 
+# adds it to the figure.
 abline(a = 0, b = 1) 
 ```
 
-## Histrograms
+## Histograms
 
 They explore distribution of a continuous variable in more detail than a boxplot. It is always good to explore with the bins to get a more complete undestanding of the distribution.
 
-```{r Plot your data in R - Plot histogram}
+```{r histograms}
 hist(left)
 hist(right)
 
@@ -191,13 +235,17 @@ hist(right, breaks = 16, col="lightblue",  main = "Breaks = 16")
 
 # Summary statistics in R
 
-```{r Summary statistics in R}
+```{r summaries}
 summary(left)
 summary(right)
 ```
 # Save data in R
 
-```{r Save data after session in R}
+I do not usually recommend saving a copy of all the objects in your environment after an analysis. It is better to save the instructions used to perform the analysis in a script, rather than the results. This way, you have a 1:1 mapping of a set of instructions to an output and this will make checking for errors and sharing your work much easier. There are occasions when it makes sense to save some (or even all) objects to file, such as at the end of an analysis that takes a very long time to run and you dont want to repeat it every time you want the output, or if the objects are very large and you want to save them to disk for later recall and clear them from the memory as you proceed.
+
+Note the `eval = FALSE` argument in the r-chunk which means this is code is not actually evaluated in the R console.
+
+```{r save_data, eval = FALSE}
 # Save your data (only if you want)
 
 # The "list=" command tells us which variables we want to save
@@ -206,7 +254,7 @@ ls() # see all the objects present in R
 save( list=ls(), file="finger_data.rdata" )
 ```
 
-**IMPORTANT: As seen in the Second R Markdown script file it is important to make comments with # sign in the R code chunk. It is even important for yourself, while you cannot e-mail to yourself in the past! (Quote: Hadley Wickham)**
+**IMPORTANT: As seen in this Second R Markdown script file it is important to make comments with # sign in the R code chunk. It is even important for yourself, while you cannot e-mail to yourself in the past! (Quote: Hadley Wickham)**
 
 #Assignment 1
 
