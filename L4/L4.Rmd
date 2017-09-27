@@ -105,7 +105,7 @@ detach("package:siar", unload=TRUE)
 
 ![R package uncheck box !](Uncheck_box.jpg)
 
-However if you want to deinstall package bayesm that is required by package siar you will receive following notice:
+However if you want to uninstall package bayesm that is required by package siar you will receive following notice:
 
 package ‘bayesm’ is required by ‘siar’ so will not be detached
 

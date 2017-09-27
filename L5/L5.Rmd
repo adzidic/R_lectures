@@ -101,6 +101,7 @@ hist(iris$Petal.Length, freq=FALSE, ylim=c(0, 0.6), main="Main title", xlab="Pet
 hist(iris$Petal.Length, freq=FALSE, ylim=c(0, 0.6), main="Main title", xlab="Petal length \n (cm)", ylab="Density", las=1)
 lines(density(iris$Petal.Length), col=2, lwd=3)
 ```
+
 ## Adding normal distribution plot
 
 ```{r}

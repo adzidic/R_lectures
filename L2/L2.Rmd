@@ -78,7 +78,7 @@ summary(cars)
 
 You can save R Markdows using FILE - SAVE AS.
 
-** Remember that R Markdown file has an .Rmd extension **
+** Remember that an R Markdown file has a .Rmd extension **
 
 *Good name for the file would be Lession_2.Rmd - use underscore instead of space*
 
