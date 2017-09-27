@@ -25,9 +25,9 @@ rm(list=ls())
 
 Arrange your data in Excel. 
 Save your data under other formats option in Excel as a .csv (comma separated values) file. 
-*Remember that name of the variable finger lenght should be written either as finger.length or finger_lenght, but not finger length!*
+*Remember that name of the variable finger length should be written either as finger.length or finger_lenght, but not "finger length" as R will add in "." in place of the white spaces on your behalf.*
 
-Change original file to modified file in Excel as follows:
+Change original file which is formatted in the "wide" format to modified file which is in the "long" format in Excel. It is generally much better practice to have each row represent a unique observation, which in this case is each of the 10 digits on my hands. There are other ways to tidy data like this directly in R which we may get on to in later podcasts that use the additional package [tidyr](https://blog.rstudio.com/2014/07/22/introducing-tidyr/). If you want to play around with this package remember you can install it via the code `install.packages("tidyr")`.
 
 ![Original file!](Original_file.png)
 
@@ -35,7 +35,7 @@ Change original file to modified file in Excel as follows:
 ![Modified file!](Modified_file.png)
 
 
-After you file has been arranged put it in the working directory. To see all the files in the working directory use:
+After you file has been re-arranged put it in the current working directory. To see all the files in the working directory use:
 ```{r}
 dir()
 ```
@@ -59,18 +59,23 @@ Then all non-numeric values will be stored as character and with function as.fac
 
 
 ```{r Importing finger_length.csv in R}
-mydata <- read.csv("finger_lengths.csv", header = TRUE)#Be sure your file is in the R working directory!!!
+#Be sure your file is in your current R working directory!!!
+mydata <- read.csv("finger_lengths.csv", header = TRUE)
 mydata
 ```
 
-*Note the use of the square brackets when addressing arrays [ , ]* - FIRST ROWS THEN COLUMNS! I (AJ) was taught in school to remember this as *Roman Catholic = RC*: I've never mixed them up.
+*Note the use of the square brackets when addressing arrays or matrices [ , ]* - FIRST ROWS THEN COLUMNS! I (AJ) was taught in school to remember this as *Roman Catholic = RC*: I've never mixed them up since.
 ```{r}
+
+# interrogate the entries directly by index address
 mydata[1,1] # extract the element of the first row and column
 mydata[1,2] # extract the element of the first row and second column
 mydata[1,3] # extract the element of the first row and third column
-mydata[ ,3] # extract the elements of the third column
-mydata[, c(1, 3)] # extract the elements of the first and third column
-mydata[, c(-1, -3)] # extract all elements except first and third column
+mydata[ ,3] # extract all the row elements of the third column
+mydata[, c(1, 3)] # extract all the row elements of the first and third column
+mydata[, c(-1, -3)] # extract all row elements except first and third column
+
+# using the $ notation
 mydata$digit #extract all values for the variable digit
 mydata$hand  #extract all values for the variable hand
 mydata$finger.length  #extract all values for the variable finger.length
@@ -110,7 +115,10 @@ head(SwissSquirrels)
 Return to the finger length dataset we built.
 
 ```{r}
-boxplot(finger.length~hand, xlab="Hand", ylab="digit length(mm)", data=mydata) # Finger.length on y axis and hand on x axis
+
+# Finger.length on y axis and hand on x axis
+boxplot(finger.length ~ hand, data = mydata,
+        xlab="Hand", ylab="digit length(mm)") 
 
 ```
 
@@ -124,11 +132,11 @@ save( list=ls(), file="finger_data.rdata" )
 
 **ASSIGNMENT**
 
-1. Find built in dataset PlantGrowth and make boxplot for each of the treatment groups.
-What is your conclusion about treatment groups applied?
+1. Locate the built-in dataset PlantGrowth and make a boxplot for each of the treatment groups.
+What is your conclusion about how the different treatment applications affect growth?
 
 
-```{r}
+```{r assignment, echo = FALSE, show = FALSE, include = FALSE}
 #Solution
-boxplot(weight~group, xlab="Group", ylab="weight", data=PlantGrowth)
+boxplot(weight ~ group, xlab="Group", ylab="weight", data=PlantGrowth)
 ```
