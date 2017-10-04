@@ -24,7 +24,7 @@ If you want to see all installed packages you could use function installed.packa
 
 Packages can be installed from anywhere, as long as you have access to the source or binary (compiled) folder containing the package. In order to keep some quality control over user-submitted packages (at least structural quality control) the official repository is hosted by [CRAN](https://cran.r-project.org) and this tutorial will focus on installing from this location. [GitHub](https://github.com) is another popular location for packages and many of them host the raw and development code here and push occasional stable releases to CRAN. Some packages though are not available on CRAN and instead push releases to GitHub. Equally, you may find packages hosted elsewhere, and you could download a copmressed, usually *.zip, folder and install as a local packge. Ultimately, there is no guarantee that any of the code in these packages is actually correct, error free or even doing what you intend, and so, as with R itself, you use them under your own cogniscance.
 
-```{r installed.packages}
+```{r installed.packages, eval = FALSE}
 #installed.packages() - there are a lot of packages, therefore it is mentioned here as a comment
 ```
 
@@ -61,7 +61,7 @@ Type in the name of the package you want to install and press Install button.
 2. Directly with code
 
 You can install packages directly with code, first you define cran, then package to install and with library at the end you are uploading the package to R
-```{r}
+```{r, eval = FALSE}
 options(repos=c(CRAN="https://ftp.heanet.ie/mirrors/cran.r-project.org/"))
 install.packages('siar') # Be aware that R is case sensitive!
 library('siar')
@@ -114,7 +114,7 @@ package ‘bayesm’ is required by ‘siar’ so will not be detached
 
 You can do the same with function detach as follows:
 
-```{r}
+```{r, eval = FALSE}
 detach("package:siar", unload = TRUE)
 ```
 
@@ -134,7 +134,7 @@ If you want to remove some of the packages then you have to press X on the right
 
 The same can be performed with remove.packages function as follows:
 
-```{r}
+```{r, eval = FALSE}
 remove.packages("siar")
 ```
 

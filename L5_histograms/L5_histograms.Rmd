@@ -1,0 +1,287 @@
+---
+title: "Lecture 5: Histograms"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+
+output:
+   html_document:
+     theme: flatly
+     toc: true
+     toc_depth: 4
+     number_sections: yes
+     
+---
+# Housekeeping
+
+Remember that `rm(list=ls())` is not sufficient for a full clean set up of R, and you should use `Ctrl/Cmd-SHIFT-F10` in Rstudio to Restart R cleanly and check that this works at least at the end of your analysis, or periodically during development.
+
+```{r}
+# remove (almost) all objects currently held in the R environment
+rm(list=ls()) 
+```
+
+# Histogram
+
+Histrograms are used to present distribution of continous variable. The accuracy of a histogram depend on the widths of the intervals to bin the data.
+
+# Finding and explore some basic data
+
+We will use the in-built dataset `iris` for this lesson.
+
+```{r}
+
+# load the iris dataset
+data("iris")
+
+# help for data set iris
+?iris 
+
+# display first six rows of the iris data set
+head(iris) 
+
+# extract the structure of iris
+str(iris)
+```
+
+
+# Plot a frequency histogram of your data and inspect histogram data
+
+In our first histogram petal length in iris dataframe is shown. On the y-axis there is a frequency or number of observations in each bin.
+```{r}
+hist(iris$Petal.Length)
+
+```
+
+These are the counts of how many times data were located between the breaks of each bin. We can visualise this by overlaying the raw data points as an excercise (we usually wouldnt actually do this for a paper for example). In order to help with spreading out the data in the vertical direction, I have used the `jitter()` function to add some random noise or jitter to the points.
+
+```{r jitter-raw-data}
+
+# create a histogram plot and store the associated details in an object 
+# for recall
+histInformation <- hist(iris$Petal.Length)
+
+# Petal.length data plotted along the x-axis. The y-axis is arbitratirly 
+# centered at 2, and with a jitter of amount = 1 around this.
+points(x = iris$Petal.Length, 
+       y = jitter(rep(2,length(iris$Petal.Length)), amount = 2),
+       cex = 0.75)
+
+# displays information about histogram
+histInformation 
+
+
+```
+
+
+# Plot a density histogram of your data
+
+The option freq=FALSE or prob= TRUE creates a plot based on probability densities rather than frequencies. 
+
+```{r}
+
+# A density histogram
+hist(iris$Petal.Length, freq = FALSE) 
+
+# Another way to make the same density histogram
+hist(iris$Petal.Length, prob = TRUE)
+```
+# Histogram additional options
+
+## Changing the number of the bins (break OPTION)
+
+Bin could be defined in histrogram with break option. Smaller bin result that distribution is more visible. However, to small bins result in presenting too much detail. The default value for breaks option in histogram is breaks = "Sturges". One of the ways to calculate it is The Freedman-Diaconis rule stating h=2∗IQR∗n−1/3. In base R you could use hist(x,breaks="FD"). The bins don’t correspond to exactly the number you put in, because of the way R runs its algorithm to break up the data.
+```{r}
+
+# set up our figure window as a multi panel plot, with 2 rows and 3 columns.
+# We have 6 plots to fit in below.
+par(mfrow = c(2,3))
+
+hist(iris$Petal.Length, freq=FALSE,  breaks = 20, main = "20 breaks")
+hist(iris$Petal.Length, freq=FALSE,  breaks = 50, main = "50 breaks")
+hist(iris$Petal.Length, freq=FALSE,  breaks = "Sturges", main = "Sturges")
+hist(iris$Petal.Length, freq=FALSE,  breaks = "FD", main = "FD")
+hist(iris$Petal.Length, freq=FALSE,  breaks = seq(from=0, to=10, by=2), 
+     main = "Breaks every 2 units")
+
+# exact 10 bins - remember number of bins is n+1
+hist(iris$Petal.Length, freq = FALSE,
+     breaks = seq(min(iris$Petal.Length), 
+                  max(iris$Petal.Length), 
+                  length.out = 11), main = "10 bins") 
+
+
+# set the figure back to a 1x1 pabel plot for subsequent plots
+par(mfrow = c(1,1))
+
+```
+
+
+
+
+## Adding Y axis limits (ylim OPTION)
+
+If you want to specify y axis limits you can do this with *ylim* option:
+
+```{r}
+hist(iris$Petal.Length, freq=FALSE, ylim=c(0, 0.6))
+```
+
+## Main title (main OPTION)
+
+*Main* is the plotting option to put a title on a graph
+
+```{r}
+# in one line
+hist(iris$Petal.Length, freq=FALSE, ylim=c(0, 0.6), main="Main title") 
+
+# in two lines
+hist(iris$Petal.Length, freq=FALSE, ylim=c(0, 0.6), main="Main \n title") 
+```
+
+## Add axis labeling (xlab, ylab OPTION)
+```{r}
+hist(iris$Petal.Length, freq=FALSE, ylim=c(0, 0.6), main="Main title", 
+     xlab="Petal length \n (cm)", ylab="Density")
+```
+
+## Y axis text orientation (las OPTION)
+
+```{r}
+hist(iris$Petal.Length, freq=FALSE, ylim=c(0, 0.6), main="Main title", 
+     xlab="Petal length \n (cm)", ylab="Density", las=1)
+```
+
+## Adding a density plot
+
+```{r}
+hist(iris$Petal.Length, freq=FALSE, ylim=c(0, 0.6), main="Main title", 
+     xlab="Petal length \n (cm)", ylab="Density", las=1)
+
+# add a line based on the density() function's interpretation
+lines(density(iris$Petal.Length), col = "red", lwd = 3)
+```
+
+## Adding normal distribution plot
+
+```{r}
+hist(iris$Petal.Length, prob=TRUE)
+
+# generate a sequence over which to evaluate the normal distribution curve
+x <- seq(1, 7, 0.01) 
+
+# Evaluate the normal distribution density curve function over this range
+# with a mean of the data and a standard deviation of the data
+y <- dnorm(x, mean=mean(iris$Petal.Length), sd=sd(iris$Petal.Length))
+
+# add this as a line to the plot
+lines(y ~ x)
+
+```
+
+## Adding number of counts for each bin
+
+```{r}
+hist(iris$Petal.Length, freq = FALSE, main="Main title", 
+     xlab="Petal length \n (cm)", 
+     ylab="Density", las = 1, labels = TRUE, ylim = c(0, 0.6))
+
+```
+
+
+## Adding median and mean to the histogram
+
+```{r}
+hist(iris$Petal.Length, freq=FALSE, breaks = 30, 
+     main = "Petal length histogram", 
+     xlab ="Petal length \n (cm)", ylim=c(0, 0.8), 
+     las = 1, col = "grey")
+
+# add a vertical line to the figure, using abline(v=...)
+# lty = 1 (solid line), lty = 2 (dashed line), lty = 3 (dotted line)
+abline(v = c(mean(iris$Petal.Length), median(iris$Petal.Length)), 
+       lty=c(1, 3), lwd =2) 
+
+# add a legend to the topright of the figure
+legend("topright", legend=c("mean Petal length", "median Petal length"), 
+       lty=c(1,3), lwd =2, bty = "n")
+
+# print these values to screen for information
+mean(iris$Petal.Length)
+median(iris$Petal.Length)
+```
+
+
+## Plotting by Species, not all at once
+
+The easiest way to achieve histograms by species (we have three categories in this example), is to extract only the elements which satisfy a defined condition. In this case, `iris$Species == "setosa"` returns `TRUE` where this condition is indeed true, and otherwise returns `FALSE`. When plotting them, R then only plots the elements for which the corresponding values are `TRUE`. This is an essential part of a coder's repertoire.
+
+```{r}
+# convince ourselves that the conditional statements work as expected.
+iris$Species=="setosa"
+
+
+par(mfrow=c(2,2)) # specify a 2x2 panel plot
+
+hist(iris$Petal.Length[iris$Species=="setosa"],  main="setosa", 
+     xlab="Petal Length (cm)", ylab="Frequency")
+
+hist(iris$Petal.Length[iris$Species=="versicolor"], main="versicolor", 
+     xlab="Petal Length (cm)", ylab="Frequency")
+
+hist(iris$Petal.Length[iris$Species=="virginica"], main="virginica", 
+     xlab="Petal Length (cm)", ylab="Frequency")
+```
+
+**NOTE** `==` is interpreted as "is it equal to?", *not* "is equal to"!
+
+
+THE SAME DATA SHOULD BE PRESENTED LIKE THIS - same x and y axis to compare data distribution between species.
+
+```{r, fig.height=12}
+par(mfrow=c(3,1)) # specify a 3x1 panel plot
+
+# Species == setosa
+hist(iris$Petal.Length[iris$Species=="setosa"], breaks=seq(0,7,0.25),
+      main="setosa", xlab="", ylab="", cex.lab=1.5, ylim=c(0, 40), 
+     las=1, col="lightgrey")
+
+# Species == versicolor
+hist(iris$Petal.Length[iris$Species=="versicolor"], breaks=seq(0,7,0.25),
+      main="versicolor", xlab="", ylab="Frequency", ylim=c(0, 40), 
+     las=1, cex.lab=1.5, col="lightgrey")
+
+# Species == virginica
+hist(iris$Petal.Length[iris$Species=="virginica"], breaks=seq(0,7,0.25),
+      main="virginica", xlab="Petal Length (cm)", ylab="", ylim=c(0, 40), 
+     las=1, cex.lab=1.5, col="lightgrey")
+
+
+```
+
+
+# Save your histogram
+
+If you want to save your image, you can save it as a image (png, jpeg, tiff, bmp, svg, eps), or pdf or save it to the clipboard as 
+![Save_histogram!](save_histogram.jpg)
+
+
+
+
+
+ASSIGNMENT 1:
+
+From the MASS package create four histograms one above the other (use par function) for each litter (A, B, I and J) from the genotype data set.
+Each histogram should have density function, bins from 30 to 70 divided into length of 10 with labels and y - axis scaling from 0 to 0.2, x -axis label should be weight and colours for Litter A - green, Litter B - blue, Litter I - red and Litter J - brown.
+
+*Solution*
+```{r assignment, include=FALSE}
+library(MASS)
+par(mfrow=c(3, 1))
+hist(PlantGrowth$weight[PlantGrowth$group=="ctrl"], main="Group ctrl", freq=FALSE, breaks=seq(3,7,1),  labels=TRUE, ylim=c(0, 1), xlab="Weight",col="gray")
+hist(PlantGrowth$weight[PlantGrowth$group=="trt1"], main="Group trt1", freq=FALSE, breaks=seq(3,7,1),  labels=TRUE, ylim=c(0, 1), xlab="Weight",col="gray")
+hist(PlantGrowth$weight[PlantGrowth$group=="trt2"], main="Group trt2", freq=FALSE, breaks=seq(3,7,1),  labels=TRUE, ylim=c(0, 1), xlab="Weight",col="gray")
+```
+
+
+
+
+
