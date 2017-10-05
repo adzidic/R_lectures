@@ -33,7 +33,10 @@ See ?iris for more information.
 # Help on file
 
 ```{r}
-head(iris)
+data("iris")
+str(iris)
+
+
 # help(iris) or ?iris will give you mor information about the data set
 ?plot # info about plot function
 ```
@@ -74,19 +77,41 @@ Now tidy up the labels and make the fonts bigger and add a line of best fit thro
 
 ```{r}
 plot( Petal.Length ~ Petal.Width, data = iris,
-        xlab="Petal Width (cm)", ylab="Petal Length (cm)", pch=20 ,
-        cex.lab=1.5, cex.axis=1.5, cex=1.2,
-        bty="L", las=1, tcl=0.5 ) # xlab - specifies the name of the x axis label and ylab specifies the name of the y axis label; pch specifies type of point we use - pch=20 is small round dot; cex - character expansion (labels, axis and points), bty - box type. las numeric in {0,1,2,3}; the style of axis labels. 0: always parallel to the axis [default], 1: always horizontal, 2: always perpendicular to the axis, 3: always vertical. tlc - The length of tick marks as a fraction of the height of a line of text. The default value is -0.5; setting tcl = NA sets tck = -0.01 which is S' default.
-abline(lm(Petal.Length~Petal.Width, data=iris),col="black", lwd=2, lty=1)
+        xlab="Petal Width (cm)", ylab="Petal Length (cm)", pch = 20 ,
+        cex.lab = 1.5, cex.axis = 1.5, cex = 1.2,
+        bty = "L", las = 1, tcl = 0.5 ) 
+
+# xlab - specifies the name of the x axis label
+# ylab specifies the name of the y axis label; 
+# pch specifies type of point we use - pch=20 is small round dot; 
+# cex - character expansion (labels, axis and points), 
+# bty - box type. 
+# las numeric in {0,1,2,3}; the style of axis labels. 
+#    0: always parallel to the axis [default], 
+#    1: always horizontal, 
+#    2: always perpendicular to the axis, 
+#    3: always vertical. 
+# tlc - The length of tick marks as a fraction of the height of a line of text. 
+#    The default value is -0.5; 
+#    setting tcl = NA sets tck = -0.01 which is the default.
+
+# fit a simple linear model to the data
+m1 <- lm(Petal.Length ~ Petal.Width, data = iris)
+
+# add a line representing this linear model
+abline(m1, col = "black", lwd = 2, lty = 1)
 ```
 
 
 # Help on graph settings
 
-```{r}
+You can use these lines to get help on the common plotting functions. They are not evaluated as part of this document.
+
+```{r, eval = FALSE}
 
 ?par
 ?points
+?lines
 ```
 
 # Graph with different species in colour
@@ -99,53 +124,41 @@ This graph include information on the different species and now tidy up the labe
 my.colors <- c("black","blue","green")
 
 # define a custom sequence of point types to use
-my.points <- c(16,17,18)
+my.points <- c(16, 17, 18)
 
 # display levels of variable Species within iris data set
 levels(iris$Species) 
 
 # generate the plot with colours and points by species
 plot( Petal.Length ~ Petal.Width, data = iris, 
-      col=my.colors[iris$Species], 
-      pch=my.points[iris$Species], 
+      col = my.colors[Species], 
+      pch = my.points[Species], 
       xlab="Petal Width (cm)", ylab="Petal Length (cm)",
-      cex.lab=1.5, cex.axis=1.5, cex=1.2,
+      cex.lab = 1.5, cex.axis = 1.5, cex = 1.2,
       bty="L", las=1, tcl=0.5 )
 
 # a legend to the plot
-legend("topleft", levels(iris$Species), col=my.colors, pch=my.points, lty=0, bty="n",
-        cex=1.5) # bty = "n" means no box around legend
+legend("topleft", levels(iris$Species), col=my.colors, 
+       pch=my.points, lty=0, bty="n",cex=1.5) 
 
 # add horizontal lines for each of the species' petal lengths
-abline(h=mean(iris$Petal.Length[iris$Species=="virginica"]), col="green", lty=2)
-abline(h=mean(iris$Petal.Length[iris$Species=="versicolor"]), col="blue", lty=2)
-abline(h=mean(iris$Petal.Length[iris$Species=="setosa"]), col="black", lty=2)
-# palette()
-# colors()
+abline(h = mean(iris$Petal.Length[iris$Species=="virginica"]), 
+       col="green", lty=2)
 
-# add some text to the figure in glorious peachpuff4
-text(1.5,2,labels="this graph pwns", col="peachpuff4",cex=2 ) 
+abline(h=mean(iris$Petal.Length[iris$Species=="versicolor"]), 
+       col="blue", lty=2)
+
+abline(h=mean(iris$Petal.Length[iris$Species=="setosa"]), 
+       col="black", lty=2)
+
+# add some text to the figure in GLORIOUS peachpuff4
+text(1.5, 2, labels="this graph pwns", col = "peachpuff4", cex=2 ) 
 
 # some other embellishments you might want to add...
 # add some specific lines or points
-points(2.5,2,pch=10,col="red",cex=2) 
-lines(c(2.2,2.5),c(2,3),col="magenta",lwd=2)
-```
+points(2.5, 2 , pch = 10, col = "red", cex = 2) 
 
-
-
-
-
-
-
-
-# Save your data (only if you want)
-
-The "list=" command tells us which variables we want to save. 
-The "file=" option tells us what file to save the data to.
-
-```{r}
-save( list=ls(), file="grazing_data.rdata")
+lines(c(2.2, 2.5), c(2, 3), col = "magenta", lwd = 2)
 ```
 
 
@@ -153,11 +166,11 @@ Once you are happy with your graph, you can export it as a high resolution tiff 
 
 Check you working directory before saving your plot, while plot will be saved on that location.
 
-```{r Save plot as a tiff}
+```{r save-as-tiff, eval = FALSE}
 
 # create and open the tif file for writing
-tiff(filename="petal_plot_1.tif",units="cm",
-		height=21,width=21, res=300, compression="none")
+tiff(filename="petal_plot_1.tif", units="cm",
+		height=21, width=21, res=300, compression = "none")
 
 # do the plotting
 my.colors <- c("black","blue","green")
@@ -168,8 +181,9 @@ plot(Petal.Length ~ Petal.Width, data = iris,
         xlab = "Petal Width (cm)", ylab="Petal Length (cm)",
         cex.lab = 1.5, cex.axis = 1.5, cex = 1.2,
         bty = "L", las = 1, tcl = 0.5 )
-legend("topleft", levels(iris$Species), col=my.colors, pch=my.points, lty=0, bty="n",
-        cex=1.5) # bty = "n" means no box around legend
+legend("topleft", levels(iris$Species), col=my.colors, 
+       pch=my.points, lty=0, bty="n",
+        cex=1.5) 
 
 # close the tif file
 dev.off()
@@ -181,27 +195,27 @@ If you want the best and most sofisticated scatter plot with lots of options you
 
 Core elements:
 
-    Data
-    Aesthetics - aes()
+    Data - a data.frame (or similar)
+    Aesthetic mappings - aes()
     Geoms - geom_()
     Themes - theme()
     Guides - guide()
 
 Data
 
-The information you want to communicate. This information is generally stored in a data frame, matrix or table.
+The information you want to communicate. This information is generally stored in a data frame, matrix, table or tibble.
 
 Aesthetics
 
-The aesthetic attributes you use to represent your data. These translate the information stored in columns in your data frame into visual properties of the plot such as point location, bar height, colour, size, shape etc..
+The aesthetic attributes you use to represent your data. These translate the information stored in columns in your data frame into visual properties of the plot by mapping a column onto a specific axis or property of the data such as point shape or colour etc...
 
 Geoms
 
-These are the geometric objects on the plot, e.g. lines, bars and points.
+These are the geometric objects on the plot, e.g. lines, bars and points. Without a geom() you have a blank plot based on the aesthetic mapping only.
 
 Themes
 
-These adjust the overall appearance of the plot, e.g. background colour.
+These adjust the overall appearance of the plot, e.g. background colour, size of text, colour palette, location of text labels and direction of axes tick marks etc...
 
 Guides
 
@@ -211,26 +225,44 @@ You will need to install the tidyverse set of packages if you do not already hav
 
 With ggplot2, you can create the figure without printing it anywhere by storing the instructions behind the figure as an object. You can then use `print()` to show it on screen or embed it into a Rmarkdown document. In contast to the method above where you have to open and close a plotting device (we used a `*.tif` file), you can use `ggsave()` to acheive the same. The advantage here is you can both print it and save it to file easily enough. Wtih ggsave, there are lots of file formats you can save to, including png, jpg, etc... We will not cover ggplot2 in detail here, but you can find a lot of help [online](http://ggplot2.tidyverse.org).
 
+You can find additional resources, including links to free online courses at http://ggplot2.tidyverse.org and copious script examples at http://www.cookbook-r.com/Graphs/. You can do almost anything with ggplot or base graphics as is your wont.
 
-```{r ggplot package scatter plot}
-library(tidyverse) # load package with ggplot
+```{r ggplot_basic}
+# load the required library
+#library(tidyverse)
+library(ggplot2)
+
+# Create the basic plot which includes a geom for points
+p1 <- ggplot(data = iris, 
+             mapping = aes(x = Petal.Width, y = Petal.Length)) + 
+  geom_point()
+
+# cause the plot to be rendered to the plotting pane
+print(p1)
+
+```
+
+
+As with base R graphics, you can alter the properties of the plot, by adding additional layers, or modifying properties of the existing layers.
+
+```{r ggplot_version}
 
 # create the plot and save it in object called p2
 p2 <- ggplot(data = iris, 
              mapping = aes(x = Petal.Width, y = Petal.Length)) + 
-  geom_point(mapping = aes(color = Species, shape=Species)) + 
+  geom_point(mapping = aes(color = Species, shape = Species)) + 
   geom_smooth() + 
-  ggtitle("Petal width and length plot") + 
+  ggtitle("my figure title") + 
   theme(plot.title = element_text(hjust = 0.5), 
-        axis.text=element_text(size=12),
-        axis.title=element_text(size=14,face="bold")) + 
-  labs( x="Petal width (cm)",y="Petal Length(cm)") 
+        axis.text  = element_text(size = 12),
+        axis.title = element_text(size = 14, face = "bold") ) + 
+  labs( x = "Petal width (cm)", y = "Petal Length(cm)") 
 
 # printing the created ggplot object causes it to be show on screen
 print(p2)
 
 # save it out as a tiff or myriad otehr formats
-ggsave(filename="petal_plot_2.tif", plot = p2, device = "tiff",
+ggsave(filename = "petal_plot_2.tif", plot = p2, device = "tiff",
        dpi = 300, compression = "none")
 
 # aesthetics defines x and y axis; geom_point defines classification variable 
@@ -244,23 +276,25 @@ ggsave(filename="petal_plot_2.tif", plot = p2, device = "tiff",
 
 ```
 
+We can now quickly update this figure, and for example change the scaling of the points by the categorical grouping variable, which in this example is by *Species*. We can also use a different theme option to make it more like the basic plots as is normal in scientific publishing, and put the axis tick marks inside the plot (using negative scaling value) and as a consequence we have to push the accompanying labels outwards. One **never** remembers this kind of code, and I end up [googling it](http://lmgtfy.com/?q=ggplot+tick+marks+inside) everytime.
 
-```{r ggplot package scatter plot with manual shape scale}
-
-library(tidyverse)
+```{r ggplot_version_scaled}
 
 # create the plot and save it in object called p3
-p3 <- ggplot(data= iris, mapping = aes(x=Petal.Width,y=Petal.Length)) + 
-  geom_point(mapping = aes(color = Species, shape=Species)) + 
-  geom_smooth() + 
-  ggtitle("Petal width and length plot") + 
-  scale_shape_manual (values=4:6) + 
+p3 <- p2 + 
+  scale_shape_manual(values = 4:6) + 
+  scale_color_manual(values = c("black", "red", "blue")) +
+  theme_classic() + 
   theme(plot.title = element_text(hjust = 0.5), 
         axis.text=element_text(size=12),
-        axis.title=element_text(size=14,face="bold")) + 
-  labs( x="Petal width (cm)",y="Petal Length(cm)")
+        axis.title=element_text(size=14,face="bold"),
+        axis.ticks.length = unit(-0.25, "cm"),
+        axis.text.x = element_text(margin = unit(c(0.5,0.5,0.5,0.5), "cm")),
+        axis.text.y = element_text(margin = unit(c(0.5,0.5,0.5,0.5), "cm")))
+
 # the only difference with previous graph is that each shape variable 
 # (Species) is defined manualy with scale_shape_manual. 
+print(p3)
 
 # save it out as a tiff or myriad otehr formats
 ggsave(filename="petal_plot_3.tif", plot = p3, device = "tiff",
