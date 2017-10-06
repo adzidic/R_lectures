@@ -1,0 +1,108 @@
+---
+title:title: "L10: Advanced Boxplots"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+
+output:
+   html_document:
+     theme: flatly
+     toc: true
+     toc_depth: 4
+     number_sections: yes
+     
+---
+
+Advanced techniques for Boxplots. This example uses the R included data "iris" and plots using the package ggplot2.
+
+
+# Housekeeping
+
+Remember that `rm(list=ls())` is not sufficient for a full clean set up of R, and you should use `Ctrl/Cmd-SHIFT-F10` in Rstudio to Restart R cleanly and check that this works at least at the end of your analysis, or periodically during development.
+
+```{r}
+# remove (almost) all objects currently held in the R environment
+rm(list=ls()) 
+```
+
+
+# Alternative Boxplots in ggplot2 package
+
+As always, `ggplot2` does boxplots, and arguably easier / prettier.
+
+```{r}
+library(ggplot2)
+```
+
+
+
+## Basic box plot in ggplot2
+
+```{r}
+
+# load the iris dataset to the global environment
+data("iris")
+
+p1 <- ggplot(iris, aes(x = Species, y = Petal.Length)) + geom_boxplot()
+print(p1)
+```
+
+## Rotate the box plot
+
+Flip it 90 degrees.
+
+```{r}
+p2 <- p1 + coord_flip()
+print(p2)
+```
+
+## Notched box plot
+
+The Notch - displays the a confidence interval around the median which is normally based on the median +/- 1.57 x IQR/sqrt of n.  According to Graphical Methods for Data Analysis (Chambers, 1983) although not a formal test the, if two boxes' notches do not overlap there is ‘strong evidence’ (95% confidence) their medians differ. 
+
+```{r}
+p3 <- ggplot(iris, aes(x=Species, y=Petal.Length)) + 
+  geom_boxplot(notch=TRUE)
+print(p3)
+```
+
+
+  
+## Change outlier, color, shape and size
+
+You can customise the details of the visualisation.
+
+```{r}
+p4 <- ggplot(iris, aes(x=Species, y=Petal.Length)) + 
+  geom_boxplot(outlier.colour = "red", outlier.shape = 8, outlier.size = 4)
+
+print(p4)
+```
+
+
+
+# Colour Boxplot in ggplot2
+
+```{r}
+
+q <- ggplot(data = iris, aes(x = Species, y = Petal.Length)) + 
+  geom_boxplot(aes(fill = Species), outlier.color = NA) + 
+  geom_point(aes(y = Petal.Length, group = Species,
+                 fill = Species), 
+             position = position_jitter(width = 0.15), shape = 21, 
+             stroke = 1.1) + 
+  scale_fill_manual(values = c("pink", "yellow", "lightblue")) +
+  
+  guides(fill=guide_legend(title="Legend Title")) + 
+  xlab("Species") + 
+  ylab("Petal length (cm)") + 
+  ggtitle("Petal length in several species") + 
+  
+  theme_classic() + 
+  theme(axis.text    = element_text(size = 12),
+        axis.title   = element_text(size = 14),
+        legend.text  = element_text(size = 14),
+        legend.title = element_text(size = 16))
+
+# print our efforts to screen
+print(q)
+```
+

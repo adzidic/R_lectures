@@ -1,0 +1,121 @@
+---
+title: "Lecture 9: Boxplots"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+
+output:
+   html_document:
+     theme: flatly
+     toc: true
+     toc_depth: 4
+     number_sections: yes
+     
+---
+
+
+Example script for creating simple boxplots of data
+
+
+# Housekeeping
+
+Remember that `rm(list=ls())` is not sufficient for a full clean set up of R, and you should use `Ctrl/Cmd-SHIFT-F10` in Rstudio to Restart R cleanly and check that this works at least at the end of your analysis, or periodically during development.
+
+```{r}
+# remove (almost) all objects currently held in the R environment
+rm(list=ls()) 
+```
+
+
+In this example we will use the in-built dataset "iris" which gives the measurements in centimeters of the variables sepal length and width and petal length and width, respectively, for 50 flowers from each of 3 species of iris. The species are Iris setosa, versicolor, and virginica. See `?iris` for more information. When visualising data, we often need to summarise it, as the raw data itself is not always the best representation. In terms of summarising or abstracting the information, we can start with the raw data which is the most granular picture we can build.
+
+# Raw data
+
+Essentailly this is a scatter plot, stacked by each species. Note that we have to use `as.numeric(Species)` in order to convert them to numbers rather than factors: if `plot(y~x)` sees that x is a factor it will automatically call the function boxplot! Note also that this code uses the expression version of `plot()` which is `plot(y~x)` rather than `plot(x, y)`. This structure is favoured as it allows us to call the columns of the dataset by name, and then provide the dataframe as `data = iris` thereby avoiding the need to call them directly with `$` notation.
+
+```{r}
+
+data("iris")
+
+plot(Petal.Length ~ as.numeric(Species), data = iris, type = "p")
+
+```
+
+The x-axis labelling is not helpful when we plot a categorical variable on the x-axis. We can fix this by preventing the axis being drawn with `axes = FALSE`, and then manually adding the axis on the bottom and left of the figure.
+
+```{r}
+plot(Petal.Length ~ as.numeric(Species), data = iris, type = "p", axes = FALSE,
+     xlab = "Species", ylab = "Petal length (cm)")
+axis(1, at = 1:3, levels(iris$Species))
+axis(2)
+
+```
+
+
+lots of the points overlap, which doesnt really help distinguish between them, so we can "jitter" them a little (i.e. add a small bit of noise). We want to jitter them in the x axis direction.
+
+```{r}
+plot(Petal.Length ~ jitter(as.numeric(Species), amount = 0.1), 
+     data = iris, type = "p", axes = FALSE, 
+     xlab = "Species", ylab = "Petal length (cm)")
+axis(1, at = 1:3, levels(iris$Species))
+axis(2)
+```
+
+Thats better, and we can at least see better how many data points we have, but its still rather cluttered and so instead we might abstract the information into three histograms.
+
+
+# Simple boxplot
+
+For more detailed explanation of the boxplot see L2 RMarkdown document. See the [wikipedia](http://en.wikipedia.org/wiki/Box_plot) site on boxplots for more information.
+
+```{r}
+par(mfrow=c(1,1))
+boxplot( iris$Petal.Length ~ iris$Species,
+		ylab = "Petal Length (cm)", xlab = "Species", frame.plot = FALSE)
+```
+
+# Histograms and boxplot 
+
+Some code below to facilirate direct comparison of histograms and boxplots.
+
+Intended for illustrative purposes in this podcast only, although you might imagine situations where you might like to employ a figure like this.
+
+```{r, fig.height = 10}
+par(mfrow = c(3,1)) # specify a 3x1 panel plot
+
+# -------------------------------
+# Setosa
+hist(iris$Petal.Length[iris$Species=="setosa"], breaks = seq(0, 7, 0.25),
+     freq = FALSE, main = "setosa", xlab = "", ylab = "", cex.lab = 1.5, 
+     ylim = c(0, 4), las = 1, col = "lightgrey", bty = "L")
+
+boxplot(iris$Petal.Length[iris$Species=="setosa"], at = 3.1, 
+        horizontal = T, add = T, axes = FALSE)
+
+# -------------------------------
+# Versicolor
+hist(iris$Petal.Length[iris$Species=="versicolor"], breaks = seq(0, 7, 0.25),
+     freq = FALSE, main="versicolor", xlab="", ylab="Frequency", 
+     ylim=c(0, 4), las=1, cex.lab=1.5, col="lightgrey", bty = "L")
+
+boxplot(iris$Petal.Length[iris$Species=="versicolor"], at = 3.1,
+        horizontal = T, add = T, axes = FALSE)
+
+# -------------------------------
+# Virginica
+hist(iris$Petal.Length[iris$Species=="virginica"], breaks = seq(0, 7, 0.25),
+     freq = FALSE, main = "virginica", xlab = "Petal Length (cm)", ylab = "", 
+     ylim = c(0, 4), las = 1, cex.lab = 1.5, col = "lightgrey", bty = "L")
+
+boxplot(iris$Petal.Length[iris$Species=="virginica"], at = 3.1, 
+        horizontal = T, add = T, axes = FALSE)
+```
+
+
+
+      
+
+
+
+
+
+

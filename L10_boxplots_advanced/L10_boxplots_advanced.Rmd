@@ -46,7 +46,7 @@ boxplot( Petal.Length ~ Species, data = iris,
 
 Here are some advanced tricks to customising plots.Remove the frame surrounding the boxplot by suppressing the axes and manually specifying them. NB this is straight forward for most plots, but for some reason the boxplot function is encoded differently.
 
-##Comparison of old and new plot without frame - not good for publication
+##Comparison of old and new plot without frame
 
 ```{r, fig.height=9}
 par(mfrow=c(2,1))

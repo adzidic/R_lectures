@@ -55,43 +55,46 @@ head(iris) # explore dataset
 mu <- tapply(iris$Petal.Length,iris$Species,mean)
 
 # create the barplot
-centres<-barplot(mu, names.arg=names(mu),ylim=c(0,7),
-                  las=1,xlab="Species",ylab="Petal Length (cm)",
-                  col = rainbow(10), cex.lab=1.2,cex.axis=1.2)
+centres<-barplot(mu, names.arg = names(mu), ylim = c(0, 7),
+                  las = 1, xlab = "Species", ylab = "Petal Length (cm)",
+                  col = rainbow(10), cex.lab = 1.2, cex.axis = 1.2)
 
 # write our own function to calculate the standard error of the mean of a 
 # vector "x"" of data
-std.error <- function (x) {return(sqrt(var(x)/length(x)))}
+std.error <- function (x) { return( sqrt( var(x) / length(x) ) ) }
 
 # apply our new function over the petal length vector by species
-se <- tapply(iris$Petal.Length,iris$Species, std.error)
+se <- tapply(iris$Petal.Length, iris$Species, std.error)
 
 # use the arrows function to draw the bar ends: essentially arrows
 # with 90 degree arrow heads, i.e. a horizontal line at each end.
-arrows( x0= centres, x1=centres, y0=mu+se, y1=mu-se,
-         code=3, length=0.3, angle=90,lwd=2)
+arrows( x0 = centres, x1 = centres, 
+        y0 = mu + se, y1 = mu - se,
+         code = 3, length = 0.3, angle = 90, lwd = 2)
 ```
 
 Another way to do acheive a similar result is with the `aggregate` function. But note here we are calculating the standard deviation of the data, not the standard error of the mean as before.
 ```{r}
 
 # mean petal length by species
-means <- aggregate(iris$Petal.Length, by=list(iris$Species), FUN=mean) # Here you can change any function you want to explore
+# Here we aggregate the PEtal.Length data by Species and apply the function
+# mean to each aggregation
+means <- aggregate(iris$Petal.Length, by = list(iris$Species), FUN = mean) 
 means
 
 # standard deviation of petal length by species
-sd <- aggregate(iris$Petal.Length, by=list(iris$Species), FUN=std.error) # Here you can change any function you want to explore
+sd <- aggregate(iris$Petal.Length, by = list(iris$Species), FUN = std.error)
 sd
 
-barplot(means$x, names.arg=means$Group.1, 
-        ylim=c(0,6), ylab="Petal Length (cm)", 
+barplot(means$x, names.arg = means$Group.1, 
+        ylim = c(0, 6), ylab = "Petal Length (cm)", 
         xlab ="Species", 
         col = c("lightblue", "mistyrose","lightcyan") )
 title(main="Mean of the petal length by species")
 
-barplot(sd$x, names.arg=sd$Group.1, 
-        ylim=c(0,0.1), ylab="Petal Length (cm)", 
-        xlab ="Species", 
+barplot(sd$x, names.arg = sd$Group.1, 
+        ylim = c(0, 0.1), ylab = "Petal Length (cm)", 
+        xlab = "Species", 
         col = c("lightblue", "mistyrose","lightcyan") )
 title(main="Standard deviation of the petal length by species")
 ```
@@ -100,7 +103,8 @@ title(main="Standard deviation of the petal length by species")
 
 # Grouped horizontal and vertical barplot
 
-To obtain grouped barplots for several species first we have to use table function to create table of frequencies. With head function we can see first six rows of the table petal.freq.
+To obtain grouped barplots for several species first we have to use table function to create table of frequencie, or counts. Essentially this is similar to how a histogram is constructed. With the `head()` function we can see first six rows of the table `petal.freq` which we created. This example only really works because the measurements are all recorded to 0.1cm resolution, and so there are multiple observations per length class; if the data were truly continuous, we would not be able to do this as the counts would be 1 for each `Petal.Length` and instead we would need to use the `hist()` function to create counts within specific breaks and bins.
+
 ```{r}
 petal.freq <- table(iris$Petal.Length,iris$Species)
 head(petal.freq)
