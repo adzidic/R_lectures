@@ -57,7 +57,7 @@ plot(Petal.Length ~ jitter(as.numeric(Species), amount = 0.1),
      data = iris, type = "p", axes = FALSE, 
      xlab = "Species", ylab = "Petal length (cm)")
 axis(1, at = 1:3, levels(iris$Species))
-axis(2)
+axis(2, las = 1)
 ```
 
 Thats better, and we can at least see better how many data points we have, but its still rather cluttered and so instead we might abstract the information into three histograms.
@@ -68,8 +68,12 @@ Thats better, and we can at least see better how many data points we have, but i
 For more detailed explanation of the boxplot see L2 RMarkdown document. See the [wikipedia](http://en.wikipedia.org/wiki/Box_plot) site on boxplots for more information.
 
 ```{r}
+
+# hard speciy a 1x1 panel
 par(mfrow=c(1,1))
-boxplot( iris$Petal.Length ~ iris$Species,
+
+# do our first simple boxplot
+boxplot( Petal.Length ~ Species, data = iris,
 		ylab = "Petal Length (cm)", xlab = "Species", frame.plot = FALSE)
 ```
 

@@ -29,6 +29,13 @@ Enter or read in your data from a file. In this example we will use the in-built
 
 see ?iris for more information
 
+```{r load_data}
+data("iris")
+str(iris)
+
+```
+
+
 
 # A basic default boxplot
 
@@ -49,40 +56,45 @@ Here are some advanced tricks to customising plots.Remove the frame surrounding 
 ##Comparison of old and new plot without frame
 
 ```{r, fig.height=9}
+
 par(mfrow=c(2,1))
+
 boxplot(  Petal.Length ~ Species, data = iris, 
           ylab = "Petal Length (cm)", xlab = "Species") # old one
+
 boxplot(  Petal.Length ~ Species, data = iris,
-          frame.plot=F ) # new one
+          frame.plot = FALSE,  ylab = "Petal Length (cm)", xlab = "Species", 
+          las = 1) 
 ```
 
 ##Removing of the axes
 
 ```{r}
 par(mfrow=c(1,1))
-boxplot( Petal.Length ~ Species, data = iris,  axes=F) # axes=F removes axes from the plot
+boxplot( Petal.Length ~ Species, data = iris,  axes = FALSE) # axes=F removes axes from the plot
 ```
 
 ## Adding the L box shape
 ```{r}
-boxplot(  Petal.Length ~ Species, data = iris,  axes=F)
+boxplot(  Petal.Length ~ Species, data = iris,  axes = FALSE)
 box(bty="L") # adding L-type box on your plot
 ```
 
 ## Adding information to the x-axis
 ```{r}
-boxplot(  Petal.Length ~ Species, data = iris, axes=F)
+boxplot(  Petal.Length ~ Species, data = iris, axes = FALSE)
 box(bty="L")
-axis(1,at=1:3,c("Iris setosa","Iris versicolor","Iris virginica"),
-        font=3, cex.axis=1.2, tcl=0.5) # font =3 shows x-axis font in italic; cex.axis= 1.2 increases font size for 20% compared to the default setting; tlc=0.5 shows ticks inside the box - default is -0.5.
+axis(1, at = 1:3, c("Iris setosa","Iris versicolor","Iris virginica"),
+        font = 3, cex.axis = 1.2, tcl = 0.5) 
+
 ```
 
 ## Adding information to the y-axis
 
 ```{r}
-boxplot(  Petal.Length ~ Species, data = iris, ylim = c(0,7), axes=F)
-box(bty="L")
-axis(1,at=1:3,c("Iris setosa","Iris versicolor","Iris virginica"),
+boxplot(  Petal.Length ~ Species, data = iris, ylim = c(0,7), axes = FALSE)
+box(bty="L", xaxs = "e")
+axis(1, at = 1:3, c("Iris setosa","Iris versicolor","Iris virginica"),
         font=3, cex.axis=1.2, tcl=0.5)
 title(xlab="Species", cex.lab=1.4)
 axis(2, at=0:7, las=1, tcl=0.5) # las=1 changes direction of the y-axis text
@@ -120,8 +132,11 @@ title(ylab="Petal Length (cm)",cex.lab=1.2)
 
 # Saving tiff from your plot
 
-```{r}
+N.B. code chunk not evaluated during knitting of html output file.
+
+```{r, eval = FALSE}
 tiff("outfile.tif", compression = "lzw") # produces nice tiff
+
 #tiff(file = "temp.tiff", width = 3200, height = 3200, units = "px", res = 800) # produced large size tiff 
 boxplot(  Petal.Length ~ Species, data = iris, 
           ylim=c(0,7), axes=F, col=rainbow(10))
@@ -130,7 +145,9 @@ axis(1,at=1:3,c("Iris setosa","Iris versicolor","Iris virginica"),
         font=3, cex.axis=1.2, tcl=0.5)
 title(xlab="Species", cex.lab=1.4)
 axis(2, at=0:7, las=1, tcl=0.5) # las=1 changes direction of the y-axis text
-title(ylab="Petal Length (cm)",cex.lab=1.2)
+title(ylab="Petal Length (cm)", cex.lab=1.2)
+
+dev.off()
 
 ```
 
