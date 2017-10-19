@@ -1,0 +1,67 @@
+---
+title: "Lecture 3b: When is a *.csv file not comma separated"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+
+output:
+   html_document:
+     theme: flatly
+     toc: true
+     toc_depth: 4
+     number_sections: yes
+     
+---
+
+
+# Housekeeping
+
+Remember that `rm(list=ls())` is not sufficient for a full clean set up of R, and you should use `Ctrl/Cmd-SHIFT-F10` in Rstudio to Restart R cleanly and check that this works at least at the end of your analysis, or periodically during development.
+
+```{r}
+# remove (almost) all objects currently held in the R environment
+rm(list=ls()) 
+```
+
+
+# International Diversity in Number Formats
+
+There is no ISO standard for representing numbers and data in files arising from different conventions depending largely it would seem on the language underlying one's country. While a standard comma seperated file in many english speaking countries works perfectly well, it is complicated in [regions who use the comma in place of the decimal point](https://en.wikipedia.org/wiki/Decimal_mark) to represent numbers less than 1. Further complications can arise in countries who tend to use the comma to separate thousands in large numbers so that 100000 is written as 100,000. The problem here is that if these decimal point or thousand separator commas are saved to the file then `read.csv()` will run into trouble as every time it sees a comma it will try to treat it as a new cell: numbers will get split and the apparent number of columns on each row are likely to conflict. This whole problem is further complicated by the fact that many software will choose to show you one format on screen, while behind the scenes retaining the underlying regional settings for your computer. This means that while you might think you have changed the format in Excel or Google Spreadsheets, when you save it out as *csv, you can find that the file has retained the commas as decimal points, and put semi-colons ";" in to demarcate the cells.
+
+![Countries' use of decimal marks: blue = . | light-green = , | dark-green = . or , or ' | red = arabic Momayyez](https://upload.wikimedia.org/wikipedia/commons/a/a8/DecimalSeparator.svg)
+
+Fortunately in R, this is not a problem. The shortcut function `read.csv2()` is purposefully designed to deal with formats where the comma "," is used as a demimal mark, and ";" is used as the cell separator. Futhermore, you can use read.table() with the myriad options to specify exactly what settings are to be used to read and interpret your file: this means you can more than likely read in that really odd datafile you got sent from the deep dark past of October 26 1985 that used "*" to separate the cells, and had commas all over the place in the thousands.
+
+By the way... date formats are whole different level of hassle!
+
+# Reading in a semi-colon separated file
+
+I created a semi-colon separated version of the `finger_lengths.csv` data which can then be readily imported using `read.csv2()`.
+
+```{r importing-csv2}
+#Be sure your file is in your current R working directory!!!
+mydata <- read.csv2("finger_lengths_sCSV.csv", header = TRUE, 
+                   stringsAsFactors = FALSE)
+
+# print the contents of my data to screen
+mydata
+
+# what is mydata's structure?
+str(mydata)
+```
+
+
+As it happens, I created this by first reading in the data using `read.csv` and then saved it out using `write.csv2()` which as you might imagine creates a semi-colon text file. The following code is not run in the knitting of this Rmarkdown, but you can run it yourself to convince yourself (just make sure you set the working directory appropriately).
+
+```{r create-sc2-from-csv, eval = FALSE, include = TRUE}
+
+# first read in the comma separated file
+tmp_data <- read.csv("finger_lengths.csv", header = TRUE,
+                     stringsAsFactors = FALSE)
+
+# now save it out as semi-colon separated with comma for decimal mark
+write.csv2(tmp_data, file = "finger_length_semi_colon.csv")
+
+
+```
+
+
+
