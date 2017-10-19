@@ -1,5 +1,5 @@
 ---
-title:title: "L10: Advanced Boxplots"
+title: "L10b: Advanced Boxplots using ggplot2"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 
 output:
@@ -41,6 +41,10 @@ library(ggplot2)
 # load the iris dataset to the global environment
 data("iris")
 
+# take a look at the structure of the data
+str(iris)
+
+# create a basic ggplot with a boxplot geom on top
 p1 <- ggplot(iris, aes(x = Species, y = Petal.Length)) + geom_boxplot()
 print(p1)
 ```
@@ -50,17 +54,19 @@ print(p1)
 Flip it 90 degrees.
 
 ```{r}
+# to plot p1, add a coordinate flip
 p2 <- p1 + coord_flip()
 print(p2)
 ```
 
 ## Notched box plot
 
-The Notch - displays the a confidence interval around the median which is normally based on the median +/- 1.57 x IQR/sqrt of n.  According to Graphical Methods for Data Analysis (Chambers, 1983) although not a formal test the, if two boxes' notches do not overlap there is ‘strong evidence’ (95% confidence) their medians differ. 
+The Notch - displays the a confidence interval around the median which is normally based on the median $\pm 1.58 * \text{IQR} / \sqrt n$.  According to Graphical Methods for Data Analysis (Chambers, 1983) although not a formal test the, if two boxes' notches do not overlap there is ‘strong evidence’ (95% confidence) their medians differ. 
 
 ```{r}
-p3 <- ggplot(iris, aes(x=Species, y=Petal.Length)) + 
-  geom_boxplot(notch=TRUE)
+# redraw our boxplot, and this time add notches
+p3 <- ggplot(iris, aes(x = Species, y = Petal.Length)) + 
+  geom_boxplot(notch = TRUE)
 print(p3)
 ```
 
@@ -71,7 +77,8 @@ print(p3)
 You can customise the details of the visualisation.
 
 ```{r}
-p4 <- ggplot(iris, aes(x=Species, y=Petal.Length)) + 
+# make some adjustments to the way the outliers are rendered
+p4 <- ggplot(iris, aes(x = Species, y = Petal.Length)) + 
   geom_boxplot(outlier.colour = "red", outlier.shape = 8, outlier.size = 4)
 
 print(p4)
@@ -82,19 +89,24 @@ print(p4)
 # Colour Boxplot in ggplot2
 
 ```{r}
-
+# Add colour to our boxplots, overlay the raw data jittered a bit for 
+# clarity, and adjust the theme to a more usual format for publications.
 q <- ggplot(data = iris, aes(x = Species, y = Petal.Length)) + 
+  
   geom_boxplot(aes(fill = Species), outlier.color = NA) + 
+  
   geom_point(aes(y = Petal.Length, group = Species,
                  fill = Species), 
-             position = position_jitter(width = 0.15), shape = 21, 
+             position = position_jitter(width = 0.15), 
+             shape = 21, 
              stroke = 1.1) + 
+  
   scale_fill_manual(values = c("pink", "yellow", "lightblue")) +
   
-  guides(fill=guide_legend(title="Legend Title")) + 
+  guides(fill = guide_legend(title="Legend Title")) + 
   xlab("Species") + 
   ylab("Petal length (cm)") + 
-  ggtitle("Petal length in several species") + 
+  ggtitle("Petal length in several species of iris") + 
   
   theme_classic() + 
   theme(axis.text    = element_text(size = 12),

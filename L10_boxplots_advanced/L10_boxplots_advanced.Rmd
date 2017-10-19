@@ -1,5 +1,5 @@
 ---
-title:title: "L10: Advanced Boxplots"
+title: "L10a: Advanced Boxplots using base R"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 
 output:
