@@ -42,7 +42,7 @@ Weight of the seed produced - response variable (y-axis)
 First lets make some houskeeping before we start:
 
 ```{r Housekeeping}
-rm(list=ls()) # remove everything currently held in the R memory
+rm(list = ls()) # remove everything currently held in the R memory
 graphics.off() # close all open graphics windows 
 ```
 
@@ -58,24 +58,48 @@ header=TRUE - in first row are the variable names (Root, Seed and Grazing)
 sep="," - means that values in grazing.csv file are separated with comma (look inside .csv data file in Excel)
 
 ```{r setup, include=FALSE}
-mydata <- read.table("grazing.csv", header=TRUE, sep=",")
+mydata <- read.csv("grazing.csv", header = TRUE, stringsAsFactors = FALSE)
 ```
 
 #EXPLORE DATA
 
-```{r explore data}
+```{r explore-data}
 head(mydata) # Return the First Part of an Object -usually first six observations
 head(mydata, n = 12L) # option - name of the Object, n= number of lines you want to see (12) from the start of the Object
-mydata # Return complete Object
+
+# check the structure of the data
+str(mydata) # Return complete Object
 ```
+
+We expect the response variable Seed and the linear covariate Root to both be numerical, but Grazing represents two categories in this experiment and we should convert these to a factor. Since the experimental treatment is designed to look at the effect of Grazing over no grazing, I am going to force the baseline level in this factor to be the "Ungrazed" category. This means that our fitted model later on will expclitly tell us what the effect of grazing is, rather than what the effect of "ungrazing" is which is a bit counter-intuitive.
+
+```{r factor-grazing}
+
+# coerce to factor and specify the order of the levels
+mydata$Grazing <- factor(mydata$Grazing, levels = c("Grazed", "Ungrazed"))
+
+# check that this came out as expected.
+str(mydata) 
+
+# if you want you can just pull out the levels only
+#levels(mydata)
+```
+
 
 #PLOT DATA SCATTERPLOT
 ```{r}
-levels(mydata$Grazing) # gives you all levels of the classification variable within variable Grazing
-plot(mydata$Root, mydata$Seed, xlab="Root",ylab="Seed",col=mydata$Grazing, pch=as.numeric(mydata$Grazing)) #xlab-means title for x-axis; y-lab- means title for y-axis, col - means colour for each level of Grazing variable (Grazed is first and first colour is black, while Ungrazed is second and second colur is red; pch- means a type of the symbol to represent each level of Grazed variable)
 
-legend("topleft", pch=c(2,1), col=c("red", "black"), c("Ungrazed", "Grazed"))
+plot(Seed ~ Root, data = mydata,
+     col = Grazing, pch = as.numeric(Grazing),
+     xlab = "Root", ylab = "Seed", bty = "L", las = 1,
+     cex.axis = 1.2, cex.lab = 1.5)
+
+legend("topleft", levels(mydata$Grazing), pch = 1:2, col = 1:2,
+       bty = "n", cex = 1.5)
 ```
+
+
+
 #FIT THE MOST COMPLICATED MODEL
 
 Our assumption is that both slopes and intercept in Grazed and Ungrazed group differ!
@@ -83,7 +107,7 @@ Our assumption is that both slopes and intercept in Grazed and Ungrazed group di
 Therefore we use INTERACTION in the model1:
 
 ```{r}
-model1 <- glm( mydata$Seed ~ mydata$Root * mydata$Grazing )
+model1 <- glm( Seed ~ Root, data = mydata )
 
 summary(model1)
 
@@ -155,9 +179,15 @@ abline(0,0,col="blue")
 ```
 Any pattern among the differences between model and observed value indicates a failure of the model to adequately represent some aspect of the relationship within the sampled data.
 
-# Save your data (only if you want)
+# Save your data 
+
+(only if you want, and this chunk is not evaluated in this markdown)
 
 The "list=" command tells us which variables we want to save
 The "file=" option tells us what file to save the data to
 
+```{r, eval = FALSE}
 save( list=ls(), file="grazing_data.rdata" )
+```
+
+

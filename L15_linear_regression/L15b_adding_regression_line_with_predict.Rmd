@@ -1,0 +1,116 @@
+---
+title: "L15b: Using the predict function to add a regression line"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+
+output:
+   html_document:
+     theme: flatly
+     toc: true
+     toc_depth: 4
+     number_sections: yes
+     
+---
+
+
+# Follow directly from L15
+
+We start where L15 left off and instead of using the `abline()` function to add a regression line, we will use the `predict()` function. Although overkill for this example, learning to use `predict()` is important when tyring to visualise more complex models where for example curvature is apparent, or where there are several explanatory variables, some of which will neeed to be averaged out to visualise the effects of the remaining ones. Future examples will illustrate these use-cases.
+
+
+Housekeeping
+
+```{r}
+rm(list=ls()) # remove everything currently held in the R memory
+```
+
+
+
+# Enter or read in your data from a file
+
+Read in data from our CSV (comma separated value) file
+
+If you need any help for import of the data, take a look at Lesson 3 course material.
+
+Remember that the data file should be in your working directory before you import the file to R.
+
+
+```{r}
+
+seed_data <- read.csv("grazing.csv", header=TRUE, stringsAsFactors = FALSE)
+```
+
+
+
+# Plot and explore your data
+
+```{r}
+plot(Seed ~ Root, data = seed_data,
+     type="p", xlab="Root diameter (cm)", ylab="Amount of seed (g)", pch=20 ,
+        cex.lab=1.5, cex.axis=1.5, cex=1.2,
+        bty="L", las=1, tcl=0.5 ) # type = p - this p is for points
+```
+
+
+
+
+
+
+
+# Analyse your data
+
+We want to see how root size influences seed size.
+
+```{r}
+
+ # model 1 will store information on linear model where Y axis variable is Seed and X axis variable is
+model1 <- lm(Seed ~ Root, data = seed_data)
+
+# and we can get a more detailed summary of the output
+summary(model1)
+```
+
+# Create a new dataset on which to predict our model
+
+The object `model1` contains everything needed to make predictions of the response variable based on values provided for the explanatory variables, since it contains the model formula and also the estimated coefficients (including their uncertainty should we want to visualise that too). The first step is to create a new `data.frame` object with the same column names as the explanatory variables used in the model formula.
+
+For this simple example, we only need to predict our response variable at the two end points of the line we want to add, since two points is all that is needed to draw a straight line. In this exmample, we will esimate our response variable $Seed$ at $Root = [5, 10]$.
+
+```{r create-newdata}
+
+# createa  new data.frame object, with Root values 5 and 10
+new_seed_data <- data.frame(Root = c(5, 10))
+
+```
+
+We can now pass our `new_data` object along with `model1` to the `predict()` function and it will return the corresponding esimated values for the response variable $Seed$. It it useful to bundle this fitted value into the `new_data` object, since that way we have a tidy object that contains everything we need to plot our fitted line. Again, to keep it the same format as the actual data, I am going to call it by the same column names.
+
+```{r predict}
+
+# make a column called Seed in our new_data object corresponding to the 
+# esimated values at the corresponding Root values.
+new_seed_data$Seed <- predict(model1, newdata = new_seed_data)
+
+# print it to screen
+print(new_seed_data)
+
+```
+
+# Plot the predicted data
+
+With this in hand, we can plot our data again, and add these esimates as a line on our figure using syntax identical to how we are used to plotting data.
+
+
+```{r plot-model}
+
+# plot our data again
+plot(Seed ~ Root, data = seed_data,
+     type="p", xlab="Root diameter (cm)", ylab="Amount of seed (g)", pch=20 ,
+        cex.lab=1.5, cex.axis=1.5, cex=1.2,
+        bty="L", las=1, tcl=0.5 ) # type = p - this p is for points
+
+# add the predicted line
+lines(Seed ~ Root, data = new_seed_data, 
+     col = "black", lty = 2, lwd = 2)
+```
+
+

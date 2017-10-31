@@ -1,0 +1,263 @@
+---
+title: "L15: Simple linear regression"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+
+output:
+   html_document:
+     theme: flatly
+     toc: true
+     toc_depth: 4
+     number_sections: yes
+     
+---
+
+
+# Linear regression in R
+
+Fitting lines to data is the cornerstone of statistical modelling. Wherever possible (and there are many tricks that can be employed to help turn curves into straight lines), we try to fit straight lines to data as it is a relatively easy pattern to interpret. Recall the equation of the line is $Y = m X + c$, where $m$ is the slope and is the rate of change of $Y$ with a one unit increase in $X$, and $c$ is the y-axial intercept, or the value of $Y$ when $X = 0$.
+
+In a statistical sense, simple linear regression model describes the effect of the explanatory variable (X) on the response variable (Y) and leaves the data hanging off the line as leftover, or residual error. Explanatory variables may be continuous, discrete, or categorical, but in this simple linear regression we have $X$ as a linear covariate.
+
+We start with the overall equation:
+
+$$Y_i = \beta_0 + \beta_1 X_i + \epsilon_i$$
+
+where $\beta_0$ is the y-axial intercept (i.e. the value of $Y$ when $X = 0$), and $\beta_1$ is the slope of the linear covariate $X$, and $\epsilon$ is the residual error since no statistical model is perfect.
+
+We can then alter this equation to separate the mean and variance as the representaiton of the error term.
+
+First we can define the expected value for each data point (i.e. their mean) as 
+
+$$\mu_i = \beta_0 + \beta_1 X_i$$
+
+and the error term as 
+$$\epsilon_i \sim N(0, \sigma)$$
+to give
+
+$$Y_i = \mu_i + N(0, \sigma^2)$$
+
+This forumulation lets us easily see that the explanatory variables affect the mean (in statistical terms this means they are **fixed effects**) and the errors are normally distributed centred around 0, and the errors all have the same variance (regardless of their size and regardless of the value of covariate, i.e. they are independent of the fixed part).
+
+The above formulations are somthing of an algebraic statement of the model, but another, perhaps more statistical way of thinking about this is that the data simply have a distribution describing them, which in this case is a normal distribution, and each data point has its own expected value depending on the formula used in the model, and they all have same leftover variance that is not attributed to the fixed part, i.e. the mean.
+
+$$Y_i \sim N(\mu_i, \sigma^2)$$
+
+The data give the diameter of plants in mm and the amount of seed each plant produced in g.
+
+We are interested in how seed production is affected by plant size, as indicated by root diameter.
+
+
+
+
+
+# Enter or read in your data from a file
+
+First some housekeeping
+
+```{r}
+rm(list=ls()) # remove everything currently held in the R memory
+```
+
+Read in data from our CSV (comma separated value) file
+
+If you need any help for import of the data, take a look at Lesson 3 course material.
+
+Remember that the data file should be in your working directory before you import the file to R.
+
+These data are a slightly modified version taken from data used in Chapter 10 in Crawley 2008, Statistics: An introduction using R. Wiley, ISBN 0-470-02298-1.
+
+
+```{r}
+
+seed_data <- read.csv("grazing.csv", header=TRUE, stringsAsFactors = FALSE)
+```
+
+
+
+# Plot and explore your data
+
+If we want to see first six rows of our data we could use function head (name of the dataset) as follows:
+
+First explore:
+
+```{r}
+head(seed_data)
+str(seed_data)
+```
+
+
+then plot
+
+```{r}
+plot(Seed ~ Root, data = seed_data,
+     type="p", xlab="Root diameter (cm)", ylab="Amount of seed (g)", pch=20 ,
+        cex.lab=1.5, cex.axis=1.5, cex=1.2,
+        bty="L", las=1, tcl=0.5 ) # type = p - this p is for points
+```
+
+
+
+
+
+
+
+# Analyse your data
+
+We want to see how root size influences seed size.
+
+```{r}
+
+ # model 1 will store information on linear model where Y axis variable is Seed and X axis variable is
+model1 <- lm(Seed ~ Root, data = seed_data)
+
+# we can see formula and coefficients of linear model
+model1 
+
+# and we can get a more detailed summary of the output
+summary(model1)
+```
+
+
+
+R-squared and adjusted R-squared explain how good is your model. If the value is close to 1 than your model is explaining nearly all the variation in the response variable (a good thing) wherease if the value is close to 0 then model is nearly no variation in the response variable (generally not a good thing, although some systems are messy and $R^2$ value around 0.2 can be good!). With an $R^2$ of approximately 0.7, we are able to explain nearly 70% of the variation in seed production as attributtable to Root diameter in a linear relationship. 
+
+
+
+# Plot the results of your analysis
+
+`abline()` adds the best fit line
+
+```{r}
+plot(Seed ~ Root, data = seed_data,
+     type = "p", pch = 20,
+     xlab = "Root diameter (cm)", ylab = "Amount of seed (g)",
+     cex.lab = 1.5, cex.axis = 1.5, cex = 1.2,
+     bty = "L", las = 1, tcl = 0.5 ) 
+
+# abline intelligently looks at the contents of the fitted model in the 
+# object model1, locates the intercept and slope and adds a line.
+abline(model1, col = "red")
+```
+
+# Extract the residuals for easy recall
+
+```{r}
+# the shortcut function resid() is equivalent to residuals(). 
+# You can use either.
+rsd <- residuals(model1)
+
+```
+
+
+
+# Histogram of the residuals
+
+```{r}
+# A basic histogram
+hist(rsd, main = "Histogram of residuals", 
+     xlab = "Residuals", ylab = "Frequency", las = 1)
+```
+
+
+
+QQ plot of the residuals to assess how well the residuals compare with an ideal normal distribution
+
+```{r}
+
+# a Q-Q plot with a 1:1 line superimposed to help visualise the expected
+# relationship
+qqnorm(rsd)
+qqline(rsd, col = "red")
+
+```
+
+
+Check for a trend in the residuals with the X axis variable
+
+```{r}
+
+# plot the residuals of our model as a function of the linear covariate
+plot(rsd ~ Root, data = seed_data,
+     type = "p", pch = 20, 
+     xlab = "Root diameter (cm)", ylab = "Residuals",
+     cex.lab = 1.5, cex.axis = 1.5, cex = 1.2,
+     bty = "L", las = 1, tcl = 0.5 ) # type = p - this p is for points
+
+# the expectation is to be centered around zero for all values of the 
+# covariate; i.e. a line with intercept = 0 and slope = 0
+abline(0, 0, col = "blue")
+```
+
+We see some data under the curve (overestimation), thereafter above the line (underestimation), then again under the line and then again over the line.
+
+If we make a graph of real values with the model and residuals we can see clearly these paterrns.
+
+```{r, fig.width = 9}
+# make a two panel figure window
+par(mfrow=c(1,2))
+
+plot(Seed ~ Root, data = seed_data,
+     type = "p", pch = 20,
+     xlab = "Root diameter (mm)", ylab = "Amount of seed (g)",
+     cex.lab = 1.5, cex.axis = 1.5, cex = 1.2,
+     bty = "L", las = 1, tcl = 0.5 ) # type = p - this p is for points
+
+abline(model1, col = "red")
+
+# plot the residuals of our model as a function of the linear covariate
+plot(rsd ~ Root, data = seed_data, 
+     type = "p", pch = 20, 
+     xlab = "Root diameter (mm)", ylab = "Residuals",
+     cex.lab = 1.5, cex.axis = 1.5, cex = 1.2,
+     bty = "L", las = 1, tcl = 0.5 ) # type = p - this p is for points
+
+# the expectation is to be centered around zero for all values of the 
+# covariate; i.e. a line with intercept = 0 and slope = 0 
+abline(0, 0, col="blue")
+```
+
+
+# Save your data 
+
+(only if you want - this chunk is not evaluated in this markdown file)
+
+The "list=" command tells us which variables we want to save
+
+The "file=" option tells us what file to save the data to
+
+
+```{r, eval = FALSE}
+save( list=ls(), file="grazing_data.rdata" )
+```
+
+
+ASSIGNMENT:
+
+Install car package, load a Prestige dataset and make a new data set called new with just these two variables. Then make a linear regression where education is on x axis and income on y-axis and explain results. Check residuals.
+
+Solution:
+
+```{r, eval = FALSE, include = FALSE}
+
+library(car)
+head(Prestige,5)
+str(Prestige)
+new <- Prestige[,c(1:2)]
+plot(new$education,new$income,type="p", xlab="Years of education", ylab="Income", pch=20 ,
+        cex.lab=1, cex.axis=0.8, cex=1.2,
+        bty="L", las=1, tcl=0.5)
+modelx <- lm(new$income~new$education)
+abline(modelx,col="red")
+rsdx <- residuals(modelx)
+hist(rsdx, main="Histogram of residuals", xlab="Residuals", ylab="Frequency", las=1)
+qqnorm(rsdx)
+qqline(rsdx,col="red")
+plot(new$education,rsdx,type="p", xlab="Years of education", ylab="Residuals", pch=20 ,
+        cex.lab=1, cex.axis=0.8, cex=1.2,
+        bty="L", las=1, tcl=0.5) # type = p - this p is for points
+abline(0,0,col="blue")
+
+```
+
+
+
