@@ -139,7 +139,7 @@ plot(Seed ~ Root, data = seed_data,
 abline(model1, col = "red")
 ```
 
-# Extract the residuals for easy recall
+# Check the residuals for model assumptions
 
 ```{r}
 # the shortcut function resid() is equivalent to residuals(). 
@@ -148,9 +148,6 @@ rsd <- residuals(model1)
 
 ```
 
-
-
-# Histogram of the residuals
 
 ```{r}
 # A basic histogram
