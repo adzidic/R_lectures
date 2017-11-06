@@ -31,7 +31,7 @@ First we can define the expected value for each data point (i.e. their mean) as
 $$\mu_i = \beta_0 + \beta_1 X_i$$
 
 and the error term as 
-$$\epsilon_i \sim N(0, \sigma)$$
+$$\epsilon_i \sim N(0, \sigma^2)$$
 to give
 
 $$Y_i = \mu_i + N(0, \sigma^2)$$
@@ -108,13 +108,18 @@ We want to see how root size influences seed size.
 ```{r}
 
  # model 1 will store information on linear model where Y axis variable is Seed and X axis variable is
-model1 <- lm(Seed ~ Root, data = seed_data)
+model1 <- glm(Seed ~ Root, data = seed_data)
 
 # we can see formula and coefficients of linear model
 model1 
 
 # and we can get a more detailed summary of the output
 summary(model1)
+
+# if we ran a glm() call we can force a linear model output summary
+# which will include a R^2 value where it can be calculated
+summary.lm(model1)
+
 ```
 
 
