@@ -63,7 +63,7 @@ We want to see how root size influences seed size.
 ```{r}
 
  # model 1 will store information on linear model where Y axis variable is Seed and X axis variable is
-model1 <- lm(Seed ~ Root, data = seed_data)
+model1 <- glm(Seed ~ Root, data = seed_data)
 
 # and we can get a more detailed summary of the output
 summary(model1)
