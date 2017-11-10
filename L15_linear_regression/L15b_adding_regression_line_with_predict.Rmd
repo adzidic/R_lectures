@@ -45,9 +45,9 @@ seed_data <- read.csv("grazing.csv", header=TRUE, stringsAsFactors = FALSE)
 
 ```{r}
 plot(Seed ~ Root, data = seed_data,
-     type="p", xlab="Root diameter (cm)", ylab="Amount of seed (g)", pch=20 ,
-        cex.lab=1.5, cex.axis=1.5, cex=1.2,
-        bty="L", las=1, tcl=0.5 ) # type = p - this p is for points
+     type = "p", xlab = "Root diameter (cm)", ylab ="Seed (g)", pch = 20 ,
+        cex.lab = 1.5, cex.axis = 1.5, cex = 1.2,
+        bty = "L", las = 1, tcl = 0.5 ) # type = p - this p is for points
 ```
 
 
@@ -104,13 +104,63 @@ With this in hand, we can plot our data again, and add these esimates as a line 
 
 # plot our data again
 plot(Seed ~ Root, data = seed_data,
-     type="p", xlab="Root diameter (cm)", ylab="Amount of seed (g)", pch=20 ,
-        cex.lab=1.5, cex.axis=1.5, cex=1.2,
-        bty="L", las=1, tcl=0.5 ) # type = p - this p is for points
+     type = "p", xlab = "Root diameter (cm)", ylab ="Seed (g)", pch = 20 ,
+        cex.lab = 1.5, cex.axis = 1.5, cex = 1.2,
+        bty = "L", las = 1, tcl = 0.5 )
 
 # add the predicted line
 lines(Seed ~ Root, data = new_seed_data, 
      col = "black", lty = 2, lwd = 2)
+```
+
+## Add a confidence interval for the line
+
+Using `predict()` we can also ask it to return confidence intervals for the corresponding estimates. Again, we will make a prediction, and add it on to the `new_data` object; however, note here that we already have a column called `Seed` so we need to be a little careful. Also, since the confidence intervals are curves, we will need more than two points at which to esimated them so will create a sequence of values corresponding to the explanatory variable (x-axis) which in this example is called `Root`. Finally, we need to care as we fitted a model here with `glm()` and the default `predict.glm` doesn't do confidence intervals, so we need to force it to call `predict.lm()` instead.
+
+```{r confidence}
+
+# create a new object for now with the expected and upper and lower 
+# confidence intervals for each value. Here I differentiate this 
+# new object "new_seed_data_2"
+new_seed_data_2 <- data.frame(Root = seq(from = 4, to = 11, by = 0.1))
+
+# calculate the predictions and but them in a separate object first
+# NB using predict.lm()
+predicted_seed <- predict.lm(model1, newdata = new_seed_data_2, 
+                             interval = "confidence")
+
+# note the names of the columns
+head(predicted_seed)
+
+# now we can put this onto the end of the new_seed_data_2 object
+# to keep it all in one place by binding the columns using cbind()
+new_seed_data_2 <- cbind(new_seed_data_2, predicted_seed)
+
+# plot our data again
+
+par(mfrow = c(1,1)) # set the panel back to 1x1 figure
+
+plot(Seed ~ Root, data = seed_data,
+     type = "p", xlab = "Root diameter (cm)", ylab ="Seed (g)", pch = 20 ,
+        cex.lab = 1.5, cex.axis = 1.5, cex = 1.2,
+        bty = "L", las = 1, tcl = 0.5 )
+
+# and now add our lines
+
+# add the expected value first
+lines(fit ~ Root, data = new_seed_data_2,
+      col = "black", lty = 1, lwd = 2)
+
+# then the lower estimate
+lines(lwr ~ Root, data = new_seed_data_2,
+      col = "grey", lty = 2, lwd = 2)
+
+# then upper in the same style
+lines(upr ~ Root, data = new_seed_data_2,
+      col = "grey", lty = 2, lwd = 2)
+
+
+
 ```
 
 

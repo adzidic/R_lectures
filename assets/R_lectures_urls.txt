@@ -1,0 +1,42 @@
+# This file contains a list of urls which is only intended as a set of notes for 
+# Andrew Jackson as he develops his website.
+
+http://www.tcd.ie/Zoology/research/research/theoretical/images/andrew_small.JPG
+http://www.tcd.ie/Zoology/research/research/theoretical/images/andrew_small.JPG
+
+
+
+
+
+https://cdn.rawgit.com/adzidic/R_lectures/f03e8d4a/L1_opening_R/L1_opening_R.html
+
+https://cdn.rawgit.com/adzidic/R_lectures/f03e8d4a/L2_working_with_scripts/L2_working_with_scripts.html
+
+https://cdn.rawgit.com/adzidic/R_lectures/f03e8d4a/L3_importing_data/L3_importing_data.html
+
+https://cdn.rawgit.com/adzidic/R_lectures/f03e8d4a/L4_installing_packages/L4_installing_packages.html
+
+https://cdn.rawgit.com/adzidic/R_lectures/f03e8d4a/L5_histograms/L5_histograms.html
+
+https://cdn.rawgit.com/adzidic/R_lectures/f03e8d4a/L6_scatter_plots/L6_scatter_plots.html
+
+
+
+The entire course, including both the rendered html versions of the lecture notes, and the mix of code and text in the underlying markdown files (*.Rmd) are available for download from https://github.com/adzidic/R_lectures.
+
+
+Master links
+
+https://rawgit.com/adzidic/R_lectures/master/L1_opening_R/L1_opening_R.html
+
+https://rawgit.com/adzidic/R_lectures/master/L2_working_with_scripts/L2_working_with_scripts.html
+
+https://rawgit.com/adzidic/R_lectures/master/L3_importing_data/L3_importing_data.html
+
+https://rawgit.com/adzidic/R_lectures/master/L4_installing_packages/L4_installing_packages.html
+
+https://rawgit.com/adzidic/R_lectures/master/L5_histograms/L5_histograms.html
+
+https://rawgit.com/adzidic/R_lectures/master/L6_scatter_plots/L6_scatter_plots.html
+
+https://rawgit.com/adzidic/R_lectures/master/
