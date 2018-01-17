@@ -48,15 +48,16 @@ We are interested in how seed production is affected by plant size, as indicated
 
 
 
+# Housekeeping
 
-
-# Enter or read in your data from a file
-
-First some housekeeping
+Remember that `rm(list=ls())` is not sufficient for a full clean set up of R, and you should use `Ctrl/Cmd-SHIFT-F10` in Rstudio to Restart R cleanly and check that this works at least at the end of your analysis, or periodically during development.
 
 ```{r}
-rm(list=ls()) # remove everything currently held in the R memory
+# remove (almost) all objects currently held in the R environment
+rm(list=ls()) 
 ```
+
+# Enter or read in your data from a file
 
 Read in data from our CSV (comma separated value) file
 

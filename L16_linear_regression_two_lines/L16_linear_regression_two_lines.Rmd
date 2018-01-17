@@ -10,15 +10,9 @@ output:
      number_sections: yes
 ---    
 
-#BEFORE START - Install RMarkdown
-
-To use this file you have to install RMarkdown!
-
-RMarkdown files have extension: .Rmd
+In this example we fit a linear model with normal errors to some data comprising a linear covariate and a categorical explanatory variable with two levels. This is commonly referred to as ANCOVA (ANalysis of COVAriance) but we prefer to simply class it as one of the foundation models in the class of Generalised Linear Models. We will fit these models using the function `glm()` but you could fit it with `lm()` or `aov()` intstead, in which case you will be given slightly different output. However, one important point to note is that if you use `aov()`, then in this example, the order in which you specify the explanatory variables will produce very different estimates of significance arising from the fact that the data are not balanced and orthogonal, and that `aov()` fits using sequential sums of squared rather than marginal sums of squared.
 
 #ANCOVA - Analysis of covariance has one continous response variable and at least one continous and categorical explanatory vairable. 
-
-**IMPORTANT THING to keep in mind is that order of categorical variable matters, because data are not-orthogonal (for details see Crawley: Statistics: an introductory using R). **
 
 EXAMPLE: 
 Data file - Grazing.csv
@@ -29,24 +23,25 @@ Solution:
 Diameter of the top of rootstock (Root) - explanatory variable (x-axis)
 Weight of the seed produced - response variable (y-axis)
 
-6 posible solutions to the problem:
-1. Both slopes and intercept are different
-2. Different intercepts and same slope
-3. Same intercept different slopes
-4. No slope and different intercepts
-5. One slope and one intercept
-6. No slope only one intercept
+There are in theory 6 posible models that might explain these data:
+1. Both slopes and intercept are different (two distinct non-parallel lines)
+2. Different intercepts and same slope (two parallel)
+3. Same intercept different slopes (this would be an unusual model to fit, unless we were very confident that the intercepts were the same. By way of example, this can arise if you are sure that the data and the underlying lines describing them are constrained to converge at the origin $(x=0, y=0)$).
+4. No slope and different intercepts (this is essentially a t-test comparing the means between the two groups)
+5. One slope and one intercept (a simple linear regression)
+6. No slope only one intercept (this is basically the null model, and comprises a single mean and error term to describe the data).
 
-#HOUSEKEEPING
+# Housekeeping
 
-First lets make some houskeeping before we start:
+Remember that `rm(list=ls())` is not sufficient for a full clean set up of R, and you should use `Ctrl/Cmd-SHIFT-F10` in Rstudio to Restart R cleanly and check that this works at least at the end of your analysis, or periodically during development.
 
-```{r Housekeeping}
-rm(list = ls()) # remove everything currently held in the R memory
-graphics.off() # close all open graphics windows 
+```{r}
+# remove (almost) all objects currently held in the R environment
+rm(list=ls()) 
 ```
 
-#READ IN YOUR DATA
+
+#Read in your data
 
 Enter or read in your data from a file as a CSV (comma separated) file from Excel
 
@@ -54,8 +49,8 @@ REMEMBER: Choose your working directory and put file inside that directory!
 
 ##CODE EXPLANATION:
 Data file - grazing.csv
-header=TRUE - in first row are the variable names (Root, Seed and Grazing)
-sep="," - means that values in grazing.csv file are separated with comma (look inside .csv data file in Excel)
+`header=TRUE` - in first row are the variable names (Root, Seed and Grazing). The `stringsAsFactors=FALSE` option prevents automatic conversion from character to factor representation of the categorical variable `Grazing` within the object. Using `read.csv()` rather than `read.table()` automatically specifies the delimiter with 
+`sep=","` - means that values in grazing.csv file are separated with comma (look inside .csv data file in Excel)
 
 ```{r setup, include=FALSE}
 mydata <- read.csv("grazing.csv", header = TRUE, stringsAsFactors = FALSE)
@@ -71,12 +66,12 @@ head(mydata, n = 12L) # option - name of the Object, n= number of lines you want
 str(mydata) # Return complete Object
 ```
 
-We expect the response variable Seed and the linear covariate Root to both be numerical, but Grazing represents two categories in this experiment and we should convert these to a factor. Since the experimental treatment is designed to look at the effect of Grazing over no grazing, I am going to force the baseline level in this factor to be the "Ungrazed" category. This means that our fitted model later on will expclitly tell us what the effect of grazing is, rather than what the effect of "ungrazing" is which is a bit counter-intuitive.
+We expect the response variable Seed and the linear covariate Root to both be numerical, but Grazing represents two categories in this experiment and we should convert these to a factor: the factor format is interpreted by various functions including plotting functions and makes life easier (although many functions will internally coerce a character to factor, it is better to do this ourselves). Since the experimental treatment is designed to look at the effect of Grazing over no grazing, I am going to force the baseline level in this factor to be the "Ungrazed" category. This means that our fitted model later on will expclitly tell us what the effect of grazing is, rather than what the effect of "ungrazing" is which is a bit counter-intuitive. **By default, R will specify the order of the levels alphabetically.**
 
 ```{r factor-grazing}
 
 # coerce to factor and specify the order of the levels
-mydata$Grazing <- factor(mydata$Grazing, levels = c("Grazed", "Ungrazed"))
+mydata$Grazing <- factor(mydata$Grazing, levels = c("Ungrazed", "Grazed"))
 
 # check that this came out as expected.
 str(mydata) 
@@ -86,7 +81,7 @@ str(mydata)
 ```
 
 
-#PLOT DATA SCATTERPLOT
+#Visualise our data with a scatterplot
 ```{r}
 
 plot(Seed ~ Root, data = mydata,
@@ -100,29 +95,40 @@ legend("topleft", levels(mydata$Grazing), pch = 1:2, col = 1:2,
 
 
 
-#FIT THE MOST COMPLICATED MODEL
+#Fit the most complicated model (non-parallel lines)
 
-Our assumption is that both slopes and intercept in Grazed and Ungrazed group differ!
+Our *a priori* assumption here is that both slopes and intercept in Grazed and Ungrazed group differ! This means that we need to esimate a total of 4 coefficients. Specifically, we fit a model of the form:
 
-Therefore we use INTERACTION in the model1:
+$$\text{Seed} = (\beta_0 + \beta_{Grazed}) + (\beta_1 + \beta_{2:Grazed})\text{Root}$$
+
+where $\beta_{Grazed} and \beta_{2:Grazed}$ are only included for data for which `Grazing == Grazed` and are otherwise $0$, in which case the equation simplifies to 
+
+$$\text{Seed} = \beta_0 + \beta_1\text{Root}$$
+and represents the line for the Ungrazed plants.
+
+The point of the full equation now is to assess the significance of the term \beta_{2:Grazed} which if different from zero, indicates that the two slopes are different.
+
+**Important:** when fitting models such as this where the slopes differ between two or more categories, it is generally the case that we are left unable to make any meaningful statement about the significance and magnitude of the different between the two intercepts. This occurs because there is no longer a fixed effect of Grazing in this example along the gradient of Root diameter, since non-parallel lines cross at some point, and are infinitely apart (both positively and negatively) at positive and negative infinity. One thing we can do when fitting linear models such as this is to recentre the data by adding or substracting an amount to the explanatory variables. This has the effect of changing the location of the intercepts, but does not affect the estimates of the slopes: meaning that we could end up with differences between the intercepts of the two lines that are either exactly zero, or massively positive or negative depending on our choice. As ever, there are exceptions to this rule, and maybe we want to know if there was a difference between the intercepts at the start of a time-series experiment between two groups, and in that case being able to test the differences betweent he intercepts at a particular value of the explanatory variable might be informative. In the case of this Seed production example though, there is no such obvious insight to be gained.
+
+Specify the interaction in the GLM model
 
 ```{r}
-model1 <- glm( Seed ~ Root, data = mydata )
+model1 <- glm( Seed ~ Root + Grazing + Root:Grazing, data = mydata )
 
 summary(model1)
 
 ```
-When we analyse coefficients we see that there is no interaction while P-value for interaction is greater than 0.05!
+
+Note that here we have specified the main effects of both `Root` and `Grazing` and manually specified the interaction between the two using the ":"" notation `Root:Grazing`. The short-hand version `glm(See ~ Root * Grazing)` with the "*" notation automatically fits all main and interection effects. This short-hand is fine when we are doing a relatively straight forward model with a few explanatory variables and only simple interactions between pairs of variables, but this can quickly get out of hand with more variables and 3, 4 or even more way interaction terms. Generally it is better, or at least clearer, to specify exactly what you want manually so there are no surprises.
+
+When we analyse coefficients we see that there is no evidence for a significant interaction between Root and Grazing which is the coefficient that determines whether there is a difference between the two slopes. The next step might be to speficy a more simple model with parallel lines, that differ not in their slopes, but only in their intercepts.
 
 
+#Fit two parallel lines
 
-##PRACTICAL EXPLANATION:
+Here we just test if there are differences in intercept between these two groups. The equation of this model is a more simplified version of the more complicated different slopes above.
 
-There is no difference in slope between Grazed and Unrazed groups!
 
-#FIT NEXT MODEL
-
-Here we just test if there are differences in intercept between these two groups.
 
 ```{r}
 model2 <- glm( mydata$Seed ~ mydata$Root + mydata$Grazing )
