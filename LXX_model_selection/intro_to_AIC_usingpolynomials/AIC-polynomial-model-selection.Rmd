@@ -1,0 +1,176 @@
+---
+title: "Using AIC to compare models - polynomials"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+In this computer practical class we will fit various models to our data, including a series of polynomials of increasing complexity in order to assess which model best describes the data. We will use the AIC value to make our initial decision, before assessing whether this model is appropriate for the data using visual inspection of the residuals.
+
+The dataset we are working with comprises data from fishing hauls and inclues the number of species recorded per haul along with the effort (time spent fishing) for each observation.
+
+```{r import-data}
+
+fish_data <- read.csv("fish.species.csv", header = TRUE, 
+                      stringsAsFactors = FALSE)
+
+# the structure and contents of the fish_data data.frame object
+str(fish_data)
+
+# a summary of the data
+summary(fish_data)
+
+```
+
+Our data comprise 50 observations with 2 variables, both of which are continuous numbers. A scatter plot is the obvious initial way to visualise these data. We need to be clear about what the response variable (y axis) is, and what the explanatory variable (x axis) is. We are interested in how the number of species (species richness) is affected by sampling effort which is represented by "haul time". We will follow our best practice from previous classes and try to use the `y~x` notation wherever possible.
+
+```{r visualise-data}
+
+plot(n.species ~ haul.time, data= fish_data, 
+     bty = "L", xlab = "Haul Time (mins)", 
+     ylab = "number of species", las = 1)
+
+
+```
+
+## Linear regression - polynomial order 1
+
+Clearly there is considerable curvature to the data, and a linear model will likely not be sufficient to descibe the trend. We will start by fitting a simple linear model, and looking at the residuals as a starting point before moving ahead and fitting more complex models.
+
+Since we are going to start fitting various models comprising polynomials of varying order, I will make the early decision to name them poly0, poly1, poly2 etc... for null model, simple linear, quadratic etc...
+
+```{r simple-linear-model}
+
+poly1 <- glm(n.species ~ haul.time, data = fish_data)
+
+summary(poly1)
+
+plot(n.species ~ haul.time, data= fish_data, 
+     bty = "L", xlab = "Haul Time (mins)", 
+     ylab = "number of species", las = 1)
+
+# add the linear model using the simple abline() command
+abline(poly1, col = "red")
+
+# extract the residuals and plot a histrogram and a scatterplot
+# of them along the x-axis variable
+resid_poly1 <- resid(poly1)
+
+par(mfrow = c(1,2))
+hist(resid_poly1)
+plot(resid_poly1 ~ haul.time, data = fish_data)
+
+# add a horizontal line at zero (the expected mean of residuals)
+abline(h = 0, col = "red", lty = 2)
+
+
+```
+
+These residuals are pretty awful: they are heavily skewed, and there is a clear pattern to their spread around the expected value of 0 along the x-axis variable `haul.time`.
+
+## Fit the null model as a baseline
+
+We can fit a null model that estimates only a mean and an error term (variance, or standard deviation or precision depending on how you want to think about error). This model basically omits any possible effect of `haul.time` on `n.species`.
+
+```{r null-model}
+
+# fit a null model, a zero order polynomial
+poly0 <- glm(n.species ~ 1, data = fish_data)
+
+summary(poly0)
+
+
+```
+
+## Fit higher order polynomials
+
+One *major* problem with the glm() function is that you cant naively do maths within the function call which is why we might specify the square and cubic transformations of our x-axis variable outside and then pass those in. However, **it is possible** to tell the function to do maths in the glm() call which greatly tidies up our code. We do this by using the following notation using capital "I" as a function which I read as "interpret this code as-Is" : `glm(y ~ x + I(x^2) + I(x^3))`. This approach also has the downstream benefit of making the use of the `predict` function much, much easier. We can apply this to our example to fit the higher order polynomials more easily.
+
+```{r higher-polynomials}
+
+poly2 <- glm(n.species ~ haul.time + I(haul.time^2), data = fish_data)
+
+poly3 <- glm(n.species ~ haul.time + I(haul.time^2) + I(haul.time^3),
+             data = fish_data)
+
+poly4 <- glm(n.species ~ haul.time + I(haul.time^2) + 
+               I(haul.time^3) + I(haul.time^4) , data = fish_data)
+
+poly5 <- glm(n.species ~ haul.time + I(haul.time^2) + 
+               I(haul.time^3) + I(haul.time^4) + I(haul.time^5)
+             , data = fish_data)
+
+poly6 <- glm(n.species ~ haul.time + I(haul.time^2) + 
+               I(haul.time^3) + I(haul.time^4) + I(haul.time^5) +
+               I(haul.time^6), data = fish_data)
+
+poly7 <- glm(n.species ~ haul.time + I(haul.time^2) + 
+               I(haul.time^3) + I(haul.time^4) + I(haul.time^5) +
+               I(haul.time^6) + I(haul.time^7), data = fish_data)
+
+
+```
+
+Now extract the AIC values from these models into a vector for comparison. We can learn some useful coding tricks here to automate this a bit more.
+
+```{r extract-AIC}
+
+# we can do this manually... 
+test_AIC <- rbind(extractAIC(poly0), extractAIC(poly1), 
+                  extractAIC(poly2), extractAIC(poly3),
+                  extractAIC(poly4), extractAIC(poly5),
+                  extractAIC(poly6), extractAIC(poly7))
+
+test_AIC <- data.frame(test_AIC)
+
+test_AIC$Poly_order <- 0:7
+
+names(test_AIC) <- c("edf", "AIC", "Poly_order")
+
+print(test_AIC)
+```
+
+## Prediction
+
+The big advantage of using the `I()` notation to specify the polynomials above is noticeable when we want to plot these models since the call to `predict()` makes it much easier. The reason here is that to plot these curves we need to specify a sequence of numbers along the x-axis variable in small enough increments that allows us to plot effectively the curvature of the models. The `predict` function will take this sequence along with the model object and use the information in it to predict the values. Since the specification above only has the one explanatory variable `haul.time` it makes specifying this sequence much easier because the transformation to the powers is handled internally in the model object via all the `I(haul.time^z)` calls.
+
+By way of example I will run this for the quadratic and cubic, but the same code can be modified readily for the other cases.
+
+```{r predict}
+
+# specify the sequence of points on the x-axis we want to make predictions for.
+# Here i make 200 points. If we made say only 10 points we would still get a 
+# curve but it would be clunky.
+new.x.sequence <- seq(0, 100, length = 200)
+
+# create a data.frame object passing this new sequence to a variable named
+# exactly as it is specified in our models: i.e. haul.time. The predict 
+# function will then pass this to the model object which will look for 
+# variables of the same name, match them up and do the calculations.
+new.data <- data.frame(haul.time = new.x.sequence)
+
+# predict the quadratic
+poly2_predict <- predict(poly2, newdata = new.data)
+
+# predict the cubic
+poly3_predict <- predict(poly3, newdata = new.data)
+
+# plot the raw data using code from above
+plot(n.species ~ haul.time, data= fish_data, 
+     bty = "L", xlab = "Haul Time (mins)", 
+     ylab = "number of species", las = 1)
+
+# add the quadratic
+lines(poly2_predict ~ new.x.sequence, col = "red", lty = 2)
+
+# add the cubic
+lines(poly3_predict ~ new.x.sequence, col = "blue", lty = 3)
+
+```
+
+This is much easier than creating new vectors of transformations of `haul.time` as various powers and then passing each of these back into the `new.data` object. As per our code above, we only have to pass `haul.time` itself and the use of `I()` in the call to `glm()` does the rest internally.
+
+
+
+
+
