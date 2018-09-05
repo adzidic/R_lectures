@@ -7,55 +7,73 @@ output:
      theme: flatly
      toc: true
      toc_depth: 4
-     number_sections: yes
+     number_sections: no
 ---
 
 
 I have been playing around with teaching R through downloadable video podcasts and feel that it works well for getting people up to speed with some of the basics in a user-friendly way. I have also decided to stick with the open-source ethos for R and provide these to all users who want access. As is the case with all programming languages, there is always more than one way to do something, and these represent my own personal preference for a variety of analyses (at least in terms of teaching others how to do them). These demonstrations are for Windows OS for the time being. Mac/Linux users will have to learn some conversions for some commands. I am moving my day-to-day computing over to Mac anyway, so one day I will probably end up with Mac only demonstrations. The course is ever expanding, and I will be adding new chapters as time goes on. If there is an analysis you would particularly like to see, I might be able to create a podcast so please contact me with your suggestions and requests (a.jackson(at)tcd.ie).
 
-You will of course need to install [R](https://cran.r-project.org/) before you can follow along with the podcast course. There are also some script template files and datafiles (I suggest you right click and save these to your local disk) to accompany some of the podcasts below. Many browsers will play these files in a frame, but I strongly suggest you download each podcast to enjoy at your convenience in your media player of choice ([Quicktime](https://support.apple.com/kb/DL837?locale=en_US) is often a default, or   [VLC player](http://www.videolan.org/vlc/index.html)) to avoid problems such as stutter or lack of content. 
+
+## Pre-requisites
+
+- You will of course need to install [R](https://cran.r-project.org/) before you can follow along with the podcast course. The latest version is 3.5.1 (released 02/Jul/2018)
+- I strongly recommend you run R through the Interactive Development Environment (IDE) [Rstudio](https://www.rstudio.com) which is also free to download: basically this makes using R much more user-friendly and includes lots of nice additional point and click features for shortcuts, colour-codes your script files and generally tidies up your workspace. The latest version is v1.1.456 (as of 05/Sep/2018).
+- There are also some script template files and datafiles (I suggest you right click and save these to your local disk) to accompany some of the podcasts below. These can be downloaded from our [github site](https://github.com/adzidic/R_lectures): click the button "clone or download" to get a zip file containing the entire course content. 
+- The podcast videos are available from the my [YouTube channel ](https://www.youtube.com/playlist?list=PLXXzyqr0tEhPRNDuEQ6wcvMcpAkGRjVqs)
+- If you are following along in a class room or public place, you will need some earphones.
+- If you are working in computer rooms in Trinity College Dublin, you should be able to access Rstudio and R as they are included as standard software. They may not be the most up-to-date versions however, but I believe it is possible for you to install your own software into a personal app area. If you plan on using college computers then I strongly recommend you familiarise yourself with the set up in advance of our classes.
+
+## Recommended Reading
+
+- The main book I recommend for students learning both statistics and R at the same time is [Statistics: An introduction using R](https://www.wiley.com/en-ie/Statistics%3A+An+Introduction+Using+R%2C+2nd+Edition-p-9781118941102) by Michael Crawley. This book is relatively inexpensive and has the advantage that there is a larger more detailed version available (at considerably more expense) [The R Book](https://www.wiley.com/en-ie/The+R+Book%2C+2nd+Edition-p-9781118448960) which allows you to go into more detail and explore more advanced statistics. I dont recommend you buy this larger book unless you really want it, and most academic libraries will likely have a copy.
+- If you already know a reasonable amount of statistics using other software, and want to get up to speed in R quickly, then [Getting Started with R](https://global.oup.com/academic/product/getting-started-with-r-9780198787846?cc=ie&lang=en&) by Beckerman, Childs and Petchey is a great small book to get you going.
+- There are also lots of free online resources available, and you can't go wrong with Hadley Wickhams [R for Data Science](http://r4ds.had.co.nz) and he has lots of very advanced and easy to follow books on how to write packages. 
 
 
+## Course Content
 
-#Introduction to R for first time users
+The course is broken into sections, designed to increase in complexity towards Generalised Linear Models which would represent the majority of modelling used in ecology or environmental science which are the subject areas I teach:
 
-    1. Opening R for the first time: [podcast](http://www.tcd.ie/Zoology/research/research/theoretical/Rpodcastsfiles/videos/Intro%20to%20R%20lesson%201.mp4), RMarkdown(L1)
-    2. Working with script files: podcast, script
-    3. Importing data into R: podcast, script, data
-    4. Installing packages: podcast
+### Introduction to R for first time users
 
-#Basic graphics / plots in R
+  1. Opening R for the first time: [podcast](http://www.tcd.ie/Zoology/research/research/theoretical/Rpodcastsfiles/videos/Intro%20to%20R%20lesson%201.mp4), RMarkdown(L1)
+  2. Working with script files: podcast, script
+  3. Importing data into R: podcast, script, data
+  4. Installing packages: podcast
 
-    1. Histograms: podcast, script
-    2. Scatter plots (including how to make pretty graphs): podcast, script
-    3. Barplots: podcast coming soon, script
-    4. Errorbar plots: podcast coming soon, script
-    5. Boxplots: podcast, script
-    6. Advanced Boxplots: podcast, script
+### Basic graphics / plots in R
 
-#Basic analyses in R
+  1. Histograms: podcast, script
+  2. Scatter plots (including how to make pretty graphs): podcast, script
+  3. Barplots: podcast coming soon, script
+  4. Errorbar plots: podcast coming soon, script
+  5. Boxplots: podcast, script
+  6. Advanced Boxplots: podcast, script
 
-    1. Generating summary statistics (includes an introduction to writing your own functions): podcast, script
-    2. Basic data manipulation (sort, subset, randomise, sample, etc...): coming soon.
-    3. Comparing two means with t-tests and their non-parametric analogues: podcast, script, data
+### Basic analyses in R
 
-#Analysis of Variance - ANOVA in R
+  1. Generating summary statistics (includes an introduction to writing your own functions): podcast, script
+  2. Basic data manipulation (sort, subset, randomise, sample, etc...): coming soon.
+  3. Comparing two means with t-tests and their non-parametric analogues: podcast, script, data
 
-    1. ANOVA one-way: (podcast coming soon), script, data
+### Analysis of Variance - ANOVA in R
 
-#General linear models in R
+  1. ANOVA one-way: (podcast coming soon), script, data
 
-    1. Simple linear regression: podcast, script, data
-    2. Analysis of Covariance (ANCOVA - fixed and linear effects in general linear models): podcast, script, data
-    3. Multiple regression and model selection using AIC: coming soon
-    4. Mixed effects / multilevel / hierarchical regression models: coming soon
+### General linear models in R
 
-#Generalised linear models in R (non-normal errors)
+  1. Simple linear regression: podcast, script, data
+  2. Analysis of Covariance (ANCOVA - fixed and linear effects in general linear models): podcast, script, data
+  3. Multiple regression and model selection using AIC: coming soon
+  4. Mixed effects / multilevel / hierarchical regression models: coming soon
 
-    1. Poisson regression: coming soon
-    2. Binary logistic regression: podcast, script, data
-    3. Binomial regression for proportional data: coming soon
-    4. Survival models for time-to-event
+### Generalised linear models in R (non-normal errors)
+
+  1. Poisson regression: coming soon
+  2. Binary logistic regression: podcast, script, data
+  3. Binomial regression for proportional data: coming soon
+  4. Survival models for time-to-event
+
 
 
 
