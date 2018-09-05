@@ -46,37 +46,39 @@ The course is broken into sections, designed to increase in complexity towards G
 ### Basic graphics / plots in R
 
   1. Histograms: [podcast](https://youtu.be/iQOR5cI4ZQQ), Rmarkdown L5
-  2. Scatter plots (including how to make pretty graphs): 
-      a. [podcast 1 - graphics in base R](https://youtu.be/QMu5riQ1rd8), Rmarkdown L
-      b. [podcast 2 - graphics in ggplot]()
+  2. Scatter plots (including how to make pretty graphs). There are two podcasts associate with this single Rmarkdown script L6: 
+      a. [podcast 1 - graphics in base R](https://youtu.be/QMu5riQ1rd8)
+      b. [podcast 2 - graphics in ggplot](https://youtu.be/0zQiItF8X9E)
   3. Barplots: podcast coming soon, script
   4. Errorbar plots: podcast coming soon, script
-  5. Boxplots: podcast, script
-  6. Advanced Boxplots: podcast, script
+  5. Boxplots: [podcast](https://youtu.be/6hw-pzGdLY8), Rmarkdown L9
+  6. Advanced Boxplots. There are two podcasts in this section: 
+      a. [podcast - advanced boxplots in base R](https://youtu.be/hP_eGwgnXS4), Rmarkdown L10a
+      b. [podcast - advanced boxplots in ggplot](https://youtu.be/LCD7lc59yM4), Rmarkdown L10b
 
 ### Basic analyses in R
 
-  1. Generating summary statistics (includes an introduction to writing your own functions): podcast, script
+  1. Generating summary statistics (includes an introduction to writing your own functions): Rmarkdown L11
   2. Basic data manipulation (sort, subset, randomise, sample, etc...): coming soon.
-  3. Comparing two means with t-tests and their non-parametric analogues: podcast, script, data
+  3. Comparing two means with t-tests and their non-parametric analogues: Rmarkdown L13
 
 ### Analysis of Variance - ANOVA in R
 
-  1. ANOVA one-way: (podcast coming soon), script, data
+  1. ANOVA one-way: Rmarkdown L14
 
 ### General linear models in R
 
-  1. Simple linear regression: podcast, script, data
-  2. Analysis of Covariance (ANCOVA - fixed and linear effects in general linear models): podcast, script, data
-  3. Multiple regression and model selection using AIC: coming soon
-  4. Mixed effects / multilevel / hierarchical regression models: coming soon
+  1. Simple linear regression: [podcast](https://youtu.be/x6ygUsKmjx8), Rmarkdown L15
+  2. Analysis of Covariance (ANCOVA - fixed and linear effects in general linear models): Rmarkdown L16
+  3. Multiple regression and model selection using AIC: pending
+  4. Mixed effects / multilevel / hierarchical regression models: pending
 
 ### Generalised linear models in R (non-normal errors)
 
-  1. Poisson regression: coming soon
-  2. Binary logistic regression: podcast, script, data
-  3. Binomial regression for proportional data: coming soon
-  4. Survival models for time-to-event
+  1. Poisson regression: pending
+  2. Binary logistic regression: pending
+  3. Binomial regression for proportional data: pending
+  4. Survival models for time-to-event: pending
 
 
 
