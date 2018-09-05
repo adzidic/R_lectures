@@ -32,19 +32,23 @@ I have been playing around with teaching R through downloadable video podcasts a
 
 ## Course Content
 
-The course is broken into sections, designed to increase in complexity towards Generalised Linear Models which would represent the majority of modelling used in ecology or environmental science which are the subject areas I teach:
+The course is broken into sections, designed to increase in complexity towards Generalised Linear Models which would represent the majority of modelling used in ecology or environmental science which are the subject areas I teach. Not all the scripts in this github repository have associated podcasts, and I hope to complete these over time.
 
 ### Introduction to R for first time users
 
-  1. Opening R for the first time: [podcast](http://www.tcd.ie/Zoology/research/research/theoretical/Rpodcastsfiles/videos/Intro%20to%20R%20lesson%201.mp4), RMarkdown(L1)
-  2. Working with script files: podcast, script
-  3. Importing data into R: podcast, script, data
-  4. Installing packages: podcast
+  1. Opening R for the first time: [podcast](https://youtu.be/GvhbhYvwxvA), RMarkdown L1
+      a. Introduction to scripts, Rmarkdown and Rnotebooks: [podcast](https://youtu.be/ddgNEeD0TQ8), no script accompanies this podcast.
+      b. First Figures in R: [podcast](https://youtu.be/3PbKwf1w3Zs), no script accompanies this podcast
+  2. Working with script files: [podcast](https://youtu.be/Nd8oQbL6qP0), Rmarkdown L2
+  3. Importing data into R: [podcast](https://youtu.be/64MZO2OKMDs), RMarkdown L3
+  4. Installing packages: Rmarkdown L4
 
 ### Basic graphics / plots in R
 
-  1. Histograms: podcast, script
-  2. Scatter plots (including how to make pretty graphs): podcast, script
+  1. Histograms: [podcast](https://youtu.be/iQOR5cI4ZQQ), Rmarkdown L5
+  2. Scatter plots (including how to make pretty graphs): 
+      a. [podcast 1 - graphics in base R](https://youtu.be/QMu5riQ1rd8), Rmarkdown L
+      b. [podcast 2 - graphics in ggplot]()
   3. Barplots: podcast coming soon, script
   4. Errorbar plots: podcast coming soon, script
   5. Boxplots: podcast, script
