@@ -32,7 +32,7 @@ I have been playing around with teaching R through downloadable video podcasts a
 
 ## Course Content
 
-The course is broken into sections, designed to increase in complexity towards Generalised Linear Models which would represent the majority of modelling used in ecology or environmental science which are the subject areas I teach. Not all the scripts in this github repository have associated podcasts, and I hope to complete these over time.
+The course is broken into sections, designed to increase in complexity towards Generalised Linear Models which would represent the majority of modelling used in ecology or environmental science which are the subject areas I teach. Not all the scripts in this github repository have associated podcasts, and I hope to complete these over time. The podcast link should take you to a youtube video, and the "RMarkdown Lx"" designation points you to which folder and file in the github repository you should look for the associated datasets and Rmarkdown scripts used in the corresponding podcast.
 
 ### Introduction to R for first time users
 
