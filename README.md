@@ -1,7 +1,7 @@
 # R_lectures
 R lectures in Trinity
 
-A course in the R statistical computing language by video podcast which is available at http://www.tcd.ie/Zoology/research/research/theoretical/Rpodcasts.php.
+A course in the R statistical computing language by video podcast. More information is available at [INTRO.html](https://cdn.rawgit.com/adzidic/R_lectures/4f995b7a/INTRO.html).
 
 These RMarkdown files were developed by Prof Alen Dzidic during a sabbatical visit to Prof Andrew Jackson in 2017. They are currently used to accompany applied statistics modules ZO4030 and BD7054 developed by Prof Andrew Jackson, School of Natural Sciences, Trinity College Dublin, Dublin 2, Ireland.
 
