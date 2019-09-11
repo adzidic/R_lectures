@@ -16,8 +16,8 @@ I have been playing around with teaching R through downloadable video podcasts a
 
 ## Pre-requisites
 
-- You will of course need to install [R](https://cran.r-project.org/) before you can follow along with the podcast course. The latest version is 3.5.1 (released 02/Jul/2018)
-- I strongly recommend you run R through the Interactive Development Environment (IDE) [Rstudio](https://www.rstudio.com) which is also free to download: basically this makes using R much more user-friendly and includes lots of nice additional point and click features for shortcuts, colour-codes your script files and generally tidies up your workspace. The latest version is v1.1.456 (as of 05/Sep/2018).
+- You will of course need to install [R](https://cran.r-project.org/) before you can follow along with the podcast course. The latest version is `r version$version.string`
+- I strongly recommend you run R through the Interactive Development Environment (IDE) [Rstudio](https://www.rstudio.com) which is also free to download: basically this makes using R much more user-friendly and includes lots of nice additional point and click features for shortcuts, colour-codes your script files and generally tidies up your workspace. The latest version is v1.2.1335 (as of `r format(Sys.time(), '%d %B %Y')`).
 - There are also some script template files and datafiles (I suggest you right click and save these to your local disk) to accompany some of the podcasts below. These can be downloaded from our [github site](https://github.com/adzidic/R_lectures): click the button "clone or download" to get a zip file containing the entire course content. 
 - The podcast videos are available from the my [YouTube channel ](https://www.youtube.com/playlist?list=PLXXzyqr0tEhPRNDuEQ6wcvMcpAkGRjVqs)
 - If you are following along in a class room or public place, you will need some earphones.
