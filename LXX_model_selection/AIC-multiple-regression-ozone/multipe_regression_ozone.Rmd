@@ -1,0 +1,248 @@
+---
+title: "Multiple regression with Ozone dataset"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+author: 
+ - name: Andrew L Jackson
+   email: jacksoan@tcd.ie
+   affiliation: School of Natural Sciences, Trinity College Dublin, Ireland
+output: html_notebook
+---
+
+In this script we will explore the Ozone dataset and use multiple regression to model the variation in ozone levels as a function of a variety of environmental factors.
+
+```{r import-data}
+
+# the dataset i have is a *.txt file and is tab or white space 
+# delimited. If you have a *.csv file  you might need to adapt 
+# the code accordingly
+
+ozone_data <- read.csv("ozone_data.csv", header = TRUE, 
+                         stringsAsFactors = FALSE)
+
+# check its structure
+str(ozone_data)
+
+# and its summary
+summary(ozone_data)
+
+```
+
+Now we need to identify our response variable and the candidate explanatory variables. We are interested in what drives variation in ozone levels, so "ozone" is our reseponse variable.
+
+Since we have lots of variables, some of which might be related to each other in some way, the `pairs()` function in R offers a quick way to get a visualisation of our data. This function plots each variable as a basic scatter plot against every other variable. You can read which variable is on each axis by referring to the diagonals. So, for example, the panel just to the right of "rad" and above "temp" shows solar radiation on the y-axis and temperature on the "x-axis. Since "ozone" is our response variable, really we should find the row where "ozone" is represented on the y-axis and look across that row to see how it varies by each of the other variables. This leadds us to focus on the bottom row, where ozone is on the y-axis, and moving from **right** to **left** along this bottom row we have "ozone ~ wind", "ozone ~ temp" and "ozone ~ rad".
+
+```{r first-visualisation}
+
+pairs(ozone_data)
+
+```
+
+We can make this pairs plot slightly more informative, and add some additional information using some extra code that is buried in the help section of this function.
+
+```{r more-detailed-pairs-plot}
+
+## this custom defined function
+## puts histograms on the diagonal
+panel.hist <- function(x, ...)
+{
+    usr <- par("usr"); on.exit(par(usr))
+    par(usr = c(usr[1:2], 0, 1.5) )
+    h <- hist(x, plot = FALSE)
+    breaks <- h$breaks; nB <- length(breaks)
+    y <- h$counts; y <- y/max(y)
+    rect(breaks[-nB], 0, breaks[-1], y, col = "cyan", ...)
+}
+
+## this custom defined function 
+## puts correlations on the upper panels,
+## with size proportional to the correlations.
+panel.cor <- function(x, y, digits = 2, prefix = "", cex.cor, ...)
+{
+    usr <- par("usr"); on.exit(par(usr))
+    par(usr = c(0, 1, 0, 1))
+    r <- cor(x, y)
+    txt <- format(c(r, 0.123456789), digits = digits)[1]
+    txt <- paste0(prefix, txt)
+    if(missing(cex.cor)) cex.cor <- 0.8/strwidth(txt)
+    text(0.5, 0.5, txt, cex = cex.cor * abs(r))
+}
+
+
+# now plot using pairs again, but this time augment the 
+# diagonals and lower triangle with our new functions.
+pairs(ozone_data, 
+      diag.panel = panel.hist, lower.panel = panel.smooth,
+      upper.panel = panel.cor)
+
+```
+
+On of the things we can see from this appraoch is that the smoothing function draws lines through the data that can be curved. This can help point us to possible sources of curvature in the relationship - focussing again on the bottom row of the table of plots. The diagonal has added the histogram of the single column of data referred to by name in the same panel which can help to see what shape the data take across their range. Certainly ozone appears to be non-normal, and it may be tempting to log transform this prior to analysis. *__However, this would be a big mistake!__* The assumption of the linear models we are fitting is that the *residuals* of the models are normally distributed. This assumption does not care what the data coming in look like, only that the resultant residuals are normal. This is a huge source of confusion and creates unecessary steps in analysis that can complicate rather than help. The final thing to note about this plot is that we have added the correlation coefficients ($\rho$) to the upper right triangle of the plot. This basically tells us how strong the pair-wise relationships are and take values between $-1 \leq \rho \leq 1$, with zero being no correlation, and +1 and -1 being perfect positive or negative correlation. There is some superfluous coding trickery here, and the correlation coefficients are printed in a fontsize proportional to their magnitude (this is not my doing per se! I only copied it out of the example file under the `pairs()` function).
+
+
+## Fitting models
+
+We might rightly start as often we should by fitting the null model to this dataset.
+
+```{r first-models}
+
+null.model <- glm(ozone ~ 1, data = ozone_data)
+
+full.model.1 <- glm(ozone ~ rad + temp + wind, data = ozone_data)
+summary(full.model.1)
+
+# check the residuals
+hist(resid(full.model.1))
+
+# qqplots are great ways to check if the assumption of 
+# normality is met.
+qqnorm(resid(full.model.1))
+qqline(resid(full.model.1), col = "red")
+
+```
+
+Clearly the null model is not behaving well, and we are not explaining well the lower and upper values of ozone as we move away from the mean.
+
+## Start with a more complex model with quadratics
+
+The curvature hinted at in the pairs() plot above might lead us to start by considering that some of the relationships between ozone and the candidate explanatory variables might be quadratic. We can start then with a full quadratic model for all three explanatory variables.
+
+```{r quadratics}
+
+full.model.2 <- glm(ozone ~ rad + I(rad^2) + 
+                      temp + I(temp^2) + 
+                      wind + I(wind^2), 
+                    data = ozone_data)
+
+summary(full.model.2)
+
+# check the residuals
+hist(resid(full.model.2))
+
+# qqplots are great ways to check if the assumption of 
+# normality is met.
+qqnorm(resid(full.model.2))
+qqline(resid(full.model.2), col = "red")
+
+```
+
+Even still the behaviour of the residuals at the upper end of the scale is not great, and we might have to return to account for this at the end and start all over again with a different model.
+
+## Remove some variables from quadratic models
+
+However, for now, taking the quadratic models as being our starting point, we might try removing some of the quadratic terms to see if all of them are necessary according to AIC.
+
+First lets remove the $rad^2$ variable.
+
+```{r}
+model.2.1 <- glm(ozone ~ rad + 
+                      temp + I(temp^2) + 
+                      wind + I(wind^2), 
+                    data = ozone_data)
+
+model.2.2<- glm(ozone ~ temp + I(temp^2) + 
+                      wind + I(wind^2), 
+                    data = ozone_data)
+
+summary(model.2.1)
+summary(model.2.2)
+
+
+```
+
+From this exercise, `model.2.1` is the minimum adequate model. It has a lower AIC than the more complex full quadratic model, and it has a lower AIC than the more simple model without `rad` included.
+
+We should check the residuals again. 
+
+```{r}
+
+# check the residuals
+hist(resid(model.2.1))
+
+# qqplots are great ways to check if the assumption of 
+# normality is met.
+qqnorm(resid(model.2.1))
+qqline(resid(model.2.1), col = "red")
+
+```
+
+These residua;ls are still not very good at the upper end, with the observed ozone values being larger than predicted for all the largest values. This more than likely reflects the skewed underlying distribution of the ozone values. We would probably try to start again with a set of log-transformed ozone values.
+
+But before we do that, we can look and see how the automated model selection function `step()` might have behaved and compare it to our manual model selection.
+
+## Check that the step function behaves as expected
+
+The `step()` function automates the model selection process. 
+
+```{r step-models}
+
+step_best_model <- step(full.model.2)
+
+summary(step_best_model)
+
+```
+
+While `step` is great for finding the model with the lowest AIC value, it does exactly this: find the very lowest AIC value it can. It may present you with a more complicated model than you wish to accept. I recommend that instead you check that removing a variable does not increase AIC by more than two units. That is, you would preferentially accept a more simple model and only accept an additional variable if adding this variable reduced AIC by more than 2 units (which is 2k penalty applied in the calculation of AIC). This rule basically implies that you only add more complexity to your model if the information gained from adding a variable surpasses a threshold of 2 units improvement in model fit.
+
+# Start again with log10(ozone)
+
+
+```{r}
+
+ozone_data$logozone <- log10(ozone_data$ozone)
+
+pairs(ozone_data, diag.panel = panel.hist, lower.panel = panel.smooth,
+      upper.panel = panel.cor)
+
+```
+
+Specify a full model
+
+```{r}
+
+full.log.model.1 <- glm(logozone ~ rad + I(rad^2) + 
+                      temp + I(temp^2) + 
+                      wind + I(wind^2), 
+                    data = ozone_data)
+
+summary(full.log.model.1)
+
+```
+
+use step to find the mimimum AIC model
+
+```{r}
+
+stepped_log_model <- step(full.log.model.1)
+
+```
+
+This model is more than two units lower than any of the other removals, which actually increase AIC again (moving it back up towards +ve values), and so we can accept this and check the residuals.
+
+
+
+
+```{r}
+
+# check the residuals
+hist(resid(stepped_log_model))
+
+# qqplots are great ways to check if the assumption of 
+# normality is met.
+qqnorm(resid(stepped_log_model))
+qqline(resid(stepped_log_model), col = "red")
+
+```
+
+These residuals look much, much better. There is really only one datapoint out of the 111 data points that is markedly different from the expected values, and this happens to be the smallest ozone value. Just remember that you *__cannot compare AIC values between our models fitted to log(ozone) with those fitted to (ozone)__* and instead we can only compare AIC values within these sets of models. We can however use the residuals plots to help us decide whether a transformation is necessary.
+
+We could now proceed to making some inference on the relative effect sizes of the different variable in the minimum adequate model and present some insight into the meaning and interpretation based on the summary table.
+
+```{r}
+summary(stepped_log_model)
+```
+
+
+
+
+
+

@@ -3,7 +3,7 @@ title:title: "L13: Comparing two means with t-tests and their non-parametric ana
 date: "`r format(Sys.time(), '%d %B %Y')`"
 
 output:
-   html_document:
+   html_notebook:
      theme: flatly
      toc: true
      toc_depth: 4

@@ -1,0 +1,107 @@
+---
+title: 'Data Handling, week 3, day 3: Salmon'
+author:
+  name: "Séamus Ó Ciardhuáin 2020-04-28"
+  affiliation: "TCD M.Sc. in Biodiversity & Conservation 2019-2020"
+  email: ciardhus@tcd.ie
+output:
+  # html_document:
+  #   df_print: paged
+  #   toc: yes
+  #   toc_depth: '4'
+  html_notebook:
+    number_sections: yes
+    toc: yes
+    toc_depth: 4
+  # pdf_document:
+  #   toc: yes
+  #   toc_depth: '4'
+---
+
+# Initialisation
+
+## Clean up
+```{r clean up initially}
+# remove (almost) all objects currently held in the R environment
+# rm(list=ls())
+```
+
+## Input the data
+```{r input}
+d = read.csv("salmon.csv", header=T, stringsAsFactors=F)
+d$status <- factor(d$status)
+summary(d)
+```
+
+# Try MuMIn::dredge()
+
+See https://sites.google.com/site/rforfishandwildlifegrads/home/mumin_usage_examples
+and the MuMIn::dredge documentation for this.
+
+```{r}
+
+# set up MuMIn
+library(MuMIn)
+# change na. action
+options(na.action = "na.fail")
+
+# kitchen sink model...
+
+m = glm(salmon.wt ~ temp + depth + status 
+        + temp:depth + temp:status + depth:status 
+        + I(log10(temp)) + I(log10(depth)) 
+        + temp:I(log10(depth)) + depth:I(log10(temp)),
+        data=d)
+
+dredged_model = dredge(m, rank="AIC")
+
+# get "best" as found by dredge
+best_model = summary(get.models(dredged_model, 1)[[1]])
+
+b = glm(best_model, data = d)
+
+best_model
+
+```
+
+# Evaluate dredge's idea of best function
+
+AIC for the model is `r extractAIC(b)`
+
+```{r}
+
+# look at the residuals
+r = residuals(b)
+hist(r,breaks=10)
+qqnorm(r)
+qqline(r, col="green")
+boxplot(r)
+
+```
+
+Using step() on this model does not improve it.
+
+
+# What is negative AIC?
+
+This model is log(weight) without interactions and logs or quadratics, and omits depth altogether.
+
+```{r}
+
+d$logweight <- log10(d$salmon.wt)
+
+m10 = glm(logweight ~ temp + temp:status + status, data=d)
+
+m10
+
+s = step(m10)
+
+s
+
+# look at the residuals
+r = residuals(s)
+hist(r,breaks=10)
+qqnorm(r)
+qqline(r, col="green")
+boxplot(r)
+```
