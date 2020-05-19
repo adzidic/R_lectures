@@ -3,7 +3,7 @@ title: "L15b: Using the predict function to add a regression line"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 
 output:
-   html_document:
+   html_notebook:
      theme: flatly
      toc: true
      toc_depth: 4

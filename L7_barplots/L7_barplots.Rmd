@@ -3,7 +3,7 @@ title: "Lecture 7: Barplots"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 
 output:
-   html_document:
+   html_notebook:
      theme: flatly
      toc: true
      toc_depth: 4

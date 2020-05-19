@@ -1,17 +1,36 @@
 ---
 title: "Using AIC to compare models - polynomials"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+author: 
+ - name: Andrew L Jackson
+   email: jacksoan@tcd.ie
+   affiliation: School of Natural Sciences, Trinity College Dublin, Ireland
 output: html_notebook
-editor_options: 
-  chunk_output_type: inline
+# editor_options: 
+#   chunk_output_type: inline
 ---
 
-In this computer practical class we will fit various models to our data, including a series of polynomials of increasing complexity in order to assess which model best describes the data. We will use the AIC value to make our initial decision, before assessing whether this model is appropriate for the data using visual inspection of the residuals.
+```{r setup}
 
-The dataset we are working with comprises data from fishing hauls and inclues the number of species recorded per haul along with the effort (time spent fishing) for each observation.
+# load tidyverse and broom packages
+library(tidyverse)
+library(broom)
+
+# package for additional table formatting
+library(kableExtra)
+
+```
+
+
+In this example we will fit various models to our data, including a series of polynomials of increasing complexity in degree to assess which model best describes the data. The goal of multiple regression is to identify which explanatory variables belong in a model, and which are superfluous to explaining variation in the response variable.  Ordinarily, our candidate explanatory variables might be quite different from one another, comprising for example: daily rainfall, daily mean temperature, humidity, altitude etc... However, in this example we will focus on a situation where we only have one explanatory variable, but we will include increasing powers of this variable (i.e. $x, x^2, x^3,\dots$) in order to identify how complex a model we need to explain the curvature in the data. We compare AIC values among these models to make our initial decision, before assessing whether this model is appropriate for the data using visual inspection of the residuals.
+
+## The dataset
+
+The dataset we are working with comprises data from fishing hauls and inclues the number of species recorded per haul along with the effort (time spent fishing) for each observation. The number of species is a non-integer number as it has been esimated from analysis of a subset of 40kg boxes analysed on board the vessel, rather than being a full count of all the fish which would be impossible.
 
 ```{r import-data}
 
-fish_data <- read.csv("fish.species.csv", header = TRUE, 
+fish_data <- read.csv("fish_species.csv", header = TRUE, 
                       stringsAsFactors = FALSE)
 
 # the structure and contents of the fish_data data.frame object
@@ -33,11 +52,11 @@ plot(n.species ~ haul.time, data= fish_data,
 
 ```
 
-## Linear regression - polynomial order 1
+## Linear regression - polynomial degree 1
 
 Clearly there is considerable curvature to the data, and a linear model will likely not be sufficient to descibe the trend. We will start by fitting a simple linear model, and looking at the residuals as a starting point before moving ahead and fitting more complex models.
 
-Since we are going to start fitting various models comprising polynomials of varying order, I will make the early decision to name them poly0, poly1, poly2 etc... for null model, simple linear, quadratic etc...
+Since we are going to start fitting various models comprising polynomials of varying degree, I will make the early decision to name them poly0, poly1, poly2 etc... for null model, simple linear, quadratic etc...
 
 ```{r simple-linear-model}
 
@@ -72,9 +91,25 @@ These residuals are pretty awful: they are heavily skewed, and there is a clear 
 
 We can fit a null model that estimates only a mean and an error term (variance, or standard deviation or precision depending on how you want to think about error). This model basically omits any possible effect of `haul.time` on `n.species`.
 
+The null model is the most simple linear model that we might fit to some data. 
+It comprises only a mean and standard deviatoin (or variance depending on your 
+preference) for the data. Mathematically it looks like $Y = \beta_0 + \epsilon$, 
+where $\beta_0$ is the intercept and overall mean of the response variable $Y$ 
+and $\epsilon$ is the error which is defined by a variance or standard 
+deviation depending on your preference for notation.
+
+The null model is specified by the function $Y \tilde 1$ where `1` represents the 
+coefficient of the intercept which is always equal to `1` which is why we omit 
+it from the equation $Y = \beta_0 * (1) + \epsilon$. We are going to get into 
+the habit of using the `data = ` argument when we call `glm()`. This approach 
+basically creates a private environment within the function glm() where it can 
+see inside the dataframe object `mydata` and access the columns of data without 
+having to manually use the dollar sign notation `mydata$richness`. This is 
+important for a subsequent step where we will use the `predict` function.
+
 ```{r null-model}
 
-# fit a null model, a zero order polynomial
+# fit a null model, a zero degree polynomial
 poly0 <- glm(n.species ~ 1, data = fish_data)
 
 summary(poly0)
@@ -82,55 +117,53 @@ summary(poly0)
 
 ```
 
-## Fit higher order polynomials
+## Fit higher degree polynomials
 
-One *major* problem with the glm() function is that you cant naively do maths within the function call which is why we might specify the square and cubic transformations of our x-axis variable outside and then pass those in. However, **it is possible** to tell the function to do maths in the glm() call which greatly tidies up our code. We do this by using the following notation using capital "I" as a function which I read as "interpret this code as-Is" : `glm(y ~ x + I(x^2) + I(x^3))`. This approach also has the downstream benefit of making the use of the `predict` function much, much easier. We can apply this to our example to fit the higher order polynomials more easily.
+One *major* problem with the glm() function is that you cant naively do maths within the function call which is why we might specify the square and cubic transformations of our x-axis variable outside and then pass those in. However, **it is possible** to tell the function to do maths in the glm() call which greatly tidies up our code. We do this by using the following notation using capital "I" as a function which I read as "interpret this code as-Is" : `glm(y ~ x + I(x^2) + I(x^3))`. This approach also has the downstream benefit of making the use of the `predict` function much, much easier. We can apply this to our example to fit the higher degree polynomials more easily.
 
 ```{r higher-polynomials}
 
-poly2 <- glm(n.species ~ haul.time + I(haul.time^2), data = fish_data)
+poly2 <- glm(n.species ~ haul.time + I(haul.time^2), 
+             data = fish_data)
 
 poly3 <- glm(n.species ~ haul.time + I(haul.time^2) + I(haul.time^3),
              data = fish_data)
 
 poly4 <- glm(n.species ~ haul.time + I(haul.time^2) + 
-               I(haul.time^3) + I(haul.time^4) , data = fish_data)
+               I(haul.time^3) + I(haul.time^4), 
+             data = fish_data)
 
 poly5 <- glm(n.species ~ haul.time + I(haul.time^2) + 
-               I(haul.time^3) + I(haul.time^4) + I(haul.time^5)
-             , data = fish_data)
+               I(haul.time^3) + I(haul.time^4) + I(haul.time^5), 
+             data = fish_data)
 
 poly6 <- glm(n.species ~ haul.time + I(haul.time^2) + 
                I(haul.time^3) + I(haul.time^4) + I(haul.time^5) +
-               I(haul.time^6), data = fish_data)
+               I(haul.time^6), 
+             data = fish_data)
 
 poly7 <- glm(n.species ~ haul.time + I(haul.time^2) + 
                I(haul.time^3) + I(haul.time^4) + I(haul.time^5) +
-               I(haul.time^6) + I(haul.time^7), data = fish_data)
+               I(haul.time^6) + I(haul.time^7), 
+             data = fish_data)
 
+
+poly8 <- glm(n.species ~ haul.time + I(haul.time^2) + 
+               I(haul.time^3) + I(haul.time^4) + I(haul.time^5) +
+               I(haul.time^6) + I(haul.time^7) + I(haul.time^8), 
+             data = fish_data)
+
+
+poly9 <- glm(n.species ~ haul.time + I(haul.time^2) + 
+               I(haul.time^3) + I(haul.time^4) + I(haul.time^5) +
+               I(haul.time^6) + I(haul.time^7) + I(haul.time^8) + 
+               I(haul.time^9), 
+             data = fish_data)
 
 ```
 
-Now extract the AIC values from these models into a vector for comparison. We can learn some useful coding tricks here to automate this a bit more.
 
-```{r extract-AIC}
-
-# we can do this manually... 
-test_AIC <- rbind(extractAIC(poly0), extractAIC(poly1), 
-                  extractAIC(poly2), extractAIC(poly3),
-                  extractAIC(poly4), extractAIC(poly5),
-                  extractAIC(poly6), extractAIC(poly7))
-
-test_AIC <- data.frame(test_AIC)
-
-test_AIC$Poly_order <- 0:7
-
-names(test_AIC) <- c("edf", "AIC", "Poly_order")
-
-print(test_AIC)
-```
-
-## Prediction
+## Prediction - Visualising the fitted models
 
 The big advantage of using the `I()` notation to specify the polynomials above is noticeable when we want to plot these models since the call to `predict()` makes it much easier. The reason here is that to plot these curves we need to specify a sequence of numbers along the x-axis variable in small enough increments that allows us to plot effectively the curvature of the models. The `predict` function will take this sequence along with the model object and use the information in it to predict the values. Since the specification above only has the one explanatory variable `haul.time` it makes specifying this sequence much easier because the transformation to the powers is handled internally in the model object via all the `I(haul.time^z)` calls.
 
@@ -141,7 +174,7 @@ By way of example I will run this for the quadratic and cubic, but the same code
 # specify the sequence of points on the x-axis we want to make predictions for.
 # Here i make 200 points. If we made say only 10 points we would still get a 
 # curve but it would be clunky.
-new.x.sequence <- seq(0, 100, length = 200)
+new.x.sequence <- seq(from = 0, to = 100, length = 200)
 
 # create a data.frame object passing this new sequence to a variable named
 # exactly as it is specified in our models: i.e. haul.time. The predict 
@@ -170,7 +203,171 @@ lines(poly3_predict ~ new.x.sequence, col = "blue", lty = 3)
 
 This is much easier than creating new vectors of transformations of `haul.time` as various powers and then passing each of these back into the `new.data` object. As per our code above, we only have to pass `haul.time` itself and the use of `I()` in the call to `glm()` does the rest internally.
 
+## Choosing the most appropriate model
+
+We can now use AIC to select the model that maximises likelihood while balancing this against the penalty for adding additional parameters. We can extract the AIC values from these models into a data.frame for comparison. We can use the function `AIC` and pass it all our fitted model objects and let it extract both the AIC And the degrees of freedom for each.
+
+```{r extract-AIC}
+
+# we can do this manually... 
+test_AIC <- AIC(poly0, poly1, poly2, 
+                poly3, poly4, poly5, 
+                poly6, poly7, poly8,
+                poly9)
+
+# add a column to represent the degree of each polynomial
+test_AIC$Poly_degree <- 0:9
 
 
+knitr::kable(test_AIC, digits = 2) %>% 
+  kable_styling("striped", full_width = F)
+```
 
+We can now start to make a decision as to which model is the "best" out of this selection. I use the term "best" lightly, as really what we are aiming to do is identify the *minimum adequate model*. That is, the model that adequately explains the data while minimising the number of parameters. It is also important to note that we are only making this choice out of the models in front of us, and there may well exist other models of different structure that may out peform this set of models. Knowing how to recognise the potential for other model formulation comes with experience, but for this excercise we will stick with what we have in terms of these polynomials and proced to make our decision. 
+
+One aspect about having this restriction of polynomials before us is that we can easily rank them in terms of their complexity. The column **df** represents the number of parameters $k$ used in the calculation of the corresponding AIC value. The zero-degree polynomial has $k = 2$ as expected, representing the mean and standard deviation, and one additional parameter is added each time we move up the degree of polynomials. From the table we can see that adding degrees of polynomials is a large improvement over the null model, with a substantial drop in AIC even moving to the first and second degree polynomials. Purely on the basis of minimising AIC we would select the 7th degree polynomial which has AIC = 75.07. However, this is where printing out at least a suite of the models around our minimum AIC and thinking carefully about their differences is important.
+
+Since AIC has a default penalty of $2k$ for every parameter added to a model, we should only accept a more complex model over a more simple one if the AIC decreases by more than 2 units for every added parameter. The easiest way to think about this is to start at the most simple model, and only add a single additonal paramer (checking the **df** column in the table above) if it results in a decrease to AIC of more than 2. So, starting at 0-degree, we see that adding one parameter results in a drop of approximately 64 units which is clearly larger than 2, and so that additional parameter is more than justified. We proceed down the table until we get to the 5-degree polynomial model with an AIC = 77.56. Adding one more paramter actally causes the AIC to go up slightly and so we cant justify the 6th over the 5th degree model. However, the 7th degree model with AIC = 75.07 looks tempting, and it is more than 2 units lower than the 6th degree *However*, if we select the 5th degree model as our starting point, we can ask ourselves if the degree 7 model is an improvement, but now we have to ask if an extra *2* parameters is justified to take us to the 7th degree model. This would required a drop of more than $2*k = 2*2 = 4$ units which would mean its AIC would have to be lower than $77.56 - 4 = 73.56$. With an AIC = 75.07, the 7th degree model is not justified over the 5th and so we would in this case conclude that the minimum adequate polynomial to explain these data is the degree 5 polynomial.
+
+## Checking our model
+
+Now that we have selected the degree 5 polynomial based on AIC, we can proceed to check whether it is a sensible model, bearing in mind that AIC based model comparison only optimises on the basis of relative performance and says nothing about absolute model fit and appropriateness.
+
+We should start by checking that the distribution of the residuals are normal.
+
+```{r}
+
+hist(resid(poly5), breaks = 10)
+
+```
+
+This histogram looks pretty good, with a fairly symmertical distribution of residuals around 0.
+
+We can also check whether the residuals are evenly dispersed along the x-axis variable which in this example is `haul.time`.
+
+```{r}
+plot(resid(poly5) ~ haul.time, data = fish_data)
+abline(0,0, col = "red")
+```
+
+
+These residuals display no obvious pattern and are evenly distributed either side of the expected zero line across the range of haul time values. Coupled with the histrogram above, we could reasonably conclude that his model is an appropriate representation of the data and finish there. We might however want to take a look at what our model actually looks like plotted over the data. We can grab a copy of the code we used above to draw the quadratic, and simply edit it to use the `poly5` object instead.
+
+```{r}
+# predict our poly5 object
+poly5_predict <- predict(poly5, newdata = new.data)
+
+# plot the raw data using code from above
+plot(n.species ~ haul.time, data= fish_data, 
+     bty = "L", xlab = "Haul Time (mins)", 
+     ylab = "number of species", las = 1)
+
+# add the cubic
+lines(poly5_predict ~ new.x.sequence, col = "red", lty = 1)
+
+
+```
+
+Based on this visualisation it is no surprise that the residuals look so good - we are hitting almost all our data points along its range. So we might rightly be very happy with our result and in some ways we should be. However, the trouble now becomes: how exactly do you explain a degree 5 polynomial model to someone? Our model might have pretty good predictive power for the relationship between number of species and haul time along the x-axis range 0 - 100, but it doesnt really help us to understand this relationship or make any particularly helpful insight into how one variable might affect another. The only real way to convey what this model says is to show someone the figure above with the line drawn through the data, and see for themselves how the function goes up, levels off a bit, goes up again, levels off etc... 
+
+This is not to say that polynomials are useless. We will often in biology expect certain relationships to follow quadratic or quadratic-like forms where say there is an optimal temperature at which some biological or chemical process occurs ([thermal perfomance curves](https://academic.oup.com/icb/article/51/5/691/630399) for example). We may even expect some cubic relationships in some systems, but after that, fitting higher degree polynomials becomes something of an exercise in smoothing out rough (jagged) patterns in data and trying to then use the fitted smoothed relationship in subsequent analyses to say something about missing data in between or to identify temporal or spatial trends. In fact, the whole statistical field of fitting splines to data and use a series of short segment polynomial cubic models to fit nuanced curves to data and are typically powerful and helpful for spatio-temporal models. These fitted spline functions are oftentimes found as the basis for fitting GAMs (Generalised Additive Models) which are particularly helpful and powerful for modelling and predicting spatio-temoporal processes such as biogeochemical processes, climatic variables and species distributions.
+
+
+# Optional - Plotting our Polynomials using ggplot
+
+The package `broom` provides an easier interface for prediction that in more complex examples will lend itself to much easier visualisation of complicated datasets. The big compatability advantage here is that `ggplot` expects `data.frame` or `tibble` formatted data for plotting, and the broom package always returns a `tibble`. As above, we pass our object `new.data` along with the glm class object to `broom::augment` which specifies the values on which to predict. One could very easily copy and paste the `geom_line()` block and add more on here, changing the model object to plot higher degrees of polynomial.
+
+ 
+```{r}
+
+
+g3 <- ggplot(data = fish_data, 
+             mapping = aes(x = haul.time,
+                           y = n.species)) + 
+  geom_point() + 
+  ylab("Number of species") + 
+  xlab("Haul time (mins") + 
+  geom_line(data = augment(poly2, newdata = new.data),
+            mapping = aes(y = .fitted),
+            color = "red",
+            linetype = 2)  + 
+  geom_line(data = augment(poly3, newdata = new.data),
+            mapping = aes(y = .fitted),
+            color = "blue",
+            linetype = 3)
+
+print(g3)
+
+```
+
+One element this basic approach does not add is the legend for the polynomial curves. Since we have created these rather arbitrarily below outside a `mapping = aes()` command, the legend is not automatically created. One solution would be to bind the augmented model dataframes together and use an identifier column to pick out each degree polynomial in the plot.
+
+```{r}
+
+## bind the augmented polynomials together and include our 5th degree one.
+## The .id command tells it to use the data.frame name as a column 
+## idendifier which we can then use to pull them apart for plotting.
+## We manually name each data.frame with the corresponding "poly2" etc...
+## so as to have them correctly named in the new identifier columne .id
+
+predicted_polys <- bind_rows(poly2 = augment(poly2, newdata = new.data),
+                             poly3 = augment(poly3, newdata = new.data),
+                             poly5 = augment(poly5, newdata = new.data),
+                             .id = "poly")
+
+
+## Now we can plot our raw data and add a geom_line using this new
+## data.frame we have created that holds all the polynomials we want to plot.
+## Note that we move the geom_point() to the end so as to add that layer
+# last and have the points sit on top of the lines rather than the other way 
+# around.One thing we need to take care of is that if we change the 
+# set of polynomials included in creating predicted_polys above, that we 
+# name the data.frame inside the bind_rows() command ensuring it matches
+# the polynomial object... i.e. polyX = augment(polyX, newdata = new.data).
+# We then need to take extra care below since we are overwriting the 
+# labels on the figure legend manually. In fact, here it is good practice
+# to create two plots, and let the first one infer the names from the 
+# data, before over-writing them as to get this wrong could be an easy 
+# recipe for disaster.
+
+g4 <- ggplot(data = fish_data, 
+             mapping = aes(x = haul.time,
+                           y = n.species)) +  
+  ylab("Number of species") + 
+  xlab("Haul time (mins") + 
+  geom_line(data = predicted_polys,
+            mapping = aes(x = haul.time,
+                          y = .fitted,
+                          color = poly,
+                          linetype = poly),
+            size = 0.8) +
+  geom_point() 
+
+print(g4)
+
+```
+
+And our manually renamed figure legend, with nicer colours.
+
+```{r}
+g5 <- ggplot(data = fish_data, 
+             mapping = aes(x = haul.time,
+                           y = n.species)) +  
+  ylab("Number of species") + 
+  xlab("Haul time (mins") + 
+  geom_line(data = predicted_polys,
+            mapping = aes(x = haul.time,
+                          y = .fitted,
+                          color = poly,
+                          linetype = poly),
+            size = 0.8) + 
+  scale_color_viridis_d(end = 0.8, 
+                        name = "Polynomial Degree",
+                        labels = c("0","3","5")) + 
+  scale_linetype_discrete(name = "Polynomial Degree",
+                        labels = c("0","3","5")) + 
+  geom_point() 
+
+print(g5)
+```
 
