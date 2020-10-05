@@ -3,7 +3,7 @@ title: "Lecture 3b: When is a *.csv file not comma separated"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 
 output:
-   html_document:
+   html_notebook:
      theme: flatly
      toc: true
      toc_depth: 4
@@ -38,7 +38,7 @@ I created a semi-colon separated version of the `finger_lengths.csv` data which 
 
 ```{r importing-csv2}
 #Be sure your file is in your current R working directory!!!
-mydata <- read.csv2("finger_lengths_sCSV.csv", header = TRUE, 
+mydata <- read.csv2("finger_lengths_semicolon.csv", header = TRUE, 
                    stringsAsFactors = FALSE)
 
 # print the contents of my data to screen

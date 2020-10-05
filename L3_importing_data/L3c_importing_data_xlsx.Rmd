@@ -1,0 +1,64 @@
+---
+title: "Lecture 3c: Importing xlsx files"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+
+output:
+   html_notebook:
+     theme: flatly
+     toc: true
+     toc_depth: 4
+     number_sections: yes
+     
+---
+
+
+# Housekeeping
+
+Remember that `rm(list=ls())` is not sufficient for a full clean set up of R, and you should use `Ctrl/Cmd-SHIFT-F10` in Rstudio to Restart R cleanly and check that this works at least at the end of your analysis, or periodically during development.
+
+```{r}
+# remove (almost) all objects currently held in the R environment
+rm(list=ls()) 
+```
+
+
+# Reading in an excel sheet
+
+```{r setup}
+# we need to use an external package to do this
+# install.packages("readxl") # if you dont have the package installed.
+library(readxl)
+
+```
+
+
+I created an xlsx version of the `finger_lengths.csv` data for this example. Note that you can only import a single sheet at a time from an excel file and this is one reason why I tend to prefer exporting to csv or csv2 first and then importing those.
+
+```{r excel}
+#Be sure your file is in your current R working directory!!!
+mydata <- read_excel("finger_lengths.xlsx")
+
+# print the contents of my data to screen
+mydata
+
+# what is mydata's structure?
+str(mydata)
+```
+
+
+As it happens, I created this by first reading in the data using `read.csv` and then saved it out using `write.csv2()` which as you might imagine creates a semi-colon text file. The following code is not run in the knitting of this Rmarkdown, but you can run it yourself to convince yourself (just make sure you set the working directory appropriately).
+
+```{r create-sc2-from-csv, eval = FALSE, include = TRUE}
+
+# first read in the comma separated file
+tmp_data <- read.csv("finger_lengths.csv", header = TRUE,
+                     stringsAsFactors = FALSE)
+
+# now save it out as semi-colon separated with comma for decimal mark
+write.csv2(tmp_data, file = "finger_length_semi_colon.csv")
+
+
+```
+
+
+
