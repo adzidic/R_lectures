@@ -1,5 +1,5 @@
 ---
-title: "Lecture 16:ANCOVA"
+title: "Lecture 16b:ANCOVA in tidyverse"
 date: "`r format(Sys.time(), '%d %B %Y')`"
 
 output:
@@ -9,6 +9,8 @@ output:
      toc_depth: 4
      number_sections: yes
 ---    
+
+This is the `tidyverse` version of "L16 linear regression with two lines (ANCOVA)".
 
 In this example we fit a linear model with normal errors to some data comprising a linear covariate and a categorical explanatory variable with two levels. This is commonly referred to as ANCOVA (ANalysis of COVAriance) but we prefer to simply class it as one of the foundation models in the class of Generalised Linear Models. We will fit these models using the function `glm()` but you could fit it with `lm()` or `aov()` intstead, in which case you will be given slightly different output. However, one important point to note is that if you use `aov()`, then in this example, the order in which you specify the explanatory variables will produce very different estimates of significance arising from the fact that the data are not balanced and orthogonal, and that `aov()` fits using sequential sums of squared rather than marginal sums of squared.
 
@@ -41,22 +43,34 @@ rm(list=ls())
 ```
 
 
-#Read in your data
+## Set up
+
+Install required packages.
+
+```{r}
+library(tidyverse) # load the tidyverse suite of packages
+library(magrittr)  # for the %<>% piping construct
+library(broom)     # for plotting actual model objects
+```
+
+
+# Read in your data
 
 Enter or read in your data from a file as a CSV (comma separated) file from Excel
 
 REMEMBER: Choose your working directory and put file inside that directory!
 
-##CODE EXPLANATION:
+## CODE EXPLANATION:
 Data file - grazing.csv
 `header=TRUE` - in first row are the variable names (Root, Seed and Grazing). The `stringsAsFactors=FALSE` option prevents automatic conversion from character to factor representation of the categorical variable `Grazing` within the object. Using `read.csv()` rather than `read.table()` automatically specifies the delimiter with 
 `sep=","` - means that values in grazing.csv file are separated with comma (look inside .csv data file in Excel)
 
 ```{r setup, include=FALSE}
+# import the data using the base-R `read.csv` function. 
 mydata <- read.csv("grazing.csv", header = TRUE, stringsAsFactors = FALSE)
 ```
 
-#EXPLORE DATA
+# EXPLORE DATA
 
 ```{r explore-data}
 head(mydata) # Return the First Part of an Object -usually first six observations
@@ -69,42 +83,44 @@ str(mydata) # Return complete Object
 We expect the response variable Seed and the linear covariate Root to both be numerical, but Grazing represents two categories in this experiment and we should convert these to a factor: the factor format is interpreted by various functions including plotting functions and makes life easier (although many functions will internally coerce a character to factor, it is better to do this ourselves). Since the experimental treatment is designed to look at the effect of Grazing over no grazing, I am going to force the baseline level in this factor to be the "Ungrazed" category. This means that our fitted model later on will expclitly tell us what the effect of grazing is, rather than what the effect of "ungrazing" is which is a bit counter-intuitive. **By default, R will specify the order of the levels alphabetically.**
 
 ```{r factor-grazing}
-
 # coerce to factor and specify the order of the levels
-mydata$Grazing <- factor(mydata$Grazing, levels = c("Ungrazed", "Grazed"))
+mydata %<>% mutate(Grazing = factor(Grazing, levels = c("Ungrazed", "Grazed")))
+
 
 # check that this came out as expected.
-str(mydata) 
+# str(mydata) 
+  
 
 # if you want you can just pull out the levels only
 #levels(mydata)
 ```
 
 
-#Visualise our data with a scatterplot
+# Visualise our data with a scatterplot
 ```{r}
 
-plot(Seed ~ Root, data = mydata,
-     col = Grazing, pch = as.numeric(Grazing),
-     xlab = "Root", ylab = "Seed", bty = "L", las = 1,
-     cex.axis = 1.2, cex.lab = 1.5)
+g1 <- ggplot(data = mydata, 
+             mapping = aes(x = Root, y = Seed, color = Grazing)) + 
+  geom_point() + 
+  scale_color_viridis_d(end = 0.9)
 
-legend("topleft", levels(mydata$Grazing), pch = 1:2, col = 1:2,
-       bty = "n", cex = 1.5)
+
+print(g1)
+
 ```
 
 
 
-#Fit the most complicated model (non-parallel lines)
+# Fit the most complicated model (non-parallel lines)
 
-Our *a priori* assumption here is that both slopes and intercept in Grazed and Ungrazed group differ! This means that we need to esimate a total of 4 coefficients. Specifically, we fit a model of the form:
+Our *a priori* assumption here is that both slopes and intercept in Grazed and Ungrazed group differ! This means that we need to estimate a total of 4 coefficients. Specifically, we fit a model of the form:
 
 $$\text{Seed} = (\beta_0 + \beta_{Grazed}) + (\beta_1 + \beta_{2:Grazed})\text{Root}$$
 
 where $\beta_{Grazed} and \beta_{2:Grazed}$ are only included for data for which `Grazing == Grazed` and are otherwise $0$, in which case the equation simplifies to 
 
 $$\text{Seed} = \beta_0 + \beta_1\text{Root}$$
-and represents the line for the Ungrazed plants.
+and represents the line for the _**Ungrazed**_ plants.
 
 The point of the full equation now is to assess the significance of the term \beta_{2:Grazed} which if different from zero, indicates that the two slopes are different.
 
@@ -113,28 +129,70 @@ The point of the full equation now is to assess the significance of the term \be
 Specify the interaction in the GLM model
 
 ```{r}
-model1 <- glm( Seed ~ Root + Grazing + Root:Grazing, data = mydata )
+
+# fit the glm and store the ouput in a new object "model1"
+model1 <- glm( Seed ~ Root + Grazing + Root:Grazing, 
+               data = mydata )
+
+# note that the above line is the full syntax for the short 
+# version. Note the "*" to denote, "include all interactions"
+model1 <- glm( Seed ~ Root * Grazing, 
+               data = mydata )
+
 
 summary(model1)
-
-# extract and store the coefficients into an object called coefmod1
-# for easier recall.
-coefmod1 <- coef(model1)
 
 ```
 
 Note that here we have specified the main effects of both `Root` and `Grazing` and manually specified the interaction between the two using the ":"" notation `Root:Grazing`. The short-hand version `glm(See ~ Root * Grazing)` with the "*" notation automatically fits all main and interection effects. This short-hand is fine when we are doing a relatively straight forward model with a few explanatory variables and only simple interactions between pairs of variables, but this can quickly get out of hand with more variables and 3, 4 or even more way interaction terms. Generally it is better, or at least clearer, to specify exactly what you want manually so there are no surprises.
 
-When we analyse coefficients we see that there is no evidence for a significant interaction between Root and Grazing which is the coefficient that determines whether there is a difference between the two slopes. The next step might be to speficy a more simple model with parallel lines, that differ not in their slopes, but only in their intercepts.
+When we analyse coefficients we see that there is no evidence for a significant interaction between Root and Grazing which is the coefficient that determines whether there is a difference between the two slopes. The next step might be to specify a more simple model with parallel lines, that differ not in their slopes, but only in their intercepts.
+
+## Plotting the fitted model over the data
+
+One of the things about ggplot is that is it encourages short cuts. While making your life potentially easy, it doesnt lend itself to good error checking. For example, one can very easily let ggplot fit separate models to the data.
+
+The approach below effectively splits the data in to two entirely separate pieces based on the Grazing variable which we have used to assign different colours in the plot and fits two linear models with two error terms $\epsilon_{Grazed}$ and $\epsilon_{Ungrazed}$. This is different to our call to the `glm()` function which does something similar but ties the two groups of data together by calculating a single error term $\epsilon$.
+
+```{r}
+
+# generate a new figure from our basic scatter plot g1 and let 
+# geom_smooth() add lines based on the colour grouping
+g_2 <- g1 + geom_smooth(method = "lm")
+
+print(g_2)
+
+```
+In order to plot the actual models we fitted, we have to actually make reference to our model in the ggplot construct. We do this using some helper functions in the `broom` package which will generate a new `data.frame` object (strictly a `tibble` per the tidyverse realm) based on the data we have and the model fit we created, keep it all in the same structure as the original data and hence allow ggplot to inherit all the information it needs to add it to the plot.
+
+```{r}
+
+model1_fitted <- model1 %>% augment(se_fit = TRUE)
+
+g_model1 <- ggplot(data = model1_fitted, 
+                   mapping = aes(x = Root, y = Seed, 
+                                 color = Grazing)) + 
+  geom_ribbon(aes(ymin=.fitted-1.96*.se.fit, ymax=.fitted+1.96*.se.fit), 
+              alpha=0.2, linetype = 0) +
+  geom_point() + 
+  geom_line(aes(Root, .fitted))
+
+print(g_model1)
+
+```
 
 
-#Fit two parallel lines
+
+
+
+# Fit two parallel lines
 
 Here we just test if there are differences in intercept between these two groups. The equation of this model is a more simplified version of the more complicated different slopes above.
 
 
 
 ```{r}
+# store the parallel model in the object "model2"
 model2 <- glm( mydata$Seed ~ mydata$Root + mydata$Grazing )
 
 summary(model2)
