@@ -1,0 +1,195 @@
+---
+title: "Lxx: Random Intercept - Variance Components"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+
+output:
+   html_notebook:
+     theme: flatly
+     toc: true
+     toc_depth: 4
+     number_sections: yes
+     
+---
+
+```{r setup}
+library(tidyverse)
+library(nlme)
+```
+
+
+The use of random terms in linear models adds enormous potential to deal with nested data that is very common in ecological type data structures. The nomenclature around these models can be confusing and there is much jargon. The following are all broadly of the class of a linear model that includes a random term:
+
+- Random effects model
+- Generalised linear mixed effects model (GLMM)
+- Variance Components model
+- Variance Partitioning
+- Repeated measures analysis (repeated measures ANOVA)
+- Hierarchical model
+- Multi-level model
+
+These linear models can get quite complicated, so here we will start by looking at a simple random intercept model with no linear covariate, so we effectively have a very simple Variance Components model. For these examples, given the complexity, it is helpful to work with simulated data so that we can more easily see how the fitted model estimates line up with the structure of the data. 
+
+## Simulate some data
+
+Here we generate some nested data. We have multiple groups within which we have multiple observations such that observations within a given group are expected to be correlated. This mimics a situation where for example we have multiple observations on individuals (the groups of data) such that there is variation between individuals and also variation within individuals.
+
+```{r}
+
+# set the random seed for reproducibility between runs
+set.seed(4293)
+
+# define the number of groups (individuals, or populations)
+n_groups <- 20
+
+# define the number of observations within each group
+n_obs <- 10
+
+# calculate the total number of observations
+n <- n_groups * n_obs
+
+## ---------------------------------------
+## generate the data
+
+# specify the grand mean
+b0 <- 10
+
+# specify the variation between individuals as an sd
+sd_groups <- 5
+
+# speficy the variation within individuals as an sd
+sd_within <- 1
+
+# generate the means for each of the groups
+mu_groups <- rnorm(n_groups, mean = b0, sd = sd_groups)
+
+# a vector to keep track of the group identifiers
+G <- seq(1, n_groups)
+
+# replicate the group means and identifiers 
+# by the number of observations within a group to 
+# generate the raw data. Also replicate the group 
+# identifiers.
+Y <- rnorm(n = n, mean = rep(mu_groups, n_obs), sd = sd_within)
+GG <- rep(G, n_obs)
+
+# Generate the data.frame
+dd <- data.frame(Y = Y, GG = GG)
+
+
+```
+
+## Plot and summarise the data
+
+Our data comprise a series of normal distributions who's means also vary according to a normal distribution. This is effectively a question of where the variation in the data are compartmentalised. There is some variation among, and some within. 
+
+```{r}
+g1 <- ggplot(data = dd, 
+              mapping = aes(x = GG, y = Y, 
+                            group = GG)) + 
+  geom_violin()
+print(g1)
+
+```
+
+## Model the data
+
+We can fit a simple random intercept model to these data. Effectively this says that the intercept for each group varies around a global mean intercept, with deviations that can be described using a normal distribution with mean 0 and some variance (standard deviation). Then, once we have accounted for that portion of the variance, there will be left over some residual error which itself is assumed to be normally distributed and will represent the variance within each group.
+
+```{r}
+
+# we fit a linear mixed effects (random effects model)
+# using the function lmer::lme()
+# The fixed part of the model is specified as normal in a 
+# lm() or glm() model, and the random part is fitted using 
+# ~ to create a function, and then we ask for the intercept "1"
+# to be modelled as a random term for each GG group identifier. 
+m1 <- lme(Y ~ 1, random = ~ 1|GG, data = dd)
+
+print(m1)
+```
+
+We can see now that we are probably quite close to recovering the parameters of the data we specified when we defined them.
+
+The estimated intercept (or grand overall mean) is `r round(fixed.effects(m1), 2)` and matches closely the value of `b0` = `r round(b0, 2)` we specified when simluting the data.
+
+The estimated standard deviation between groups is given by the random term on the `(Intercept)` which is `r round(as.numeric(VarCorr(m1)["(Intercept)", "StdDev"]),2)` and compares with the value we assigned to `sd_groups` =  `r round(sd_groups, 2)`.
+
+The estimated standard deviation within groups is therefore the residual variation left over after accounting for the variation between groups. The model has estimated this to be `r round(as.numeric(VarCorr(m1)["Residual", "StdDev"]),2)` and compares with the value we assined to `sd_within` = `r round(sd_within,2)`.
+
+## Variance components
+
+The variance components concept lets us take advantage of the fact that variance is additive (standard deviations are not!) and so we can partition the variance between the group means and the within group variation. 
+
+We can calculate the variation of the data in multiple ways and also do so given that we have simulated the data and so know what the population's parameters are. 
+
+```{r}
+
+# the raw, overall (sample) variance of the data
+var_raw <- var(dd$Y)
+
+# the variance of the means of each group
+var_of_means <- dd %>% group_by(GG) %>% summarise(group_means = mean(Y)) %>% summarise(var(group_means)) %>% unlist()
+
+# the mean of the variance within each group gives us an 
+# esimate of the within group variance
+mean_of_var_within <- dd %>% group_by(GG) %>% 
+  summarise(var_within = var(Y)) %>% 
+  summarise(mean(var_within)) %>% unlist()
+
+# the sum of these two variances gives us a measure of the 
+# total variance
+var_total <- var_of_means + mean_of_var_within
+
+```
+
+The expectation is that the overall variance of the raw data which we calculated as `var_raw` = `r round(var_raw, 2)` should be close to the total variance we calculate as the two components of between and within group: `var_total` = `r round(var_total,2)`. The more structure there is in the data though, the more these two estimates will diverge. The advantage of fitting the random effects model is that it considers these two components simultaneously and allows esimation of not only the random effects, but as we will see later the effect that explanatory variables have on the mean or fixed part of the equation while also adjusting the degrees of freedom according to the within-group autocorrelation inherent to the data. 
+
+The model esimates of the within and between variance are obtainable as before, via the function `VarCorr()`
+
+```{r}
+print(VarCorr(m1))
+
+# estimated variances for each level
+est_var = as.numeric(VarCorr(m1)[,"Variance"])
+
+# estimated total variance
+est_tot_var = sum(est_var)
+
+```
+And the total variance estimated from the model is `r round( sum(as.numeric(VarCorr(m1)[,"Variance"])), 2)`. More over we can calculate the proportion of variance attributable to each component. The variance in this example is split `r round( est_var[1] / est_tot_var , 2)` to the between individual level, and the remaining `r round( est_var[2] / est_tot_var , 2)` to the level within individuals.
+
+## Extracting information from the random effects model
+
+A very common misconception is that if you fit a variable as a random effect, you lose the ability to recover the estimated mean for each group. But this information is readily available within the fitted model object.
+
+```{r}
+# the grand mean is 
+mu <- fixed.effects(m1)
+
+# the group deviations from this is 
+group_dev <- random.effects(m1)
+
+# therefore the group means are 
+group_means <- unlist(mu + group_dev, use.names = FALSE)
+
+# which we can confirm graphically by adding to the 
+# figure we created above
+g2 <- g1 + geom_point(data = data.frame(G, group_means),
+                      mapping = aes(x = G, 
+                                    y = group_means, 
+                                    group = NULL), 
+                      color = "red")
+print(g2)
+
+
+```
+
+
+## Extensions
+
+We will move on to including a covariate in the model such that the data have an additional slope effect on the means, with deviations around this slope accounted for by the random intercept for each group. 
+
+Not covered, but equally possible is to model 3, 4 or even more levels to the data, such that you might have repeated measures on individuals, themselves nested within a group, who themselves are nested within a larger population. For example, you might measure people's weights on multiple occasions and nest the data such that they are grouped into electoral units within a country, with countries grouped into continents and then the world at the top level. In such a structure you could identify where the largest level of variation arises and then start to target future studies to identify possible explanatory variables at each level. 
+
+
+
